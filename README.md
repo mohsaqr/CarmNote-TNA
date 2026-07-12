@@ -60,13 +60,7 @@ inseparable: a multi-level confirmatory testing battery validates every
 supported model and every analytical claim, through split-half reliability
 for internal consistency, bootstrapping for edge-level stability,
 case-dropping for centrality stability, and permutation-based comparisons
-for groups, conditions, and temporal phases. Where most methods stop at
-describing a pattern, Dynalytics asks whether that pattern would survive
-rigorous statistical scrutiny — and supplies the tools to find out. CarmNote
-TNA carries this scientific contract into a single file: its validation
-verbs implement the full confirmatory battery, and every statistical routine
-is verified for numerical equivalence against its reference R
-implementation.
+for groups, conditions, and temporal phases.
 
 ---
 
