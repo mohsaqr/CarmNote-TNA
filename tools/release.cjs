@@ -55,9 +55,13 @@ function escapeRegExp(s) {
   return s.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
 }
 
-/** All built .html files in distDir stamped with exactly this version. */
+/**
+ * All built .html files in distDir stamped with exactly this version.
+ * The boundary forbids a following digit or dot-digit (so 2.1.2 matches
+ * neither 2.1.22 nor 2.1.2.1) while allowing ".html" and variant letters.
+ */
 function findArtifacts(distDir, artifactPrefix, version) {
-  const stamp = new RegExp('^' + escapeRegExp(artifactPrefix + version) + '(?![0-9.])');
+  const stamp = new RegExp('^' + escapeRegExp(artifactPrefix + version) + '(?!\\d|\\.\\d)');
   return fs.readdirSync(distDir)
     .filter((f) => f.endsWith('.html') && stamp.test(f))
     .sort();

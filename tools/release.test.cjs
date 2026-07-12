@@ -73,6 +73,18 @@ test('findArtifacts matches exact version only (1.2.3 ≠ 1.2.30), html only', (
   );
 });
 
+test('findArtifacts handles letterless artifacts (version followed by .html)', () => {
+  const bare = path.join(tmp, 'bare-dist');
+  fs.mkdirSync(bare, { recursive: true });
+  ['bare_V2.1.22.html', 'bare_V2.1.22.beta.min.html', 'bare_V2.1.2.html', 'bare_V2.1.2.1.html']
+    .forEach((f) => fs.writeFileSync(path.join(bare, f), '<html></html>'));
+  assert.deepStrictEqual(
+    findArtifacts(bare, 'bare_V', '2.1.22'),
+    ['bare_V2.1.22.beta.min.html', 'bare_V2.1.22.html']
+  );
+  assert.deepStrictEqual(findArtifacts(bare, 'bare_V', '2.1.2'), ['bare_V2.1.2.html']);
+});
+
 test('dry run reports artifacts without writing anything', () => {
   const r = releaseNote('fake', { configPath, repoRoot, dryRun: true });
   assert.strictEqual(r.version, '1.2.3');
