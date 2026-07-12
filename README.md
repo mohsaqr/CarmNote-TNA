@@ -1,8 +1,8 @@
 # CarmNote TNA
 
-> **Reference:** Saqr, M., & López-Pernas, S. *CarmNote: A Portable,
+> **Reference:** Saqr, M., & López-Pernas, S. (2026). *CarmNote: A Portable,
 > Reproducible, Single-File Computational Software Purely in JavaScript.*
-> The International Symposium on Computers in Education (SIIE).
+> The 26th International Symposium on Computers in Education (SIIE 2026).
 
 **A portable, reproducible, single-file computational software for Transition
 Network Analysis**
