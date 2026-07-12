@@ -1,0 +1,12 @@
+{
+  "tna": {
+    "displayName": "CarmNote TNA",
+    "description": "Self-contained HTML notebook for Transition Network Analysis, powered by tnaj. Load a CSV/TSV of sequence data and run TNA model construction, pruning, communities, centralities, bootstrap, permutation and stability analyses — fully offline, no install.",
+    "sourceDir": "../carm-tna",
+    "versionFile": "notebook.version.cjs",
+    "distDir": "dist",
+    "artifactPrefix": "tna-notebook_V",
+    "defaultArtifact": "tna-notebook_V{V}j.html",
+    "releaseDir": "."
+  }
+}
