@@ -53,4 +53,14 @@ htna-pro, …) is ready for public release, give it its own repo: copy
 `tools/` there, write a one-entry `tools/notes.config.json` pointing at its
 source repo (`sourceDir`, `versionFile`, `distDir`, `artifactPrefix`,
 `defaultArtifact`, `releaseDir: "."`), and run `node tools/release.cjs <id>`.
-The first release generates the README and layout automatically.
+The first release generates the README and layout automatically. The full
+step-by-step playbook (with a worked example, the config field reference,
+and the hard rules) is in `Note/RELEASE-MECHANISM.md` in the workspace;
+`CarmNote-SNA` was stood up from it.
+
+## Canonical tooling
+
+THIS repo holds the canonical `tools/release.cjs` and
+`tools/release.test.cjs`. Fix or extend the tool here first, run the tests,
+then copy both files into every other `CarmNote-*` release repo and re-run
+their tests.
