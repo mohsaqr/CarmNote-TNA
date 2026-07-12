@@ -1,0 +1,97 @@
+<svg width="740" height="1150" viewBox="0 0 740 1150" xmlns="http://www.w3.org/2000/svg" font-family="Helvetica, Arial, 'DejaVu Sans', sans-serif">
+<defs>
+<marker id="arrow" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+<path d="M2 1L8 5L2 9" fill="none" stroke="#5F5E5A" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+</marker>
+</defs>
+<rect x="0" y="0" width="740" height="1150" fill="#FFFFFF"/>
+
+<text x="40" y="48" font-size="15" font-weight="600" fill="#26215C">Analysis verbs — each takes inputs, runs the engine, and draws a figure</text>
+
+<!-- Row 1 -->
+<rect x="40" y="76" width="320" height="136" rx="8" fill="#EEEDFE" stroke="#534AB7" stroke-width="0.75"/>
+<text x="56" y="102" font-size="14" font-weight="600" fill="#26215C">Build · construct the model</text>
+<text x="56" y="128" font-size="12" fill="#3C3489"><tspan font-weight="600">Network</tspan> — fit from sequences</text>
+<text x="56" y="150" font-size="12" fill="#3C3489"><tspan font-weight="600">Groups</tspan> — one network per group</text>
+<text x="56" y="172" font-size="12" fill="#3C3489"><tspan font-weight="600">Cluster sequences</tspan> — similar paths</text>
+<text x="56" y="194" font-size="12" fill="#3C3489"><tspan font-weight="600">Mixture-Markov</tspan> — latent subgroups</text>
+
+<rect x="380" y="76" width="320" height="136" rx="8" fill="#EEEDFE" stroke="#534AB7" stroke-width="0.75"/>
+<text x="396" y="102" font-size="14" font-weight="600" fill="#26215C">Describe · summarise the data</text>
+<text x="396" y="128" font-size="12" fill="#3C3489"><tspan font-weight="600">State frequencies</tspan> — occurrence rates</text>
+<text x="396" y="150" font-size="12" fill="#3C3489"><tspan font-weight="600">Mosaic heatmap</tspan> — transition matrix</text>
+<text x="396" y="172" font-size="12" fill="#3C3489"><tspan font-weight="600">Transition weights</tspan> — ranked edges</text>
+
+<!-- Row 2 -->
+<rect x="40" y="232" width="320" height="158" rx="8" fill="#EEEDFE" stroke="#534AB7" stroke-width="0.75"/>
+<text x="56" y="258" font-size="14" font-weight="600" fill="#26215C">Validate · test robustness</text>
+<text x="56" y="284" font-size="12" fill="#3C3489"><tspan font-weight="600">Bootstrap edges</tspan> — edge stability</text>
+<text x="56" y="306" font-size="12" fill="#3C3489"><tspan font-weight="600">Centrality stability</tspan> — of measures</text>
+<text x="56" y="328" font-size="12" fill="#3C3489"><tspan font-weight="600">Case-dropping</tspan> — case sensitivity</text>
+<text x="56" y="350" font-size="12" fill="#3C3489"><tspan font-weight="600">Reliability</tspan> — split-half agreement</text>
+<text x="56" y="372" font-size="12" fill="#3C3489"><tspan font-weight="600">Markov-order test</tspan> — order adequacy</text>
+
+<rect x="380" y="232" width="320" height="158" rx="8" fill="#EEEDFE" stroke="#534AB7" stroke-width="0.75"/>
+<text x="396" y="258" font-size="14" font-weight="600" fill="#26215C">Analyze · measure structure</text>
+<text x="396" y="284" font-size="12" fill="#3C3489"><tspan font-weight="600">Centralities</tspan> — node importance</text>
+<text x="396" y="306" font-size="12" fill="#3C3489"><tspan font-weight="600">Edge betweenness</tspan> — transition flow</text>
+<text x="396" y="328" font-size="12" fill="#3C3489"><tspan font-weight="600">Communities</tspan> — clusters of states</text>
+<text x="396" y="350" font-size="12" fill="#3C3489"><tspan font-weight="600">Cliques</tspan> — fully connected groups</text>
+
+<!-- Row 3 -->
+<rect x="40" y="410" width="320" height="180" rx="8" fill="#EEEDFE" stroke="#534AB7" stroke-width="0.75"/>
+<text x="56" y="436" font-size="14" font-weight="600" fill="#26215C">Sequences · per-trajectory view</text>
+<text x="56" y="462" font-size="12" fill="#3C3489"><tspan font-weight="600">Index plot</tspan> — trajectories over time</text>
+<text x="56" y="484" font-size="12" fill="#3C3489"><tspan font-weight="600">Sequence indices</tspan> — complexity, entropy</text>
+<text x="56" y="506" font-size="12" fill="#3C3489"><tspan font-weight="600">Discover patterns</tspan> — frequent subpaths</text>
+
+<rect x="380" y="410" width="320" height="180" rx="8" fill="#EEEDFE" stroke="#534AB7" stroke-width="0.75"/>
+<text x="396" y="436" font-size="14" font-weight="600" fill="#26215C">Compare · contrast groups</text>
+<text x="396" y="462" font-size="12" fill="#3C3489"><tspan font-weight="600">Network properties</tspan> — global metrics</text>
+<text x="396" y="484" font-size="12" fill="#3C3489"><tspan font-weight="600">Difference network</tspan> — edge contrasts</text>
+<text x="396" y="506" font-size="12" fill="#3C3489"><tspan font-weight="600">Permutation test</tspan> — significance</text>
+<text x="396" y="528" font-size="12" fill="#3C3489"><tspan font-weight="600">Positionwise divergence</tspan> — per step</text>
+<text x="396" y="550" font-size="12" fill="#3C3489"><tspan font-weight="600">Pattern comparison</tspan> — enrichment</text>
+<text x="396" y="572" font-size="12" fill="#3C3489"><tspan font-weight="600">Outcome regression</tspan> — to outcomes</text>
+
+<!-- Row 4 -->
+<rect x="40" y="610" width="320" height="180" rx="8" fill="#EEEDFE" stroke="#534AB7" stroke-width="0.75"/>
+<text x="56" y="636" font-size="14" font-weight="600" fill="#26215C">High-order · beyond first order</text>
+<text x="56" y="662" font-size="12" fill="#3C3489"><tspan font-weight="600">Higher-order networks</tspan> — memory</text>
+<text x="56" y="684" font-size="12" fill="#3C3489"><tspan font-weight="600">Path anomaly</tspan> — over/under-used paths</text>
+<text x="56" y="706" font-size="12" fill="#3C3489"><tspan font-weight="600">Embeddings</tspan> — vector view of states</text>
+<text x="56" y="728" font-size="12" fill="#3C3489"><tspan font-weight="600">Directly-follows graph</tspan> — process map</text>
+<text x="56" y="750" font-size="12" fill="#3C3489"><tspan font-weight="600">Path dependence</tspan> — history effects</text>
+<text x="56" y="772" font-size="12" fill="#3C3489"><tspan font-weight="600">Topological pathways</tspan> — hypergraphs</text>
+
+<rect x="380" y="610" width="320" height="180" rx="8" fill="#EEEDFE" stroke="#534AB7" stroke-width="0.75"/>
+<text x="396" y="636" font-size="14" font-weight="600" fill="#26215C">Note · narrative</text>
+<text x="396" y="662" font-size="12" fill="#3C3489"><tspan font-weight="600">Text cells</tspan> — notes between analyses,</text>
+<text x="396" y="684" font-size="12" fill="#3C3489">with inline figures and tables</text>
+<text x="396" y="728" font-size="12" font-style="italic" fill="#534AB7">Every verb is a self-contained cell:</text>
+<text x="396" y="750" font-size="12" font-style="italic" fill="#534AB7">rerun, lock, reorder, export on its own</text>
+
+<line x1="370" y1="794" x2="370" y2="814" stroke="#5F5E5A" stroke-width="1.5" marker-end="url(#arrow)"/>
+
+<!-- Visualisation layer -->
+<rect x="40" y="822" width="660" height="64" rx="8" fill="#E1F5EE" stroke="#0F6E56" stroke-width="0.75"/>
+<text x="56" y="848" font-size="14" font-weight="600" fill="#085041">Visualisation — draws every verb's output</text>
+<text x="56" y="870" font-size="12" fill="#0F6E56">network plots · frequency, mosaic, sequence and centrality charts · formatted tables · SVG and PNG export</text>
+
+<line x1="370" y1="890" x2="370" y2="910" stroke="#5F5E5A" stroke-width="1.5" marker-end="url(#arrow)"/>
+
+<!-- Engine layer -->
+<rect x="40" y="918" width="660" height="96" rx="8" fill="#E1F5EE" stroke="#0F6E56" stroke-width="0.75"/>
+<text x="56" y="944" font-size="14" font-weight="600" fill="#085041">Numerical engine — performs all computation behind the verbs</text>
+<rect x="56" y="958" width="308" height="38" rx="6" fill="#FFFFFF" stroke="#0F6E56" stroke-width="0.6"/>
+<text x="210" y="981" font-size="12" fill="#085041" text-anchor="middle">Pure TypeScript (default)</text>
+<rect x="376" y="958" width="308" height="38" rx="6" fill="#FFFFFF" stroke="#0F6E56" stroke-width="0.6"/>
+<text x="530" y="981" font-size="12" fill="#085041" text-anchor="middle">WebAssembly — same results, faster</text>
+
+<line x1="370" y1="1018" x2="370" y2="1038" stroke="#5F5E5A" stroke-width="1.5" marker-end="url(#arrow)"/>
+
+<!-- Local state layer -->
+<rect x="40" y="1046" width="660" height="64" rx="8" fill="#E1F5EE" stroke="#0F6E56" stroke-width="0.75"/>
+<text x="56" y="1072" font-size="14" font-weight="600" fill="#085041">Local state — save · restore · lock · reproducibility seal</text>
+<text x="56" y="1094" font-size="12" fill="#0F6E56">reopening restores the prior analysis · nothing leaves the machine</text>
+</svg>

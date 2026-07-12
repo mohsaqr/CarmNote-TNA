@@ -3,7 +3,10 @@
 **A portable, reproducible, single-file computational software for Transition
 Network Analysis**
 
-Mohammed Saqr · Sonsoles López-Pernas
+[**Mohammed Saqr**](https://saqr.me) — Professor of Learning Analytics and
+Artificial Intelligence, University of Eastern Finland ·
+[**Sonsoles López-Pernas**](https://sonsoles.me) — Associate Professor,
+University of Eastern Finland
 
 CarmNote TNA is a self-contained JavaScript implementation of Transition
 Network Analysis (TNA) and its higher-order extensions delivered as a single
@@ -36,7 +39,7 @@ the embedding of the complete analytical model — data, parameters,
 procedures, and outputs — within the same file, so that the analysis can be
 inspected, executed, and reproduced as a single unit.
 
-![CarmNote TNA architecture: data ingestion, the in-memory working document, network construction, the analysis units and numerical engine, the rendering backbone, and local persistence](./assets/figure-1.png)
+![CarmNote TNA data flow: data ingestion, the in-memory working document, network construction, the analysis units and numerical engine, the rendering backbone, and local persistence](./assets/dataflow.svg)
 
 Because the whole workflow lives in one file, an analysis can be initiated by
 one researcher, extended by another, and redistributed without any shared
@@ -47,13 +50,21 @@ and re-export the updated artefact. All data remain on the client side,
 loaded into local memory and processed by the browser's native JavaScript
 runtime, which ensures that sensitive data never leave the user's device.
 
+CarmNote TNA is part of the [**Dynalytics**](https://dynalytics.org)
+initiative — *Analytics of Dynamics* — and embodies its principles: all
+computation runs locally with no server dependency; privacy is guaranteed by
+construction, since data never leave the machine; reproducibility follows
+from the architecture rather than from policy; and every statistical routine
+is validated for numerical equivalence against its reference R
+implementation.
+
 ---
 
 ## Functions and Analytical Workflow
 
 CarmNote TNA features a full end-to-end numerical stack written in pure JavaScript, handling matrix algebra, network topologies, and sequence mathematics directly within the client-side environment.
 
-![The 49 analysis verbs of CarmNote TNA in eight groups — build, describe, validate, analyze, sequences, compare, high-order, and note — over the shared visualisation layer, numerical engine, and local state](./assets/figure-2.png)
+![The analysis verbs of CarmNote TNA in eight groups — build, describe, validate, analyze, sequences, compare, high-order, and note — over the shared visualisation layer, numerical engine, and local state](./assets/architecture.svg)
 
 ### Network Analysis & Community Structure
 
