@@ -50,12 +50,22 @@ and re-export the updated artefact. All data remain on the client side,
 loaded into local memory and processed by the browser's native JavaScript
 runtime, which ensures that sensitive data never leave the user's device.
 
-CarmNote TNA is part of the [**Dynalytics**](https://dynalytics.org)
-initiative — *Analytics of Dynamics* — and embodies its principles: all
-computation runs locally with no server dependency; privacy is guaranteed by
-construction, since data never leave the machine; reproducibility follows
-from the architecture rather than from policy; and every statistical routine
-is validated for numerical equivalence against its reference R
+CarmNote TNA is part of [**Dynalytics**](https://dynasite.org/) — an
+overarching framework and methodological ecosystem for the analysis and
+rigorous validation of the dynamics of dynamical systems. Dynalytics
+encompasses a diverse family of models — transition networks, co-occurrence
+networks, psychological networks, and higher-order networks — unified by a
+single philosophy of scientific rigour, in which analysis and validation are
+inseparable: a multi-level confirmatory testing battery validates every
+supported model and every analytical claim, through split-half reliability
+for internal consistency, bootstrapping for edge-level stability,
+case-dropping for centrality stability, and permutation-based comparisons
+for groups, conditions, and temporal phases. Where most methods stop at
+describing a pattern, Dynalytics asks whether that pattern would survive
+rigorous statistical scrutiny — and supplies the tools to find out. CarmNote
+TNA carries this scientific contract into a single file: its validation
+verbs implement the full confirmatory battery, and every statistical routine
+is verified for numerical equivalence against its reference R
 implementation.
 
 ---
