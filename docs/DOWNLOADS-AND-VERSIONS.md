@@ -10,33 +10,32 @@ minified).
 
 ## Quick recommendation
 
-Use the full JavaScript file ending in **`j.html`** unless you have a clear
+Use the full JavaScript file ending in **`-full-j.html`** unless you have a clear
 reason to choose another file. It is the default, smallest full build, easiest
 to archive and review, and the most broadly compatible.
 
 For the current release, that file is:
 
-`tna-notebook_V2.3.64j.html`
+`tna-notebook_V2.3.64-full-j.html`
 
 ## The four files
 
 | Filename pattern | Engine | Packaging | Best use |
 |---|---|---|---|
-| `tna-notebook_V…j.html` | JavaScript | Full | Recommended default; routine analysis, teaching, sharing, and archiving |
-| `tna-notebook_V…w.html` | WebAssembly | Full | Computationally larger datasets and heavier numerical kernels |
-| `tna-notebook_V…j.beta.min.html` | JavaScript | Minified | Web hosting or bandwidth-sensitive download when the recipient can download directly |
-| `tna-notebook_V…w.beta.min.html` | WebAssembly | Minified | Bandwidth-sensitive delivery of the WASM build; not recommended for email |
+| `tna-notebook_V…-full-j.html` | JavaScript | Full | Recommended default; routine analysis, teaching, sharing, and archiving |
+| `tna-notebook_V…-full-w.html` | WebAssembly | Full | Computationally larger datasets and heavier numerical kernels |
+| `tna-notebook_V…-min-j.html` | JavaScript | Minified | Web hosting or bandwidth-sensitive download when the recipient can download directly |
+| `tna-notebook_V…-min-w.html` | WebAssembly | Minified | Bandwidth-sensitive delivery of the WASM build; not recommended for email |
 
 The letter belongs to the engine:
 
 - **`j`** means the numerical engine is JavaScript compiled from TypeScript.
 - **`w`** means selected numerical kernels use WebAssembly.
 
-The suffix belongs to packaging:
+The packaging word is explicit:
 
-- **No `.beta.min` suffix** means the readable full build.
-- **`.beta.min`** means the same application has been minified by the newer
-  minification pipeline.
+- **`full`** means the readable, reviewable build.
+- **`min`** means the same application has been minified.
 
 ## Full versus minified
 
@@ -104,20 +103,14 @@ The WASM notebook is larger because the WebAssembly bytes are embedded inside
 the self-contained HTML file. Start with `j`; move to `w` when workload, not
 file-download size, is the bottleneck.
 
-## What “beta” means
-
-In these filenames, `beta` refers to the minified build pipeline, not to a
-different statistical engine or an experimental set of results. The
-unminified file remains the conservative release default.
-
 ## How to identify a file
 
-For `tna-notebook_V2.3.64w.beta.min.html`:
+For `tna-notebook_V2.3.64-min-w.html`:
 
 - `tna-notebook` — CarmNote TNA;
 - `V2.3.64` — notebook release version;
+- `min` — minified packaging;
 - `w` — WebAssembly engine;
-- `.beta.min` — minified packaging;
 - `.html` — complete self-contained notebook.
 
 The version shown in the filename should match the version badge inside the

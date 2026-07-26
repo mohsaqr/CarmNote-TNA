@@ -58,15 +58,15 @@ function escapeRegExp(s) {
 /**
  * All built .html files in distDir stamped with exactly this version.
  * The boundary forbids a following digit or dot-digit (so 2.1.2 matches
- * neither 2.1.22 nor 2.1.2.1) while allowing ".html" and variant letters.
+ * neither 2.1.22 nor 2.1.2.1) while allowing packaging and engine suffixes.
  */
 function findArtifacts(distDir, artifactPrefix, version) {
   const stamp = new RegExp('^' + escapeRegExp(artifactPrefix + version) + '(?!\\d|\\.\\d)');
   return fs.readdirSync(distDir)
     .filter((f) => f.endsWith('.html') && stamp.test(f))
     .sort((a, b) => {
-      const aMinified = a.includes('.min.');
-      const bMinified = b.includes('.min.');
+      const aMinified = /(?:^|[.-])min(?:[.-]|$)/.test(a);
+      const bMinified = /(?:^|[.-])min(?:[.-]|$)/.test(b);
       return aMinified === bMinified
         ? a.localeCompare(b)
         : Number(aMinified) - Number(bMinified);

@@ -6,7 +6,7 @@
     "versionFile": "notebook.version.cjs",
     "distDir": "dist",
     "artifactPrefix": "tna-notebook_V",
-    "defaultArtifact": "tna-notebook_V{V}j.html",
+    "defaultArtifact": "tna-notebook_V{V}-full-j.html",
     "releaseDir": "."
   }
 }

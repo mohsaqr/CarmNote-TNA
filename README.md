@@ -138,12 +138,12 @@ The following table summarizes the mathematical and algorithmic framework implem
 ## Variants
 
 Each version is published in two computationally equivalent variants,
-distinguished by the letter after the version number in the filename. The
-`j` variant implements the entire numerical engine in pure
+distinguished by the final engine letter in the filename. The `j` variant
+implements the entire numerical engine in pure
 TypeScript-compiled JavaScript and is the default — it is the smaller file
 and the one `index.html` points to. The `w` variant accelerates the
 computational kernels with WebAssembly and is preferable for large datasets.
-Files ending in `.beta.min.html` are minified builds of the same variants.
+Files containing `-min-` are minified builds of the same variants.
 
 ## Releases
 
@@ -154,12 +154,12 @@ verified against the SHA-256 checksums below.
 <!-- releases:begin -->
 | Version | Date | File | Size | SHA-256 |
 |---|---|---|---|---|
-| 2.3.64 | 2026-07-14 | [tna-notebook_V2.3.64j.html](./versions/tna-notebook_V2.3.64j.html) | 1.09 MB | `00844f48d54ebb25d2e54934800a73d7fbba68931468930ea44f8642d0f23bfe` |
-| 2.3.64 | 2026-07-14 | [tna-notebook_V2.3.64w.html](./versions/tna-notebook_V2.3.64w.html) | 1.77 MB | `a2be7d1bf0201477ed77f681219d5049a505f5d93208894b89aa09f6577c6bb5` |
-| 2.3.64 | 2026-07-14 | [tna-notebook_V2.3.64j.beta.min.html](./versions/tna-notebook_V2.3.64j.beta.min.html) | 0.78 MB | `66bec055320f4ec55f533eca43d2b16b7c034bbf0beab400b281008c82af9b3b` |
-| 2.3.64 | 2026-07-14 | [tna-notebook_V2.3.64w.beta.min.html](./versions/tna-notebook_V2.3.64w.beta.min.html) | 1.46 MB | `68f07bb9144fc6b2260f68e260b1e2dd0991e99e723126f7b4dad7ee668070f4` |
-| 2.3.63 | 2026-07-12 | [tna-notebook_V2.3.63j.html](./versions/tna-notebook_V2.3.63j.html) | 1.08 MB | `3ecce4d8f5116b34d1714c028057c00fa3def8d5c3a34412fe03a83bbb3d6809` |
-| 2.3.63 | 2026-07-12 | [tna-notebook_V2.3.63w.html](./versions/tna-notebook_V2.3.63w.html) | 1.76 MB | `c8f78222f73f42fc6d5a1525b09a8f154b1f86b22874abfcd4e9e5b286dd5648` |
-| 2.3.63 | 2026-07-12 | [tna-notebook_V2.3.63j.beta.min.html](./versions/tna-notebook_V2.3.63j.beta.min.html) | 0.78 MB | `988a2f10e207abdad316f359b6d196692bcf051624bbf7812ab5667276bd7cb3` |
-| 2.3.63 | 2026-07-12 | [tna-notebook_V2.3.63w.beta.min.html](./versions/tna-notebook_V2.3.63w.beta.min.html) | 1.46 MB | `5acd013ad05649a22c95b50a4ce548f5af49bf13b8abd5d1884ea392c4b90e6e` |
+| 2.3.64 | 2026-07-14 | [tna-notebook_V2.3.64-full-j.html](./versions/tna-notebook_V2.3.64-full-j.html) | 1.09 MB | `00844f48d54ebb25d2e54934800a73d7fbba68931468930ea44f8642d0f23bfe` |
+| 2.3.64 | 2026-07-14 | [tna-notebook_V2.3.64-full-w.html](./versions/tna-notebook_V2.3.64-full-w.html) | 1.77 MB | `a2be7d1bf0201477ed77f681219d5049a505f5d93208894b89aa09f6577c6bb5` |
+| 2.3.64 | 2026-07-14 | [tna-notebook_V2.3.64-min-j.html](./versions/tna-notebook_V2.3.64-min-j.html) | 0.78 MB | `66bec055320f4ec55f533eca43d2b16b7c034bbf0beab400b281008c82af9b3b` |
+| 2.3.64 | 2026-07-14 | [tna-notebook_V2.3.64-min-w.html](./versions/tna-notebook_V2.3.64-min-w.html) | 1.46 MB | `68f07bb9144fc6b2260f68e260b1e2dd0991e99e723126f7b4dad7ee668070f4` |
+| 2.3.63 | 2026-07-12 | [tna-notebook_V2.3.63-full-j.html](./versions/tna-notebook_V2.3.63-full-j.html) | 1.08 MB | `3ecce4d8f5116b34d1714c028057c00fa3def8d5c3a34412fe03a83bbb3d6809` |
+| 2.3.63 | 2026-07-12 | [tna-notebook_V2.3.63-full-w.html](./versions/tna-notebook_V2.3.63-full-w.html) | 1.76 MB | `c8f78222f73f42fc6d5a1525b09a8f154b1f86b22874abfcd4e9e5b286dd5648` |
+| 2.3.63 | 2026-07-12 | [tna-notebook_V2.3.63-min-j.html](./versions/tna-notebook_V2.3.63-min-j.html) | 0.78 MB | `988a2f10e207abdad316f359b6d196692bcf051624bbf7812ab5667276bd7cb3` |
+| 2.3.63 | 2026-07-12 | [tna-notebook_V2.3.63-min-w.html](./versions/tna-notebook_V2.3.63-min-w.html) | 1.46 MB | `5acd013ad05649a22c95b50a4ce548f5af49bf13b8abd5d1884ea392c4b90e6e` |
 <!-- releases:end -->

@@ -33,9 +33,9 @@ fs.mkdirSync(repoRoot, { recursive: true });
 
 // Synthetic source repo: string-style version file + versioned artifacts.
 fs.writeFileSync(path.join(srcDir, 'notebook.version.cjs'), "module.exports = '1.2.3';\n");
-fs.writeFileSync(path.join(distDir, 'fake_V1.2.3j.html'), '<html>full v1.2.3</html>');
-fs.writeFileSync(path.join(distDir, 'fake_V1.2.3j.beta.min.html'), '<html>min v1.2.3</html>');
-fs.writeFileSync(path.join(distDir, 'fake_V1.2.30j.html'), '<html>DIFFERENT version</html>');
+fs.writeFileSync(path.join(distDir, 'fake_V1.2.3-full-j.html'), '<html>full v1.2.3</html>');
+fs.writeFileSync(path.join(distDir, 'fake_V1.2.3-min-j.html'), '<html>min v1.2.3</html>');
+fs.writeFileSync(path.join(distDir, 'fake_V1.2.30-full-j.html'), '<html>DIFFERENT version</html>');
 fs.writeFileSync(path.join(distDir, 'fake_V1.2.3.notes.txt'), 'not html');
 
 // Object-style version file (pro-notebook lineage).
@@ -52,7 +52,7 @@ fs.writeFileSync(configPath, JSON.stringify({
     versionFile: 'notebook.version.cjs',
     distDir: 'dist',
     artifactPrefix: 'fake_V',
-    defaultArtifact: 'fake_V{V}j.html',
+    defaultArtifact: 'fake_V{V}-full-j.html',
   },
 }, null, 2));
 
@@ -69,20 +69,20 @@ test('readVersion handles { version } exports', () => {
 test('findArtifacts matches exact version only (1.2.3 ≠ 1.2.30), html only', () => {
   assert.deepStrictEqual(
     findArtifacts(distDir, 'fake_V', '1.2.3'),
-    ['fake_V1.2.3j.html', 'fake_V1.2.3j.beta.min.html']
+    ['fake_V1.2.3-full-j.html', 'fake_V1.2.3-min-j.html']
   );
 });
 
 test('findArtifacts handles letterless artifacts (version followed by .html)', () => {
   const bare = path.join(tmp, 'bare-dist');
   fs.mkdirSync(bare, { recursive: true });
-  ['bare_V2.1.22.html', 'bare_V2.1.22.beta.min.html', 'bare_V2.1.2.html', 'bare_V2.1.2.1.html']
+  ['bare_V2.1.22-full.html', 'bare_V2.1.22-min.html', 'bare_V2.1.2-full.html', 'bare_V2.1.2.1-full.html']
     .forEach((f) => fs.writeFileSync(path.join(bare, f), '<html></html>'));
   assert.deepStrictEqual(
     findArtifacts(bare, 'bare_V', '2.1.22'),
-    ['bare_V2.1.22.html', 'bare_V2.1.22.beta.min.html']
+    ['bare_V2.1.22-full.html', 'bare_V2.1.22-min.html']
   );
-  assert.deepStrictEqual(findArtifacts(bare, 'bare_V', '2.1.2'), ['bare_V2.1.2.html']);
+  assert.deepStrictEqual(findArtifacts(bare, 'bare_V', '2.1.2'), ['bare_V2.1.2-full.html']);
 });
 
 test('dry run reports artifacts without writing anything', () => {
@@ -96,7 +96,7 @@ test('release copies artifacts, latest pointer, and writes both READMEs', () => 
   const r = releaseNote('fake', { configPath, repoRoot, today: '2026-07-12' });
   assert.deepStrictEqual(r.artifacts.map((a) => a.status), ['released', 'released']);
   assert.strictEqual(
-    fs.readFileSync(path.join(repoRoot, 'fake', 'versions', 'fake_V1.2.3j.html'), 'utf8'),
+    fs.readFileSync(path.join(repoRoot, 'fake', 'versions', 'fake_V1.2.3-full-j.html'), 'utf8'),
     '<html>full v1.2.3</html>'
   );
   assert.strictEqual(
@@ -118,17 +118,17 @@ test('re-releasing the same version is a no-op, not a duplicate row', () => {
 });
 
 test('a released version is immutable — changed bytes abort the release', () => {
-  fs.writeFileSync(path.join(distDir, 'fake_V1.2.3j.html'), '<html>TAMPERED</html>');
+  fs.writeFileSync(path.join(distDir, 'fake_V1.2.3-full-j.html'), '<html>TAMPERED</html>');
   assert.throws(
     () => releaseNote('fake', { configPath, repoRoot, today: '2026-07-12' }),
     /immutable/
   );
-  fs.writeFileSync(path.join(distDir, 'fake_V1.2.3j.html'), '<html>full v1.2.3</html>');
+  fs.writeFileSync(path.join(distDir, 'fake_V1.2.3-full-j.html'), '<html>full v1.2.3</html>');
 });
 
 test('a new version appends a row and keeps the old one', () => {
   fs.writeFileSync(path.join(srcDir, 'notebook.version.cjs'), "module.exports = '1.2.4';\n");
-  fs.writeFileSync(path.join(distDir, 'fake_V1.2.4j.html'), '<html>full v1.2.4</html>');
+  fs.writeFileSync(path.join(distDir, 'fake_V1.2.4-full-j.html'), '<html>full v1.2.4</html>');
   const r = releaseNote('fake', { configPath, repoRoot, today: '2026-07-13' });
   assert.strictEqual(r.version, '1.2.4');
   const noteReadme = fs.readFileSync(path.join(repoRoot, 'fake', 'README.md'), 'utf8');
@@ -162,7 +162,7 @@ test('releaseDir "." publishes flat at the repo root with a single README', () =
 
   const r = releaseNote('fake', { configPath: flatConfigPath, repoRoot: flatRoot, today: '2026-07-12' });
   assert.strictEqual(r.isFlat, true);
-  assert.ok(fs.existsSync(path.join(flatRoot, 'versions', 'fake_V1.2.4j.html')), 'versions/ at root');
+  assert.ok(fs.existsSync(path.join(flatRoot, 'versions', 'fake_V1.2.4-full-j.html')), 'versions/ at root');
   assert.ok(fs.existsSync(path.join(flatRoot, 'index.html')), 'index.html at root');
   const readme = fs.readFileSync(path.join(flatRoot, 'README.md'), 'utf8');
   assert.ok(readme.startsWith('# Fake Note'), 'root README is the note README');

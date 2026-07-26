@@ -29,7 +29,7 @@ Optionally also attach the files to a GitHub Release for a nicer download
 page:
 
 ```bash
-gh release create tna-v2.3.63 versions/tna-notebook_V2.3.63j*.html \
+gh release create tna-v2.3.63 versions/tna-notebook_V2.3.63-*.html \
   --title "CarmNote TNA v2.3.63" --notes "See README.md for checksums."
 ```
 
