@@ -28,6 +28,41 @@ is installed and no data leave the machine. The current build is
 [`index.html`](./index.html); the table at the end of this page lists every
 published version with its checksum.
 
+## Gallery
+
+A sample of CarmNote TNA output — scroll horizontally.
+
+<table>
+  <tr>
+    <td><img src="./assets/screenshots/grouped-transition-network.png" width="640" alt="Grouped transition network comparing Human and AI states, with edge probabilities and self-loops"></td>
+    <td><img src="./assets/screenshots/higher-order-patterns.png" width="640" alt="Higher-order pathway panels: order-3 simplicial pathways with their support counts"></td>
+    <td><img src="./assets/screenshots/markov-order-test.png" width="640" alt="Markov order selection: log-likelihood, AIC, and BIC across orders with permutation LRT null distributions"></td>
+    <td><img src="./assets/screenshots/split-half-reliability.png" width="640" alt="Split-half reliability of the network over 1000 random 50/50 splits"></td>
+    <td><img src="./assets/screenshots/cluster-comparison.png" width="640" alt="Edge-count comparison between two clusters with permutation p-values and standardised residuals"></td>
+    <td><img src="./assets/screenshots/state-distribution.png" width="640" alt="State distribution across time steps as a stacked proportion plot"></td>
+    <td><img src="./assets/screenshots/case-dropping-stability.png" width="640" alt="Case-dropping stability diagnostics: correlation and edge-weight differences"></td>
+    <td><img src="./assets/screenshots/q-analysis-persistent-homology.png" width="640" alt="Q-analysis structure and persistent-homology Betti curve"></td>
+    <td><img src="./assets/screenshots/cluster-transition-networks.png" width="640" alt="Cluster-specific transition networks with communities and weighted pathways"></td>
+    <td><img src="./assets/screenshots/cluster-pathway-residuals.png" width="640" alt="Standardised pathway residuals across sequence clusters"></td>
+    <td><img src="./assets/screenshots/significant-transition-patterns.png" width="640" alt="Ranked transition patterns with permutation-test p-values"></td>
+    <td><img src="./assets/screenshots/simplicial-hypa-pathways.png" width="640" alt="Order-four simplicial pathways with HYPA anomalies"></td>
+  </tr>
+  <tr>
+    <td align="center"><em>Grouped transition network (Human vs AI)</em></td>
+    <td align="center"><em>Higher-order pathways (order 3)</em></td>
+    <td align="center"><em>Markov order test with permutation LRT</em></td>
+    <td align="center"><em>Split-half reliability</em></td>
+    <td align="center"><em>Cluster comparison with permutation tests</em></td>
+    <td align="center"><em>State distribution over time</em></td>
+    <td align="center"><em>Case-dropping stability diagnostics</em></td>
+    <td align="center"><em>Q-analysis and persistent homology</em></td>
+    <td align="center"><em>Cluster transition networks</em></td>
+    <td align="center"><em>Cluster pathway residuals</em></td>
+    <td align="center"><em>Significant transition patterns</em></td>
+    <td align="center"><em>Simplicial HYPA pathways</em></td>
+  </tr>
+</table>
+
 ## Design
 
 CarmNote belongs to the family of Carm software and stands for **Contained**,
