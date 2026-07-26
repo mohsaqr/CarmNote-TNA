@@ -64,7 +64,13 @@ function findArtifacts(distDir, artifactPrefix, version) {
   const stamp = new RegExp('^' + escapeRegExp(artifactPrefix + version) + '(?!\\d|\\.\\d)');
   return fs.readdirSync(distDir)
     .filter((f) => f.endsWith('.html') && stamp.test(f))
-    .sort();
+    .sort((a, b) => {
+      const aMinified = a.includes('.min.');
+      const bMinified = b.includes('.min.');
+      return aMinified === bMinified
+        ? a.localeCompare(b)
+        : Number(aMinified) - Number(bMinified);
+    });
 }
 
 function sha256(filePath) {

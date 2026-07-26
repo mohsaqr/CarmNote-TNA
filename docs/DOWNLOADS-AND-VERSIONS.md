@@ -23,8 +23,8 @@ For the current release, that file is:
 | Filename pattern | Engine | Packaging | Best use |
 |---|---|---|---|
 | `tna-notebook_V…j.html` | JavaScript | Full | Recommended default; routine analysis, teaching, sharing, and archiving |
-| `tna-notebook_V…j.beta.min.html` | JavaScript | Minified | Web hosting or bandwidth-sensitive download when the recipient can download directly |
 | `tna-notebook_V…w.html` | WebAssembly | Full | Computationally larger datasets and heavier numerical kernels |
+| `tna-notebook_V…j.beta.min.html` | JavaScript | Minified | Web hosting or bandwidth-sensitive download when the recipient can download directly |
 | `tna-notebook_V…w.beta.min.html` | WebAssembly | Minified | Bandwidth-sensitive delivery of the WASM build; not recommended for email |
 
 The letter belongs to the engine:
