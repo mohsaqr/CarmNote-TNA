@@ -28,6 +28,49 @@ is installed and no data leave the machine. The current build is
 [`index.html`](./index.html); the table at the end of this page lists every
 published version with its checksum.
 
+## In Depth
+
+CarmNote TNA is a reactive notebook for sequential and process data. Build
+first-order transition networks, fit **higher-order Markov models**, detect
+path anomalies against the **hypergeometric null**, compute **simplicial
+complexes** with their topological summaries, mine recurring sequential
+patterns, and validate every claim with bootstrap and permutation tests —
+eight methodological families and twenty-five named procedures. Every method
+is a notebook cell: configured inline with named arguments, executed on
+demand, and exportable as a table or vector graphic. Results are paginated
+and persist across browser refreshes, and the notebook itself saves as a
+single self-contained HTML report, so the analysis you hand over is the
+analysis that ran.
+
+It is research software you can give a colleague without a setup guide, a
+Conda environment, or a list of system prerequisites. The notebook is one
+file and the file is the whole program:
+
+- **No installation.** Save the file and open it — that is the entire setup.
+- **No prior software.** Python, R, Conda, pip, Node — none of them need to
+  be on the computer first. Everything the notebook needs is already inside it.
+- **No admin rights.** The notebook opens the way any ordinary document does.
+- **No internet.** It works the same way online and offline; nothing is
+  fetched and nothing is sent.
+- **No compiler.** No Xcode, Rtools, or build tools — there is nothing to
+  assemble before it runs.
+- **No server.** Nothing runs in the background and nothing communicates
+  with another computer. The whole program is the page you have open.
+- **No extra files.** One file; there is no folder of supporting material to
+  keep alongside it.
+- **No system-specific version.** The same file works on Mac, Windows,
+  Linux, iPhone, Android, and Chromebook.
+- **No desktop required.** The notebook is usable on a phone or a tablet,
+  not only on a computer.
+
+The analytical surface covers what a typical transition-network study would
+normally assemble from several R and Python libraries — `tna`, `Nestimate`,
+`TraMineR`, `igraph`, `qgraph`, `bootnet`, and `cluster` on the R side;
+`pathpy`, `networkx`, `scikit-learn`, `statsmodels`, and `scipy` on the
+Python side. The higher-order Markov family is numerically equivalent to its
+R reference implementation; the remaining methods reproduce the canonical
+implementations from those ecosystems.
+
 ## Gallery
 
 A sample of CarmNote TNA output — scroll horizontally.
@@ -170,6 +213,45 @@ The following table summarizes the mathematical and algorithmic framework implem
 
 ---
 
+## Citation
+
+If CarmNote TNA supports your published work, please cite the software
+paper:
+
+> Saqr, M., & López-Pernas, S. (2026). *CarmNote: A Portable, Reproducible,
+> Single-File Computational Software Purely in JavaScript.* The 26th
+> International Symposium on Computers in Education (SIIE 2026).
+
+```bibtex
+@inproceedings{saqr2026carmnote,
+  author    = {Saqr, Mohammed and L{\'o}pez-Pernas, Sonsoles},
+  title     = {{CarmNote}: A Portable, Reproducible, Single-File
+               Computational Software Purely in {JavaScript}},
+  booktitle = {The 26th International Symposium on Computers
+               in Education (SIIE 2026)},
+  year      = {2026}
+}
+```
+
+To reference the software itself, cite the version you actually ran —
+update the `version` field to match the file you used (the repository URL
+is stable):
+
+```bibtex
+@software{carmnote_tna,
+  author  = {Saqr, Mohammed and L{\'o}pez-Pernas, Sonsoles},
+  title   = {{CarmNote TNA}: A Portable, Reproducible, Single-File
+             Software for Transition Network Analysis},
+  year    = {2026},
+  version = {2.3.66},
+  url     = {https://github.com/mohsaqr/CarmNote-TNA},
+  note    = {Numerically equivalent to the R reference implementations
+             for the higher-order Markov family.}
+}
+```
+
+---
+
 ## Variants
 
 Each version is published in two computationally equivalent variants,
@@ -189,6 +271,10 @@ can be verified against the SHA-256 checksums below.
 <!-- releases:begin -->
 | Version | Date | File | Size | SHA-256 |
 |---|---|---|---|---|
+| 2.3.66 | 2026-08-11 | [tna-notebook_V2.3.66-full-j.html](./versions/tna-notebook_V2.3.66-full-j.html) | 1.18 MB | `2625e7a30283cc9339640bdb63d8f588774bfd8a6ae9ade9181855eafd53409c` |
+| 2.3.66 | 2026-08-11 | [tna-notebook_V2.3.66-full-w.html](./versions/tna-notebook_V2.3.66-full-w.html) | 1.85 MB | `b6684c4114069a909a2551a82369574178c8846eeaea40c6511b7a6ae2ab4a01` |
+| 2.3.66 | 2026-08-11 | [tna-notebook_V2.3.66-min-j.html](./versions/tna-notebook_V2.3.66-min-j.html) | 0.86 MB | `158102395e86d5547f3be4f8847333405d37e2afed1add4fd417adb2e5dedd07` |
+| 2.3.66 | 2026-08-11 | [tna-notebook_V2.3.66-min-w.html](./versions/tna-notebook_V2.3.66-min-w.html) | 1.53 MB | `a9a1f76ae5f33058eff19680f729bbdb93d49726906f37535b99a41238462c75` |
 | 2.3.64 | 2026-07-14 | [tna-notebook_V2.3.64-full-j.html](./versions/tna-notebook_V2.3.64-full-j.html) | 1.09 MB | `00844f48d54ebb25d2e54934800a73d7fbba68931468930ea44f8642d0f23bfe` |
 | 2.3.64 | 2026-07-14 | [tna-notebook_V2.3.64-full-w.html](./versions/tna-notebook_V2.3.64-full-w.html) | 1.77 MB | `a2be7d1bf0201477ed77f681219d5049a505f5d93208894b89aa09f6577c6bb5` |
 | 2.3.64 | 2026-07-14 | [tna-notebook_V2.3.64-min-j.html](./versions/tna-notebook_V2.3.64-min-j.html) | 0.78 MB | `66bec055320f4ec55f533eca43d2b16b7c034bbf0beab400b281008c82af9b3b` |

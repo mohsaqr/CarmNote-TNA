@@ -144,6 +144,7 @@ Selecting an item adds a new cell to the notebook.
 | **Sequences** | Inspect trajectories and per-sequence indices |
 | **Pattern mining** | Discover, compare, visualize, and model recurring patterns |
 | **Compare** | Compare group networks and position-wise sequence distributions |
+| **Process mining** | Build the directly-follows process map and its tables |
 | **High-order** | Run higher-order, path-anomaly, topology, and memory analyses |
 | **Note** | Add formatted narrative text between analysis cells |
 

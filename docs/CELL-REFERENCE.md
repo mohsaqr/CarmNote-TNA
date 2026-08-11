@@ -372,6 +372,54 @@ decay and is ignored by other model types.
   Heavy missingness or variable-length attrition at later positions can drive
   apparent differences.
 
+## Process mining menu
+
+The **Process mining** cell has a **Method** selector. Its form changes to the
+chosen method and one **Run** button dispatches the analysis. Both methods read
+the same sequences as an **event log**: cases made of activities that directly
+follow one another.
+
+### Process map
+
+- **Purpose:** Show the directly-follows map of the process — every activity a
+  box, every hand-off an arrow — annotated with a measure of your choosing.
+- **Requires:** Built sequences. Duration measures additionally require a Time
+  column mapped in the data panel.
+- **Main controls:** Node metric and edge metric, each chosen independently
+  from the frequency, case, and duration families; optional secondary metric
+  for each, shown in brackets; time units; activity and path simplification
+  sliders; flow direction; Start/End boundary nodes; self-loops; tables.
+- **Produces:** The map as a vector figure, plus activity and hand-off tables.
+- **Use with care:** The simplification sliders change **display only** — every
+  reported measure is computed on the full log, and the count of hidden
+  activities and paths is stated above the map. Without a Time column the
+  duration measures are unavailable; the cell says so and falls back to
+  absolute frequency rather than drawing a map of blank labels.
+
+The measures follow the bupaR vocabulary:
+
+| Family | Measure | Meaning |
+|---|---|---|
+| Frequency | absolute | Number of events |
+| Frequency | relative | Share of all events |
+| Cases | absolute | Number of cases that reach the activity or hand-off |
+| Cases | relative | Share of cases |
+| Probability | — | Share of the source activity's outgoing flow (edges only) |
+| Duration | mean / median / min / max / total | Dwell time in an activity, or transit time between two |
+
+An activity repeated inside one case counts once under **Cases** but several
+times under **Frequency**; comparing the two is often the point.
+
+### Directly-Follows Graph
+
+- **Purpose:** The same directly-follows structure as tables rather than a map.
+- **Requires:** A built network.
+- **Main controls:** Optional start and end labels, number of top edges.
+- **Produces:** State table with activity and case frequencies, and an edge
+  table of directly-follows counts.
+- **Use with care:** For group models the tables show the first group, named
+  above the output.
+
 ## High-order menu
 
 The **High-order** cell has a **Method** selector. Its form changes to the
