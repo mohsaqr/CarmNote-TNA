@@ -243,7 +243,7 @@ is stable):
   title   = {{CarmNote TNA}: A Portable, Reproducible, Single-File
              Software for Transition Network Analysis},
   year    = {2026},
-  version = {2.3.66},
+  version = {2.3.67},
   url     = {https://github.com/mohsaqr/CarmNote-TNA},
   note    = {Numerically equivalent to the R reference implementations
              for the higher-order Markov family.}
@@ -271,6 +271,10 @@ can be verified against the SHA-256 checksums below.
 <!-- releases:begin -->
 | Version | Date | File | Size | SHA-256 |
 |---|---|---|---|---|
+| 2.3.67 | 2026-08-12 | [tna-notebook_V2.3.67-full-j.html](./versions/tna-notebook_V2.3.67-full-j.html) | 1.18 MB | `0bc29c96d5958721e93234e7304d37b3061c49203b26268d6194d4bf17d335da` |
+| 2.3.67 | 2026-08-12 | [tna-notebook_V2.3.67-full-w.html](./versions/tna-notebook_V2.3.67-full-w.html) | 1.85 MB | `ef40e0b1411a3b8cdda31a78caa77bae25cc545fbd65197b4bed95b051ff2a97` |
+| 2.3.67 | 2026-08-12 | [tna-notebook_V2.3.67-min-j.html](./versions/tna-notebook_V2.3.67-min-j.html) | 0.86 MB | `57bae53f2eee609c35769aaa16df206546caffb5faca9153feb9e12688433b99` |
+| 2.3.67 | 2026-08-12 | [tna-notebook_V2.3.67-min-w.html](./versions/tna-notebook_V2.3.67-min-w.html) | 1.53 MB | `0ba93e32abfe1729134b5cb6c0b3b451f1936d65198ddbcea8c1dff794715d47` |
 | 2.3.66 | 2026-08-11 | [tna-notebook_V2.3.66-full-j.html](./versions/tna-notebook_V2.3.66-full-j.html) | 1.18 MB | `2625e7a30283cc9339640bdb63d8f588774bfd8a6ae9ade9181855eafd53409c` |
 | 2.3.66 | 2026-08-11 | [tna-notebook_V2.3.66-full-w.html](./versions/tna-notebook_V2.3.66-full-w.html) | 1.85 MB | `b6684c4114069a909a2551a82369574178c8846eeaea40c6511b7a6ae2ab4a01` |
 | 2.3.66 | 2026-08-11 | [tna-notebook_V2.3.66-min-j.html](./versions/tna-notebook_V2.3.66-min-j.html) | 0.86 MB | `158102395e86d5547f3be4f8847333405d37e2afed1add4fd417adb2e5dedd07` |
