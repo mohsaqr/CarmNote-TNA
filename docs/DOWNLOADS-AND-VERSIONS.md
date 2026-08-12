@@ -16,7 +16,7 @@ to archive and review, and the most broadly compatible.
 
 For the current release, that file is:
 
-`tna-notebook_V2.3.67-full-j.html`
+`tna-notebook_V2.3.68-full-j.html`
 
 ## The four files
 
@@ -105,10 +105,10 @@ file-download size, is the bottleneck.
 
 ## How to identify a file
 
-For `tna-notebook_V2.3.67-min-w.html`:
+For `tna-notebook_V2.3.68-min-w.html`:
 
 - `tna-notebook` — CarmNote TNA;
-- `V2.3.67` — notebook release version;
+- `V2.3.68` — notebook release version;
 - `min` — minified packaging;
 - `w` — WebAssembly engine;
 - `.html` — complete self-contained notebook.
