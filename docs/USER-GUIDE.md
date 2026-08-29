@@ -47,6 +47,21 @@ one actor has named sessions, and `Group` for conditions or cohorts. If both
 `Time` and `Order` are absent, rows are used in file order. The `Gap` setting
 can split an actor's events into sessions based on elapsed seconds.
 
+`Session` is nested in `Actor`: with `Actor = student` and `Session =
+submission`, each student × submission pair becomes one sequence, exactly as
+`Nestimate::build_network(actor =, session =)` builds it. (Releases up to
+2.3.69 ignored the `Session` choice and built one sequence per actor.)
+
+`Order` is **sorted on**, as R's `tna::prepare_data()` and Nestimate do. That
+is right when the column is a step index within each sequence, and wrong when
+it restarts inside a sequence — a "position within line" column, for
+example — because sorting then pulls every step-1 row together and inflates
+the self-loops. For that reason `Order` is never auto-selected (from 2.3.70):
+choose it deliberately, as you would pass `order =` in R. When a chosen
+`Order` changes any sequence relative to file order, the data card shows
+*"Order column … changed the event order in N of M sequences"*; if that is
+not intended, set `Order` back to none and rebuild.
+
 ### Wide format
 
 Wide format has one complete sequence per row and one state per successive
