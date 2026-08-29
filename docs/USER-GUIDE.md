@@ -29,6 +29,27 @@ CarmNote TNA accepts CSV or TSV in long or wide format.
 
 ### Long format
 
+No dataset at hand? **Generate sample data…** (the button under the drop
+card, or **File → Generate sample data…** at any time) opens a dialog: pick a
+vocabulary, the number of students, sessions per student, sequence length
+and a seed — the dialog shows what it will produce — then **Generate & load**
+or **Download CSV** (the same long-format file, one row per event, for R or
+another notebook). Default: 1,000
+learning sessions (100 students × 10 sessions, eight learning actions — Plan,
+Read, Watch, Discuss, Practice, Write, Review, Reflect — with timestamps and a
+High/Low achievement group; the **verbs** menu swaps in one of Saqrlab's
+learning-state categories — metacognitive, cognitive, behavioral, social,
+motivational, affective, group regulation (SSRL), LMS events — or one of two
+profile-based sets: **Engagement** (Active / Moderate / Disengaged) and
+**Collaborative roles** (Leader / Active / Moderator / Isolate), where students
+are split evenly across the profiles, each student's own state has a high
+self-transition, and the `group` column is the profile) created in the browser from a seeded model the
+moment you click. Nothing is bundled in the file; the small **seed** box next
+to the link (default 14) fixes the draw, so the same seed always yields the
+same data and a different seed a different cohort, and it loads exactly like a dropped CSV (auto-detected as
+Actor = student, Action = action, Time = timestamp, Session = session,
+Group = achievement).
+
 Long format has one event per row. `Action` is required; `Actor` and an
 ordering column are strongly recommended.
 
