@@ -85,6 +85,21 @@ test('findArtifacts handles letterless artifacts (version followed by .html)', (
   assert.deepStrictEqual(findArtifacts(bare, 'bare_V', '2.1.2'), ['bare_V2.1.2-full.html']);
 });
 
+test('findArtifacts excludePattern drops the accessible -a edition', () => {
+  const ed = path.join(tmp, 'edition-dist');
+  fs.mkdirSync(ed, { recursive: true });
+  ['ed_V2.1.24-full.html', 'ed_V2.1.24-min.html', 'ed_V2.1.24-full-a.html', 'ed_V2.1.24-min-a.html',
+    'ed_V3.0.0-full-j.html', 'ed_V3.0.0-full-a-j.html', 'ed_V3.0.0-full-a-w.html']
+    .forEach((f) => fs.writeFileSync(path.join(ed, f), '<html></html>'));
+  const pattern = '-a(-[a-z])?\\.html$';
+  assert.deepStrictEqual(
+    findArtifacts(ed, 'ed_V', '2.1.24', pattern),
+    ['ed_V2.1.24-full.html', 'ed_V2.1.24-min.html']
+  );
+  assert.deepStrictEqual(findArtifacts(ed, 'ed_V', '3.0.0', pattern), ['ed_V3.0.0-full-j.html']);
+  assert.strictEqual(findArtifacts(ed, 'ed_V', '2.1.24').length, 4, 'no pattern keeps every edition');
+});
+
 test('dry run reports artifacts without writing anything', () => {
   const r = releaseNote('fake', { configPath, repoRoot, dryRun: true });
   assert.strictEqual(r.version, '1.2.3');

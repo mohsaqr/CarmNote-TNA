@@ -59,11 +59,14 @@ function escapeRegExp(s) {
  * All built .html files in distDir stamped with exactly this version.
  * The boundary forbids a following digit or dot-digit (so 2.1.2 matches
  * neither 2.1.22 nor 2.1.2.1) while allowing packaging and engine suffixes.
+ * excludePattern (optional regex source, config key "excludePattern") drops
+ * editions that are built but not distributed, e.g. the accessible "-a" one.
  */
-function findArtifacts(distDir, artifactPrefix, version) {
+function findArtifacts(distDir, artifactPrefix, version, excludePattern) {
   const stamp = new RegExp('^' + escapeRegExp(artifactPrefix + version) + '(?!\\d|\\.\\d)');
+  const exclude = excludePattern ? new RegExp(excludePattern) : null;
   return fs.readdirSync(distDir)
-    .filter((f) => f.endsWith('.html') && stamp.test(f))
+    .filter((f) => f.endsWith('.html') && stamp.test(f) && !(exclude && exclude.test(f)))
     .sort((a, b) => {
       const aMinified = /(?:^|[.-])min(?:[.-]|$)/.test(a);
       const bMinified = /(?:^|[.-])min(?:[.-]|$)/.test(b);
@@ -191,7 +194,7 @@ function releaseNote(noteId, options) {
   if (!fs.existsSync(distDir)) fail(`dist directory not found: ${distDir}`);
 
   const version = readVersion(path.join(sourceDir, cfg.versionFile));
-  const artifacts = findArtifacts(distDir, cfg.artifactPrefix, version);
+  const artifacts = findArtifacts(distDir, cfg.artifactPrefix, version, cfg.excludePattern);
   const defaultArtifact = cfg.defaultArtifact.replace('{V}', version);
   if (!artifacts.includes(defaultArtifact)) {
     fail(

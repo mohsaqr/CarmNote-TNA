@@ -7,6 +7,7 @@
     "distDir": "dist",
     "artifactPrefix": "tna-notebook_V",
     "defaultArtifact": "tna-notebook_V{V}-full-j.html",
+    "excludePattern": "-a(-[a-z])?\\.html$",
     "releaseDir": "."
   }
 }
