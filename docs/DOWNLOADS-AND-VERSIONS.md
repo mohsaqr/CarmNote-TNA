@@ -10,9 +10,10 @@ minified).
 
 ## Quick recommendation
 
-Use the full JavaScript file ending in **`-full-j.html`** unless you have a clear
-reason to choose another file. It is the default, smallest full build, easiest
-to archive and review, and the most broadly compatible.
+The full JavaScript file ending in **`-full-j.html`** is the recommended
+choice unless there is a clear reason for another file. It is the default,
+smallest full build, easiest to archive and review, and the most broadly
+compatible.
 
 For the current release, that file is:
 
@@ -54,18 +55,18 @@ The minified build:
 
 ### Email warning
 
-Do **not** use a minified CarmNote file as an ordinary email attachment.
+A minified CarmNote file is **not** suitable as an ordinary email attachment.
 Many institutional and commercial mail systems block or quarantine HTML with
 large minified scripts. Renaming the file does not solve the underlying
 security policy and can make the attachment look more suspicious.
 
-Prefer one of these delivery methods:
+The preferred delivery methods are:
 
-1. Send a link to the immutable file in the GitHub release repository.
-2. Send a link from the approved LaCarm/notes website.
-3. Use an institutionally approved file-sharing service.
-4. If policy permits attachments, use the full build in an approved archive
-   format—but assume that some gateways also scan or block archives.
+1. A link to the immutable file in the GitHub release repository.
+2. A link from the approved LaCarm/notes website.
+3. An institutionally approved file-sharing service.
+4. Where policy permits attachments, the full build in an approved archive
+   format—with the caveat that some gateways also scan or block archives.
 
 Even the full `.html` build may be blocked by organizations that prohibit all
 HTML attachments. A download link is the most reliable option.
@@ -74,17 +75,17 @@ HTML attachments. A download link is the most reliable option.
 
 ### JavaScript (`j`)
 
-Choose `j` when:
+`j` is appropriate when:
 
 - the dataset is small or moderate;
 - maximum browser compatibility matters;
 - the notebook will be used for teaching or demonstration;
 - the file will be archived for later reference;
-- you are unsure which build to use.
+- the appropriate build is uncertain.
 
 ### WebAssembly (`w`)
 
-Choose `w` when:
+`w` is appropriate when:
 
 - the dataset has many sequences, states, or transitions;
 - resampling, high-order modelling, or other numerical kernels are taking a
@@ -100,10 +101,10 @@ WASM accelerates selected computational kernels. It does **not**:
 - change the statistical model or intended numerical result.
 
 The WASM notebook is larger because the WebAssembly bytes are embedded inside
-the self-contained HTML file. Start with `j`; move to `w` when workload, not
-file-download size, is the bottleneck.
+the self-contained HTML file. `j` is the starting point; `w` becomes the
+better choice when workload, not file-download size, is the bottleneck.
 
-## How to identify a file
+## File identification
 
 For `tna-notebook_V2.3.68-min-w.html`:
 
@@ -118,11 +119,11 @@ notebook.
 
 ## Integrity and archiving
 
-Released files are immutable. Use the SHA-256 value in the release table to
-verify a downloaded file. For long-term research archiving:
+Released files are immutable. The SHA-256 value in the release table verifies
+a downloaded file. Long-term research archiving involves:
 
-- keep the exact original release file;
-- keep the saved analysis notebook produced from it;
-- record the filename, version, engine letter, and checksum;
-- prefer the full build unless storage or download constraints require the
-  minified form.
+- keeping the exact original release file;
+- keeping the saved analysis notebook produced from it;
+- recording the filename, version, engine letter, and checksum;
+- preferring the full build unless storage or download constraints require
+  the minified form.

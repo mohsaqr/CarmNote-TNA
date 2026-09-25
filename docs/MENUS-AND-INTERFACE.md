@@ -17,7 +17,7 @@ engine variant. The filename and in-app version should agree.
 
 ### Notebook title
 
-Edit the title before saving. The title becomes the basis of the downloaded
+The title is edited before saving and becomes the basis of the downloaded
 notebook filename.
 
 ### Saved indicator and build tag
@@ -72,18 +72,18 @@ should not be treated as the only research archive.
 #### Load Data
 
 Opens the CSV/TSV file picker. Loading a new dataset replaces the active data
-context; review the mapping and rebuild the network.
+context, after which the mapping is reviewed and the network rebuilt.
 
 #### Save As
 
 Duplicates the notebook under a new title and identifier in the browser
-library. It does **not** replace the need to click **Save** for a portable file
-on disk.
+library. It does **not** remove the need for **Save**, which produces the
+portable file on disk.
 
 #### Publish
 
 Creates a presentation-oriented saved copy with editing controls hidden.
-Keep an editable saved copy before publishing.
+An editable saved copy should be kept before publishing.
 
 #### Copy All
 
@@ -101,13 +101,13 @@ same as the editable self-contained notebook produced by **Save**.
 
 #### Print / PDF
 
-Opens the browser print flow. Select a PDF printer to create a static PDF.
+Opens the browser print flow. Selecting a PDF printer creates a static PDF.
 
 #### Clear data & cells
 
 Removes the active data, model, and cells while keeping the current notebook
 identity in the browser library. This is destructive for the current
-workspace; save a portable copy first.
+workspace, so a portable copy should be saved first.
 
 #### Delete notebook
 
@@ -121,15 +121,16 @@ performs analysis locally in the browser.
 
 #### Reset notebook storage & reload
 
-Clears CarmNote TNA's browser-library state and reloads a clean notebook. Use
-this when an incompatible or damaged cached workspace is being restored.
+Clears CarmNote TNA's browser-library state and reloads a clean notebook. It is
+intended for cases in which an incompatible or damaged cached workspace is
+being restored.
 Downloaded `.html` files are not deleted.
 
 #### Clear browser analysis history
 
 Clears Carm-related browser storage, including saved notebooks and
 preferences. This has a wider scope than resetting only the active notebook
-storage. Read the confirmation carefully.
+storage. The confirmation message warrants careful reading.
 
 ## Analysis menus
 
@@ -137,23 +138,23 @@ Selecting an item adds a new cell to the notebook.
 
 | Menu | Purpose |
 |---|---|
-| **Build** | Create the base transition model, grouped models, or data-driven clusters |
-| **Describe** | Inspect state frequencies, mosaics, and transition weights |
-| **Validate** | Assess edge, centrality, and whole-model stability |
-| **Analyze** | Compute centralities, edge betweenness, communities, and cliques |
-| **Sequences** | Inspect trajectories and per-sequence indices |
-| **Pattern mining** | Discover, compare, visualize, and model recurring patterns |
-| **Compare** | Compare group networks and position-wise sequence distributions |
-| **Process mining** | Build the directly-follows process map and its tables |
-| **High-order** | Run higher-order, path-anomaly, topology, and memory analyses |
-| **Note** | Add formatted narrative text between analysis cells |
+| **Build** | Creates the base transition model, grouped models, or data-driven clusters |
+| **Describe** | Inspects state frequencies, mosaics, and transition weights |
+| **Validate** | Assesses edge, centrality, and whole-model stability |
+| **Analyze** | Computes centralities, edge betweenness, communities, and cliques |
+| **Sequences** | Inspects trajectories and per-sequence indices |
+| **Pattern mining** | Discovers, compares, visualizes, and models recurring patterns |
+| **Compare** | Compares group networks and position-wise sequence distributions |
+| **Process mining** | Builds the directly-follows process map and its tables |
+| **High-order** | Runs higher-order, path-anomaly, topology, and memory analyses |
+| **Note** | Adds formatted narrative text between analysis cells |
 
 The [Cell reference](./CELL-REFERENCE.md) documents every item in menu order.
 
 ## Sequence Data
 
-Opens a processed-data inspector after the network has been built. Use it to
-confirm:
+Opens a processed-data inspector after the network has been built. It serves
+to confirm:
 
 - the number of sequences;
 - actor and group alignment;
@@ -167,8 +168,8 @@ more than one way.
 
 Runs every unlocked executable cell from top to bottom. It is useful after a
 data or model-setting change. Large resampling and high-order cells can make a
-full run slow; lock completed cells or run expensive cells individually when
-appropriate.
+full run slow; locking completed cells or running expensive cells
+individually is an option when appropriate.
 
 ## Lock/Unlock All
 
@@ -180,13 +181,14 @@ from the notebook-wide sharing tiers in the lower-left lock menu.
 
 ### Drop zone
 
-Drop a CSV, TSV, semicolon-delimited, or pipe-delimited text file, or click to
-browse. Excel workbooks must first be exported as CSV UTF-8 or TSV.
+Accepts a dropped CSV, TSV, semicolon-delimited, or pipe-delimited text file,
+or opens a file browser when clicked. Excel workbooks must first be exported
+as CSV UTF-8 or TSV.
 
 ### Data preview
 
 Shows the filename, dimensions, column names, detected types, and first rows.
-Always inspect it before building.
+It is always inspected before building.
 
 ### Format
 
@@ -221,7 +223,8 @@ Keeps the loaded data but removes the built model and all analysis cells.
 
 ### Change dataset
 
-Replaces the loaded dataset. Recheck mappings and rerun dependent cells.
+Replaces the loaded dataset, after which mappings are rechecked and dependent
+cells rerun.
 
 ## Global plot options
 
@@ -266,14 +269,14 @@ Restores the standard global plot appearance.
 
 Every analysis cell has a header and a form/result area.
 
-- **Drag handle** — reorder the cell.
-- **Minimize** — collapse or expand the cell.
-- **Duplicate** — create a copy with the same settings.
-- **Lock** — preserve settings and cached output; a locked cell is skipped by
+- **Drag handle** — reorders the cell.
+- **Minimize** — collapses or expands the cell.
+- **Duplicate** — creates a copy with the same settings.
+- **Lock** — preserves settings and cached output; a locked cell is skipped by
   Run All.
-- **Remove** — delete the cell from the notebook.
-- **Run button** — execute the cell with current settings.
-- **Export** — export tables, plots, or underlying data when offered.
+- **Remove** — deletes the cell from the notebook.
+- **Run button** — executes the cell with current settings.
+- **Export** — exports tables, plots, or underlying data when offered.
 
 Cells are evaluated against the current built model. Rebuilding the model can
 change all downstream results.
@@ -303,8 +306,8 @@ the notebook.
 
 ### Locked
 
-Frozen state. The original cannot be returned directly to editable; use
-**Duplicate to editable copy**.
+Frozen state. The original cannot be returned directly to editable;
+**Duplicate to editable copy** is required instead.
 
 ### Sealed
 
@@ -319,8 +322,8 @@ Copies the seal metadata and fingerprint for external recording.
 
 Creates a new editable notebook while preserving the locked/sealed original.
 
-Always click **Save** after selecting the intended sharing tier so the
-downloaded file contains that state.
+**Save** is always selected after the intended sharing tier is chosen, so
+that the downloaded file contains that state.
 
 ## Footer: About, License, and How to cite
 

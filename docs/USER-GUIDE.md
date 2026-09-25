@@ -5,36 +5,36 @@
 [Menus and interface](./MENUS-AND-INTERFACE.md) ·
 [Cell reference](./CELL-REFERENCE.md)
 
-This guide explains how to download CarmNote TNA, prepare sequence data, run
-an analysis, export results, and save a portable notebook. CarmNote TNA is a
-self-contained HTML application: it requires no installation, account,
-server, or internet connection after download.
+This guide describes how CarmNote TNA is downloaded, how sequence data are
+prepared, and how an analysis is run, exported, and saved as a portable
+notebook. CarmNote TNA is a self-contained HTML application: it requires no
+installation, account, server, or internet connection after download.
 
-## Download and open CarmNote TNA
+## Downloading and opening CarmNote TNA
 
-[Download the latest recommended build](../index.html?raw=1), keep the
-`.html` extension, and open the file in a current web browser.
+The [latest recommended build](../index.html?raw=1) is downloaded with its
+`.html` extension kept and is opened in a current web browser.
 
 The recommended build is the full `j` variant. It is the smallest
 non-minified release and is suitable for most analyses. The `w` variant uses
 WebAssembly to accelerate computational kernels for larger datasets.
 
-If GitHub shows the HTML source instead of downloading the file, use the
-**Download raw file** button. Do not copy the displayed source into a new
-file.
+If GitHub shows the HTML source instead of downloading the file, the
+**Download raw file** button retrieves the file itself. Copying the displayed
+source into a new file is not a substitute.
 
-## Prepare sequence data
+## Sequence data preparation
 
 CarmNote TNA accepts CSV or TSV in long or wide format.
 
 ### Long format
 
-No dataset at hand? **Generate sample data…** (the button under the drop
-card, or **File → Generate sample data…** at any time) opens a dialog: pick a
-vocabulary, the number of students, sessions per student, sequence length
-and a seed — the dialog shows what it will produce — then **Generate & load**
-or **Download CSV** (the same long-format file, one row per event, for R or
-another notebook). Default: 1,000
+When no dataset is at hand, **Generate sample data…** (the button under the
+drop card, or **File → Generate sample data…** at any time) opens a dialog
+with settings for the vocabulary, the number of students, sessions per
+student, sequence length and a seed — the dialog shows what it will produce —
+followed by **Generate & load** or **Download CSV** (the same long-format
+file, one row per event, for R or another notebook). Default: 1,000
 learning sessions (100 students × 10 sessions, eight learning actions — Plan,
 Read, Watch, Discuss, Practice, Write, Review, Reflect — with timestamps and a
 High/Low achievement group; the **verbs** menu swaps in one of Saqrlab's
@@ -43,10 +43,11 @@ motivational, affective, group regulation (SSRL), LMS events — or one of two
 profile-based sets: **Engagement** (Active / Moderate / Disengaged) and
 **Collaborative roles** (Leader / Active / Moderator / Isolate), where students
 are split evenly across the profiles, each student's own state has a high
-self-transition, and the `group` column is the profile) created in the browser from a seeded model the
-moment you click. Nothing is bundled in the file; the small **seed** box next
-to the link (default 14) fixes the draw, so the same seed always yields the
-same data and a different seed a different cohort, and it loads exactly like a dropped CSV (auto-detected as
+self-transition, and the `group` column is the profile), created in the
+browser from a seeded model at the moment of the click. Nothing is bundled in
+the file; the small **seed** box next to the link (default 14) fixes the draw,
+so the same seed always yields the same data and a different seed a different
+cohort, and the result loads exactly like a dropped CSV (auto-detected as
 Actor = student, Action = action, Time = timestamp, Session = session,
 Group = achievement).
 
@@ -63,10 +64,10 @@ S02,Video,2,Treatment
 S02,Quiz,3,Treatment
 ```
 
-Use `Time` for timestamps, `Order` for an explicit event order, `Session` when
-one actor has named sessions, and `Group` for conditions or cohorts. If both
-`Time` and `Order` are absent, rows are used in file order. The `Gap` setting
-can split an actor's events into sessions based on elapsed seconds.
+`Time` holds timestamps, `Order` an explicit event order, `Session` named
+sessions within one actor, and `Group` conditions or cohorts. If both `Time`
+and `Order` are absent, rows are used in file order. The `Gap` setting can
+split an actor's events into sessions based on elapsed seconds.
 
 `Session` is nested in `Actor`: with `Actor = student` and `Session =
 submission`, each student × submission pair becomes one sequence, exactly as
@@ -78,10 +79,10 @@ is right when the column is a step index within each sequence, and wrong when
 it restarts inside a sequence — a "position within line" column, for
 example — because sorting then pulls every step-1 row together and inflates
 the self-loops. For that reason `Order` is never auto-selected (from 2.3.70):
-choose it deliberately, as you would pass `order =` in R. When a chosen
-`Order` changes any sequence relative to file order, the data card shows
-*"Order column … changed the event order in N of M sequences"*; if that is
-not intended, set `Order` back to none and rebuild.
+it is a deliberate choice, equivalent to passing `order =` in R. When a
+chosen `Order` changes any sequence relative to file order, the data card
+shows *"Order column … changed the event order in N of M sequences"*; if that
+is not intended, `Order` is set back to none and the network is rebuilt.
 
 ### Wide format
 
@@ -94,67 +95,68 @@ S01,Control,Start,Read,Quiz,Finish
 S02,Treatment,Start,Video,Quiz,Finish
 ```
 
-Select the first and last state columns (`T1` to `T4` above). Columns outside
-that span remain metadata and can later be used for grouping and comparison.
+The first and last state columns (`T1` to `T4` above) define the state span.
+Columns outside that span remain metadata and can later be used for grouping
+and comparison.
 
-Use a header row and save spreadsheet data as **CSV UTF-8** or TSV. Excel
-files (`.xlsx` and `.xls`) are not read directly. Comma, tab, semicolon, and
-pipe delimiters are supported.
+Files require a header row; spreadsheet data are saved as **CSV UTF-8** or
+TSV. Excel files (`.xlsx` and `.xls`) are not read directly. Comma, tab,
+semicolon, and pipe delimiters are supported.
 
-## Load the data and build a network
+## Loading the data and building a network
 
-1. Drop the data file on the opening panel, or choose **File → Load Data**.
-2. Check the preview and set **Format** to **Long (events)** or
+1. The data file is dropped on the opening panel, or loaded with
+   **File → Load Data**.
+2. The preview is checked and **Format** is set to **Long (events)** or
    **Wide (sequences)**.
-3. Review the detected mapping. For long data, confirm at least **Action** and
-   preferably **Actor** plus **Time** or **Order**. For wide data, confirm the
-   optional ID and the state-column span.
-4. Select **Group**, **Session**, or adjust **Gap** if the study design needs
-   them.
-5. Click **Build Network**.
+3. The detected mapping is reviewed. For long data, at least **Action** and
+   preferably **Actor** plus **Time** or **Order** are confirmed. For wide
+   data, the optional ID and the state-column span are confirmed.
+4. **Group**, **Session**, or **Gap** are set if the study design needs them.
+5. **Build Network** is selected.
 
-Use **Sequence Data** to inspect the processed sequences. If they do not match
-the intended cases or order, expand the data card, correct the mapping, and
-rebuild.
+**Sequence Data** displays the processed sequences. If they do not match the
+intended cases or order, the data card is expanded, the mapping corrected,
+and the network rebuilt.
 
-## Add and run analyses
+## Adding and running analyses
 
-A useful first workflow is:
+A typical first workflow is:
 
-1. **Describe → State frequencies** to check the state distribution.
-2. **Validate → Bootstrap (edges)** or **Reliability (whole model)** to assess
+1. **Describe → State frequencies** for the state distribution.
+2. **Validate → Bootstrap (edges)** or **Reliability (whole model)** for
    stability.
-3. **Analyze → Centrality measures** and **Community detection** to examine
-   network structure.
-4. **Sequences** and **Pattern mining** to inspect trajectories and recurring
+3. **Analyze → Centrality measures** and **Community detection** for network
+   structure.
+4. **Sequences** and **Pattern mining** for trajectories and recurring
    subsequences.
 5. **Compare** for group or network comparisons.
 6. **High-order** when first-order transitions do not capture the relevant
    memory or pathway structure.
 
-Configure a cell and use its run button. **Run All** reruns every analysis cell
-in notebook order. The flask button reveals experimental methods; keep it off
-for the curated default surface.
+Each cell is configured and then executed with its run button. **Run All**
+reruns every analysis cell in notebook order. The flask button reveals
+experimental methods; with it off, the curated default surface is shown.
 
-## Export results
+## Exporting results
 
 Each result cell has an **Export** menu. Tables can be copied or downloaded in
 CSV, TSV, JSON, Markdown, HTML, or Word-compatible form. Plots can be exported
-as SVG or PNG, and underlying data can be downloaded where available. Use
-**File → HTML Report**, **Word (.doc)**, or **Print / PDF** for a
+as SVG or PNG, and underlying data can be downloaded where available.
+**File → HTML Report**, **Word (.doc)**, and **Print / PDF** produce
 notebook-level output.
 
-## Save, resume, and share
+## Saving, resuming, and sharing
 
-Rename the notebook in the title field, then click **Save** or press
+The notebook is named in the title field and saved with **Save** or
 <kbd>Ctrl</kbd>/<kbd>Cmd</kbd>+<kbd>S</kbd>. This downloads a self-contained
 `.html` file with the data, settings, cells, and results embedded. That file
 is the portable copy to archive or share.
 
 CarmNote also autosaves a working copy in the current browser and exposes it
 through **File → Open Notebook**, but browser storage is not a substitute for
-the downloaded file. **Save As** creates another browser-library entry; use
-**Save** whenever you need a file on disk.
+the downloaded file. **Save As** creates another browser-library entry;
+**Save** is the command that produces a file on disk.
 
 The lower-left lock control provides four sharing states:
 
@@ -163,17 +165,19 @@ The lower-left lock control provides four sharing states:
 - **Locked** — a frozen copy; editing requires **Duplicate to editable copy**.
 - **Sealed** — locked with a SHA-256 fingerprint that flags later changes.
 
-Set the intended state first, then click **Save** to download that version.
-Keep an editable saved copy before locking or sealing important work.
+The intended state is set first, and **Save** then downloads that version.
+An editable saved copy should be kept before important work is locked or
+sealed.
 
 ## Troubleshooting
 
-- **The browser shows code:** return to GitHub and use **Download raw file**.
-- **Excel will not load:** export the sheet as CSV UTF-8 or TSV.
-- **Sequences look wrong:** verify Long/Wide format, Actor/Action mapping, the
-  ordering column, Session, and Gap, then rebuild.
-- **Analysis cells say “Build a network first”:** rebuild the network from the
-  data card before running downstream cells.
-- **A new release restores an unsuitable browser state:** choose
-  **File → Reset notebook storage & reload**. This clears CarmNote TNA's
-  browser library but does not delete saved `.html` files.
+- **The browser shows code:** the file is downloaded again from GitHub with
+  **Download raw file**.
+- **Excel will not load:** the sheet is exported as CSV UTF-8 or TSV.
+- **Sequences look wrong:** the Long/Wide format, Actor/Action mapping, the
+  ordering column, Session, and Gap are verified, and the network is rebuilt.
+- **Analysis cells say “Build a network first”:** the network is rebuilt from
+  the data card before downstream cells are run.
+- **A new release restores an unsuitable browser state:**
+  **File → Reset notebook storage & reload** clears CarmNote TNA's browser
+  library but does not delete saved `.html` files.
