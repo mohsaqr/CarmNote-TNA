@@ -287,7 +287,8 @@ function main() {
       const released = result.artifacts.some((a) => a.status === 'released');
       const addPaths = result.isFlat ? 'README.md index.html versions' : `${result.noteId} README.md`;
       console.log(released
-        ? `\nNext: git add ${addPaths} && git commit -m "${result.noteId} v${result.version}" && git tag ${result.noteId}-v${result.version}`
+        ? `\nNext: git add ${addPaths} && git commit -m "${result.noteId} v${result.version}" && git tag ${result.noteId}-v${result.version}` +
+          '\nThen publish it on the CarmNote Store: node "../Carmnote Store/server/tools/push.mjs" --all'
         : '\nNothing new to release — this version is already published.');
     }
   } catch (err) {
