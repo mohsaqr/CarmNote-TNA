@@ -271,6 +271,10 @@ can be verified against the SHA-256 checksums below.
 <!-- releases:begin -->
 | Version | Date | File | Size | SHA-256 |
 |---|---|---|---|---|
+| 2.3.97 | 2026-10-05 | [tna-notebook_V2.3.97-full-j.html](./versions/tna-notebook_V2.3.97-full-j.html) | 1.32 MB | `7948192d6fc4c8e6174a96e4f23e8834351aa9c998aa7ba219bcda74f867babe` |
+| 2.3.97 | 2026-10-05 | [tna-notebook_V2.3.97-full-w.html](./versions/tna-notebook_V2.3.97-full-w.html) | 1.99 MB | `414f035e1a6e6afc41c9f1ef8b1a68c8dcdee1070c4062fd151e0b7f43de7726` |
+| 2.3.97 | 2026-10-05 | [tna-notebook_V2.3.97-min-j.html](./versions/tna-notebook_V2.3.97-min-j.html) | 0.97 MB | `adb924c96366acbac2aaef4f8d47c8bee44af0ee3f005087825e942a6a5602ae` |
+| 2.3.97 | 2026-10-05 | [tna-notebook_V2.3.97-min-w.html](./versions/tna-notebook_V2.3.97-min-w.html) | 1.65 MB | `121773231b19450a5562ba239aa878c0eadaf925e25bbc8469f4339c008d23a9` |
 | 2.3.96 | 2026-10-04 | [tna-notebook_V2.3.96-full-j.html](./versions/tna-notebook_V2.3.96-full-j.html) | 1.29 MB | `729c6faa7acaf04b449025c43d09db6fc64384fd35d162d3eeabaeabc8032dff` |
 | 2.3.96 | 2026-10-04 | [tna-notebook_V2.3.96-full-w.html](./versions/tna-notebook_V2.3.96-full-w.html) | 1.96 MB | `f9d0257fefb2a4977c7d7ef5a5905f8064e598b5dc21216a250f3f682af773b3` |
 | 2.3.96 | 2026-10-04 | [tna-notebook_V2.3.96-min-j.html](./versions/tna-notebook_V2.3.96-min-j.html) | 0.94 MB | `319547d5bc87f412709ea6ec288b5a5a406dc409737b2384a7666b08056529f9` |
