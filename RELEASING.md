@@ -64,3 +64,28 @@ THIS repo holds the canonical `tools/release.cjs` and
 `tools/release.test.cjs`. Fix or extend the tool here first, run the tests,
 then copy both files into every other `CarmNote-*` release repo and re-run
 their tests.
+
+## Publishing on the CarmNote Store
+
+After the tag and `git push --tags`, the release is published on the CarmNote
+Store (https://carmstore.lacarm.com). The command runs from this repository's
+root:
+
+```bash
+node "../Carmnote Store/server/tools/push.mjs" --all --dry-run   # what a push would send
+node "../Carmnote Store/server/tools/push.mjs" --all             # publish
+```
+
+The push reads the new tag, the release files and the `carm-manifest` stamped
+in each file (version, date, functions, release notes as news). It uploads
+only what the store lacks and never replaces a published file; a faulty
+version is yanked and superseded. The publish token is read from
+`~/.config/carmstore/token` (issued with
+`node "../Carmnote Store/server/tools/push-token.mjs" create --name <agent> --save`).
+
+- Protocol: `../Carmnote Store/docs/PUSH-PROTOCOL.md`
+- Agent procedure: the `carmstore-push` skill
+  (`../Carmnote Store/skills/carmstore-push/SKILL.md`, installed in
+  `~/.claude/skills`)
+- Store-only text (capabilities, usage, figures):
+  `../Carmnote Store/server/registry/<id>.json`
