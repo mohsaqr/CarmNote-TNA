@@ -113,7 +113,7 @@ The header holds the controls that act on the whole notebook.
 | Carm TNA and the version badge | The release and engine variant, for example 2.3.102 with `j` for JavaScript. |
 | Notebook title | The name of the notebook. It becomes the file name when the notebook is saved. A new notebook receives a generated name such as "Amber Raven NG4". |
 | Saved indicator | The time of the last automatic save to the browser's storage. |
-| Build ID | The commit and date of the exact build, for example `build 167ae52·20261028`. |
+| Build ID | The commit and the date of the exact build, as in the figure above. |
 | Standard / Wide / Full | Cycles the width of the notebook column. The choice is remembered by the browser. |
 | Flask | Experimental mode. In this release every method is already listed in the menus, so the flask only marks the version badge. |
 | Accessibility | A large, high-contrast view of the whole notebook. |
@@ -270,8 +270,9 @@ but removes the sequences, the model and every cell.
 
 When the mapping is changed after a build, the card shows a re-run notice:
 the cells keep their results until Save Settings or Build Network applies
-the new mapping. Change dataset, at the top right of the card, replaces the
-data and keeps the cells, which are then rerun on the new data.
+the new mapping. Change dataset, at the top right of the card, asks for
+confirmation and then clears the data and every analysis, returning the
+notebook to its empty state for a new file.
 
 ### Checking the sequences
 
@@ -595,7 +596,7 @@ The bootstrap draws sequences with replacement, re-estimates the network on
 each draw, and records every edge's weight. An edge is significant when its
 weight stays within the consistency range around the original weight
 (0.75 to 1.25 times by default) in at least 95% of the resamples, or, with
-the probability cutoff, when its bootstrap weight stays above the cutoff.
+the probability cutoff, when its bootstrap mean is at or above the cutoff.
 
 | Control | Default | What it sets |
 |---|---|---|
@@ -799,8 +800,9 @@ and edge betweenness removes bridging edges in turn.
 <figcaption>Cliques of at least three states in the sample network: 41 cliques, each listed with its states and plotted on the network.</figcaption>
 </figure>
 
-A clique is a set of states in which every pair is connected. Directed
-transitions are treated as connections for this purpose.
+A directed clique is a set of states in which every pair is connected in
+both directions by edges at or above the weight threshold, as in R's
+`tna::cliques()`.
 
 | Control | Default | What it sets |
 |---|---|---|
@@ -809,8 +811,8 @@ transitions are treated as connections for this purpose.
 | Networks | on | — |
 | Table | on | — |
 
-A probability network without pruning is often nearly complete, in which
-case almost every set of states is a clique. Raising Weight ≥ restricts
+A probability network without pruning often has edges in both directions
+between most states, in which case almost every set of states is a clique. Raising Weight ≥ restricts
 cliques to strong transitions.
 
 ## Sequences
@@ -1421,7 +1423,7 @@ file is the copy that is kept.
 | Print / PDF | Opens the browser's print dialog, which can save a PDF. |
 | Clear data & cells | Removes the data, the model and the cells from the current notebook. |
 | Delete notebook… | Deletes the current notebook from the browser library; saved files are unaffected. |
-| Privacy & network access | States what the notebook stores and that it makes no network requests for analysis. |
+| Privacy & network access | States that the notebook makes no network calls and keeps its data in the browser's storage. |
 | Reset notebook storage & reload… | Clears this notebook's browser library and reloads. Saved files are unaffected. |
 | Clear browser analysis history… | Clears all Carm data stored by this browser, including notebooks and preferences. |
 
