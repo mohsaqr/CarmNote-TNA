@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Carm TNA 2.4.3j — Transition Network Analysis Notebook</title>
+<title>Carm TNA 2.4.4j — Transition Network Analysis Notebook</title>
 <style>
 /* === Reset + Base === */
 * { margin: 0; padding: 0; box-sizing: border-box; }
@@ -309,6 +309,10 @@ th.dct-rownum { z-index: 3; }
 .modal-overlay.sample-modal { display: none; }
 .modal-overlay.sample-modal.show { display: flex; }
 .sample-modal-box { width: min(92vw, 600px); max-height: 90vh; display: flex; flex-direction: column; }
+.modal-overlay.saveas-modal { display: none; }
+.modal-overlay.saveas-modal.show { display: flex; }
+.saveas-modal-box { width: min(92vw, 460px); display: flex; flex-direction: column; }
+.saveas-file { margin-top: 8px; font-size: 12px; color: #6b7280; word-break: break-all; }
 .sample-icon { width: 44px; height: 44px; border-radius: 10px; background: #2563eb18; display: flex; align-items: center; justify-content: center; font-size: 22px; flex-shrink: 0; }
 .sample-body { padding: 18px 24px 16px; overflow: auto; }
 .sample-field label { display: block; font-size: 11px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.4px; color: #6b7280; margin-bottom: 6px; }
@@ -1542,7 +1546,7 @@ Exhibit B - "Incompatible With Secondary Licenses" Notice
 <header>
   <!-- Row 1 — identity: brand, notebook title, save -->
   <div class="hdr-row-1">
-    <h1>Carm <b>TNA</b><sup id="nb-version-tag" style="font-size:9px;color:#9aa0a6;font-weight:500;margin-left:4px;letter-spacing:0.5px">2.4.3j</sup></h1>
+    <h1>Carm <b>TNA</b><sup id="nb-version-tag" style="font-size:9px;color:#9aa0a6;font-weight:500;margin-left:4px;letter-spacing:0.5px">2.4.4j</sup></h1>
     <div class="hdr-sep"></div>
     <input id="nb-title-input" class="nb-title-input" type="text" aria-label="Notebook title" placeholder="Name this notebook…" autocomplete="off" spellcheck="false">
     <span id="nb-saved-indicator" class="nb-saved-indicator"></span>
@@ -1581,6 +1585,8 @@ Exhibit B - "Incompatible With Secondary Licenses" Notice
         <button data-action="sample"><span>&#x1F3B2;</span> Generate sample data...</button>
         <div class="fd-sep"></div>
         <button data-action="save-as"><span>&#x1F4BE;</span> Save As...</button>
+        <button data-action="export-session" title="The analysis recipe as a small .json file: data, column mapping and every cell's settings. Results are not stored; they are recomputed on import."><span>&#x2B07;</span> Export Session (.json)...</button>
+        <button data-action="import-session" title="Open a .carmsession.json written by CarmNote TNA. It opens as a new notebook and every cell is re-run."><span>&#x2B06;</span> Import Session...</button>
         <button data-action="publish"><span>&#x1F4D6;</span> Publish</button>
         <div class="fd-sep"></div>
         <button data-action="copyall"><span>&#x1F4CB;</span> Copy All</button>
@@ -1764,6 +1770,32 @@ Exhibit B - "Incompatible With Secondary Licenses" Notice
       <button type="button" class="btn-secondary" id="btn-sample-cancel">Cancel</button>
       <button type="button" class="btn-secondary" id="btn-sample-download">Download CSV</button>
       <button type="button" class="btn-primary-blue" id="btn-sample-data">Generate &amp; load</button>
+    </div>
+  </div>
+</div>
+<!-- Save As — an in-page dialog, not prompt(): prompt() is blocked in
+     sandboxed frames and once a browser stops a page's dialogs, and then the
+     menu item did nothing at all (PRV-86). Used where the browser has no
+     system Save dialog (showSaveFilePicker). -->
+<div class="modal-overlay saveas-modal" id="saveas-modal" aria-hidden="true">
+  <div class="modal-box saveas-modal-box" role="dialog" aria-modal="true" aria-labelledby="saveas-modal-title">
+    <div class="modal-header">
+      <div>
+        <div id="saveas-modal-title" style="font-weight:700;font-size:16px;color:#111">Save As</div>
+        <div style="font-size:12px;color:#6b7280;margin-top:2px">Saves a copy under a new name and downloads it as an .html file</div>
+      </div>
+      <button type="button" class="modal-close-btn" id="btn-saveas-close" title="Close">&#x2715;</button>
+    </div>
+    <div class="sample-body">
+      <div class="sample-field">
+        <label for="saveas-name">Notebook name</label>
+        <input type="text" id="saveas-name" maxlength="120" autocomplete="off">
+      </div>
+      <div class="saveas-file" id="saveas-file"></div>
+    </div>
+    <div class="modal-footer">
+      <button type="button" class="btn-secondary" id="btn-saveas-cancel">Cancel</button>
+      <button type="button" class="btn-primary-blue" id="btn-saveas-ok">Save</button>
     </div>
   </div>
 </div>
@@ -2049,6 +2081,11 @@ function _a11yPlotLabel(svg) {
 }
 function _a11yTableName(table) {
   var prev = table.previousElementSibling;
+  // A paginated table's previous sibling is its toolbar ("8 rows ↓ Export
+  // Copy (TSV)…"), which then became the table's spoken name. Controls never
+  // name a table (found with PRV-86, 2026-11-18).
+  while (prev && (prev.matches('.carm-tbl-toolbar, .plot-bar, .cnr-fig-bar') ||
+                  prev.querySelector('button, select, input'))) prev = prev.previousElementSibling;
   if (prev && prev.tagName === 'DIV') {
     var direct = _a11yCleanText(prev);
     if (direct && direct.length < 180) return direct;
@@ -3645,6 +3682,11 @@ function specifyData() {
   S.model = null;
   S.groupModel = null;
   S.groupLabels = null;
+  // Clusterings label the OLD sequences one to one; a Groups cell built from
+  // them must never pair them with new sequences of the same count (audit,
+  // 2026-11-18).
+  ['clusterLabels', 'clusterK', 'clusterMethod', 'clusterAssignments', 'clusterSilhouette', 'clusterDissimilarity',
+   'mmmLabels', 'mmmK', 'mmmAssignments'].forEach(function(k) { S[k] = null; });
 
   // Fold the data panel so cells get vertical space.
   S.dataCardCollapsed = true;
@@ -3687,10 +3729,16 @@ function _rerunCells(includeModelVerbs) {
   // Network cell first"). The rest start once every network cell has run.
   var nets = runnable.filter(function(cs) { return cs.type === 'network'; });
   var rest = runnable.filter(function(cs) { return cs.type !== 'network'; });
-  Promise.all(nets.map(function(cs) { return Promise.resolve(runCell(cs.id, cs.type)); }))
+  // The rest run one after another, each waiting for the one above: a cell
+  // can depend on an earlier one (a Groups cell built from a Cluster cell's
+  // clusters), and a 10 ms stagger let it read the previous run's output.
+  return Promise.all(nets.map(function(cs) { return Promise.resolve(runCell(cs.id, cs.type)); }))
     .catch(function(err) { console.warn('[carm-tna] network re-run failed:', err); })
     .then(function() {
-      rest.forEach(function(cs, i) { setTimeout(function() { runCell(cs.id, cs.type); }, i * 10); });
+      return rest.reduce(function(chain, cs) {
+        return chain.then(function() { return runCell(cs.id, cs.type); })
+          .catch(function(err) { console.warn('[carm-tna] re-run of ' + cs.id + ' failed:', err); });
+      }, Promise.resolve());
     });
 }
 
@@ -4497,7 +4545,9 @@ function formComparePerm(id) {
   return '<div class="form-row">' +
     '<div class="form-group" title="Permutation iterations"><span class="form-label">Iterations</span><input type="number" class="form-control" data-field="iter" value="1000" min="100" max="10000" step="100"></div>' +
     '<div class="form-group" title="Significance threshold for permutation p-values"><span class="form-label">α</span><input type="number" class="form-control" data-field="level" value="0.05" min="0.001" max="0.1" step="0.01"></div>' +
-    '<div class="form-group" title="Multiple-comparison correction"><span class="form-label">Adjust</span><select class="form-control" data-field="adjust"><option value="BH" selected>BH (FDR)</option><option value="holm">Holm</option><option value="bonferroni">Bonferroni</option><option value="fdr">FDR</option><option value="none">None</option></select></div>' +
+    // No adjustment by default, as tna::permutation_test (adjust = "none")
+    // (2026-11-18, the owner: "remove fdr, tna doesnt have adjustment by default").
+    '<div class="form-group" title="Multiple-comparison correction across the edge p-values. None is the R default (tna::permutation_test adjust = &quot;none&quot;)."><span class="form-label">Adjust</span><select class="form-control" data-field="adjust"><option value="none" selected>None (R default)</option><option value="BH">BH (FDR)</option><option value="holm">Holm</option><option value="bonferroni">Bonferroni</option><option value="fdr">FDR</option></select></div>' +
     '<div class="form-group" title="Seed for reproducibility (default 14)"><span class="form-label">Seed</span><input type="number" class="form-control" data-field="seed" value="14" min="0" step="1"></div>' +
     groupSourceField() +
     '</div>' +
@@ -4749,7 +4799,14 @@ function formGroup(id) {
       groupCols.map(function(c) { return '<option value="' + esc(c) + '"' + (c === selVal ? ' selected' : '') + '>' + esc(c) + '</option>'; }).join('') +
       '</select></div>';
   }
-  return '<div class="form-row">' + groupOpts +
+  // Groups from a column, or from the last clustering (2026-11-18, the owner:
+  // "best if we can build groups from clusters, and then all analysis after
+  // would apply to them"). Once built they are the active groups, so the
+  // Sequences cell's every view, Centrality, Compare, Patterns and HON follow.
+  var fromSel = '<div class="form-group" title="Where the groups come from.\n• Group column — a column of the data\n• Clusters — the last Cluster sequences run\n• Mixture clusters — the last Mixture Markov model run\nOnce built, every later cell that works by group uses these groups.">' +
+    '<span class="form-label">Groups from</span><select class="form-control" data-field="groupFrom">' +
+    '<option value="column" selected>Group column</option><option value="clusters">Clusters</option><option value="mmm">Mixture clusters</option></select></div>';
+  return '<div class="form-row">' + fromSel + groupOpts +
     '<div class="form-group"><span class="form-label">Type</span><select class="form-control" data-field="type"><option>tna</option><option>ftna</option><option>ctna</option><option>atna</option></select></div>' +
     '<div class="form-group"><span class="form-label">Scaling</span><select class="form-control" data-field="scaling"><option value="">None</option><option value="minmax">Min-Max</option><option value="max">Max</option><option value="rank">Rank</option></select></div>' +
     '<div class="form-group" title="ATNA attention decay β — only used when Type = atna; ignored for other types. Empty = engine default (0.1)."><span class="form-label">ATNA β</span><input type="number" class="form-control" data-field="atnaBeta" value="" placeholder="0.1" min="0" max="1" step="0.05" style="width:75px"></div>' +
@@ -4766,6 +4823,8 @@ function formHon(id) {
     '<div class="form-group" title="Drop tuples with raw count below this threshold"><span class="form-label">Min freq</span><input type="number" class="form-control" data-field="minFreq" value="1" min="1" max="50" step="1" style="width:70px"></div>' +
     '<div class="form-group" title="HON+ (Saebi et al. 2020): builds higher orders lazily with a MaxDivergence pre-check. HON: classical Xu et al. 2016"><span class="form-label">Method</span><select class="form-control" data-field="method"><option value="hon+" selected>HON+ (default)</option><option value="hon">HON (classical)</option></select></div>' +
     '<label class="form-check" title="Collapse runs of the same state into one (A,A,A→A). The reference pyHON always collapses repeats; leaving them in keeps self-transitions, which carry meaning in TNA data."><input type="checkbox" data-field="collapse"> Collapse repeats</label>' +
+    '<div class="form-group" title="Build one HON per group, each from that group\'s sequences, one after another.\n• Group column — the Group column picked in the data card\n• Clusters — the last Cluster sequences run\n• Groups cell — the groups the last Groups cell built"><span class="form-label">By group</span><select class="form-control" data-field="honGroups">' +
+      '<option value="none" selected>None (all sequences)</option><option value="column">Group column</option><option value="clusters">Clusters</option><option value="auto">Groups cell</option></select></div>' +
     '</div></div>' +
     '<div class="form-section"><span class="form-section-lbl">Table</span><div class="form-section-row">' +
     '<div class="form-group" title="Show edges ranked from this position (1-based, sorted by probability × count desc)"><span class="form-label">From rank</span><input type="number" class="form-control" data-field="fromRank" value="1" min="1" max="5000" step="1" style="width:70px"></div>' +
@@ -5685,7 +5744,7 @@ window.runCell = function(id, verb) {
         case 'network':     runNetwork(ra, fv); break;
         case 'group':       runGroup(ra, fv); break;
         case 'sequences':   runSequences(ra, fv); break;
-        case 'cluster':     runClustering(ra, fv); break;
+        case 'cluster':     _rp = runClustering(ra, fv); break;
         case 'mmm':         _rp = runMmm(ra, fv); break;
         case 'states':      runDescriptives(ra, fv); break;
         case 'centrality':  runCentrality(ra, fv); break;
@@ -6503,7 +6562,7 @@ function renderCentralityTable(container, cent, measures) {
     var th = document.createElement('th'); th.style.cssText = 'cursor:pointer;border-bottom:2px solid ' + MEASURE_COLORS[mi % MEASURE_COLORS.length];
     th.setAttribute('data-key', m);
     var tip = CENTRALITY_TIPS[m] || '';
-    th.innerHTML = m + (tip ? ' <span title="' + esc(tip) + '" style="display:inline-block;width:13px;height:13px;line-height:13px;text-align:center;border-radius:50%;background:#e5e7eb;color:#666;font-size:9px;font-weight:700;cursor:help;vertical-align:middle">?</span>' : '');
+    th.innerHTML = m + (tip ? ' <span class="help-tip-inline" data-no-export title="' + esc(tip) + '" style="display:inline-block;width:13px;height:13px;line-height:13px;text-align:center;border-radius:50%;background:#e5e7eb;color:#666;font-size:9px;font-weight:700;cursor:help;vertical-align:middle">?</span>' : '');
     htr.appendChild(th);
   });
   thead.appendChild(htr); table.appendChild(thead);
@@ -7295,6 +7354,39 @@ function downloadSvg(container, filename) {
   URL.revokeObjectURL(a.href);
 }
 
+// Rasterize an SVG to a PNG data URL, for documents that cannot draw SVG
+// (Word shows an inline <svg> as its bare text: every edge weight and state
+// name run together — PRV-86). Resolves { dataUrl, width, height } in CSS
+// pixels; `scale` is the supersampling factor (2 = crisp on paper, small
+// file). Rejects with a reason instead of resolving an empty image.
+function cnrSvgToPngDataUrl(svgEl, scale) {
+  return new Promise(function(resolve, reject) {
+    var d = cnrSvgExportData(svgEl);
+    if (!(d.width > 0 && d.height > 0)) {
+      reject(new Error('the figure has no size (is its cell collapsed?)'));
+      return;
+    }
+    var s = scale > 0 ? scale : 2;
+    var canvas = document.createElement('canvas');
+    canvas.width  = Math.max(1, Math.round(d.width  * s));
+    canvas.height = Math.max(1, Math.round(d.height * s));
+    var ctx = canvas.getContext('2d');
+    ctx.fillStyle = '#fff';
+    ctx.fillRect(0, 0, canvas.width, canvas.height);
+    var img = new Image();
+    img.onload = function() {
+      ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
+      try {
+        resolve({ dataUrl: canvas.toDataURL('image/png'), width: d.width, height: d.height });
+      } catch (e) {
+        reject(new Error('the figure could not be turned into an image (' + (e && e.message || e) + ')'));
+      }
+    };
+    img.onerror = function() { reject(new Error('the figure could not be drawn as an image')); };
+    img.src = 'data:image/svg+xml;base64,' + btoa(unescape(encodeURIComponent(d.source)));
+  });
+}
+
 function downloadPng(container, filename) {
   var svgEl = container.querySelector('svg');
   if (!svgEl) return;
@@ -7722,14 +7814,22 @@ function _carmTableToRows(tableEl) {
     };
   }
   var headerRows = [], bodyRows = [];
+  // A cell's exported text leaves out what is only on screen: the "?" help
+  // badge after a header made the CSV header "OutStrength ?" (PRV-86 sweep).
+  var cellText = function(c) {
+    if (!c.querySelector('[data-no-export],.help-tip,.sr-only')) return (c.textContent || '').trim();
+    var k = c.cloneNode(true);
+    k.querySelectorAll('[data-no-export],.help-tip,.sr-only').forEach(function(n) { n.remove(); });
+    return (k.textContent || '').trim();
+  };
   tableEl.querySelectorAll('thead tr').forEach(function(tr) {
     var cells = [];
-    tr.querySelectorAll('th,td').forEach(function(c) { cells.push((c.textContent || '').trim()); });
+    tr.querySelectorAll('th,td').forEach(function(c) { cells.push(cellText(c)); });
     headerRows.push(cells);
   });
   tableEl.querySelectorAll('tbody tr').forEach(function(tr) {
     var cells = [];
-    tr.querySelectorAll('th,td').forEach(function(c) { cells.push((c.textContent || '').trim()); });
+    tr.querySelectorAll('th,td').forEach(function(c) { cells.push(cellText(c)); });
     bodyRows.push(cells);
   });
   return { headers: headerRows, body: bodyRows };
@@ -9490,7 +9590,13 @@ if (poReset) poReset.addEventListener('click', function() {
   rerenderAllNetworkPlots();
 });
 
-function runNetwork(ra, fv) {
+// Builds S.model the way a Network cell with these form values does. Shared
+// by runNetwork and by the restore path (applyState), which used to rebuild a
+// plain tna() and so dropped the cell's Type, Scaling, Prune and START/END
+// states: every cell run after reopening a notebook saw the wrong network
+// while the Network form still showed the boxes ticked (PRV-86, 2026-11-18).
+function buildNetworkModel(fv) {
+  fv = fv || {};
   var type = fv.type || 'tna';
   // Default 0.05 prune matches the form default; user can set to 0 to keep all edges.
   var threshold = parseFloat(fv.threshold);
@@ -9534,6 +9640,13 @@ function runNetwork(ra, fv) {
   model.data = modelSeqs;
   model.__prunedBelow = threshold;
   model.__boundary = { addStart: addStart, addEnd: addEnd, startLbl: startLbl, endLbl: endLbl };
+  return model;
+}
+
+function runNetwork(ra, fv) {
+  var type = fv.type || 'tna';
+  var scaling = fv.scaling || null;
+  var model = buildNetworkModel(fv);
   S.model = model;
 
   ra.innerHTML = '';
@@ -9582,17 +9695,14 @@ function runNetwork(ra, fv) {
   );
 }
 
-function runGroup(ra, fv) {
-  if (!S.sequences || !S.data) { ra.innerHTML = '<div style="color:#e15759;font-size:12px">Load data first.</div>'; return; }
-
-  // Determine group column — always use form value (allows changing)
-  var groupCol = fv.groupCol || (S.columns && S.columns.group);
-  if (!groupCol) { ra.innerHTML = '<div style="color:#e15759;font-size:12px">Select a Group column.</div>'; return; }
-  S.columns.group = groupCol;
-  // Sync the data card dropdown
-  var dcGroup = document.getElementById('col-group');
-  if (dcGroup) dcGroup.value = groupCol;
-
+// Builds the group model a Groups cell with these form values builds. Shared
+// by runGroup and the restore path (applyState), which used to build a plain
+// groupTna() whenever a Group column was mapped — even with no Groups cell —
+// so a reopened notebook's Centrality, Communities… switched to per-group
+// results the session had never shown (PRV-86 tests, 2026-11-18).
+// Returns { groupModel, labels, sequences, opts }; throws with a message.
+function buildGroupModel(groupCol, fv) {
+  fv = fv || {};
   var type = fv.type || 'tna';
   var scaling = fv.scaling || null;
   var opts = {};
@@ -9602,36 +9712,65 @@ function runGroup(ra, fv) {
     var _atnaBeta = parseFloat(fv.atnaBeta);
     if (isFinite(_atnaBeta) && _atnaBeta >= 0) opts.beta = _atnaBeta;
   }
-
-  // Re-derive sequences + group labels for the chosen column. Long re-runs
-  // the gap-split builder; wide reads the label from per-sequence metadata.
-  if (S.columns && S.columns.wide && S.metaCols && S.metaCols.indexOf(groupCol) === -1) {
-    ra.innerHTML = '<div style="color:#e15759;font-size:12px">"' + esc(groupCol) + '" is part of the sequence (a state column), not metadata. Pick a column outside the States From→To span.</div>';
-    return;
+  var from = fv.groupFrom || 'column';
+  var result;
+  if (from === 'clusters' || from === 'mmm') {
+    // A clustering labels S.sequences one to one (runClustering / runMmm).
+    var cl = from === 'clusters' ? S.clusterLabels : S.mmmLabels;
+    if (!cl || !S.sequences || cl.length !== S.sequences.length) {
+      throw new Error(from === 'clusters' ? 'Run a Cluster sequences cell first.' : 'Run a Mixture Markov model cell first.');
+    }
+    result = { sequences: S.sequences, groups: cl.slice(), actorIds: S.actorIds };
+  } else {
+    // Re-derive sequences + group labels for the chosen column. Long re-runs
+    // the gap-split builder; wide reads the label from per-sequence metadata.
+    if (!groupCol) throw new Error('Select a Group column.');
+    if (S.columns && S.columns.wide && S.metaCols && S.metaCols.indexOf(groupCol) === -1) {
+      throw new Error('"' + groupCol + '" is part of the sequence (a state column), not metadata. Pick a column outside the States From→To span.');
+    }
+    result = sequencesWithGroupColumn(groupCol);
   }
-  var result = sequencesWithGroupColumn(groupCol);
   var sequences = result.sequences;
   var labels = result.groups || [];
   // Actor ids ride along with the sequences they were built from (NESTED DATA).
   var _gMeta = actorMeta(result.actorIds, sequences.length);
   if (_gMeta) opts.meta = _gMeta;
-
   var builders = { tna: groupTna, ftna: groupFtna, ctna: groupCtna, atna: groupAtna };
-  var buildFn = builders[type] || groupTna;
+  var groupModel = (builders[type] || groupTna)(sequences, labels, opts);
+  // Each group model carries its own sequences.
+  groupEntries(groupModel).forEach(function(e) {
+    var seqs = [];
+    for (var i = 0; i < sequences.length; i++) { if (labels[i] === e[0]) seqs.push(sequences[i]); }
+    e[1].data = seqs;
+  });
+  return { groupModel: groupModel, labels: labels, sequences: sequences, opts: opts };
+}
 
+function runGroup(ra, fv) {
+  if (!S.sequences || !S.data) { ra.innerHTML = '<div style="color:#e15759;font-size:12px">Load data first.</div>'; return; }
+
+  var from = fv.groupFrom || 'column';
+  var groupCol = null;
+  if (from === 'column') {
+    // Determine group column — always use form value (allows changing)
+    groupCol = fv.groupCol || (S.columns && S.columns.group);
+    if (!groupCol) { ra.innerHTML = '<div style="color:#e15759;font-size:12px">Select a Group column.</div>'; return; }
+    S.columns.group = groupCol;
+    // Sync the data card dropdown
+    var dcGroup = document.getElementById('col-group');
+    if (dcGroup) dcGroup.value = groupCol;
+  }
+
+  var type = fv.type || 'tna';
+  var scaling = fv.scaling || null;
+  var built;
   try {
-    var groupModel = buildFn(sequences, labels, opts);
-    S.groupModel = groupModel;
-    S.groupLabels = labels;
-
-    // Also set data on each group model
+    built = buildGroupModel(groupCol, fv);
+    S.groupModel = built.groupModel;
+    S.groupLabels = built.labels;
+    var groupModel = built.groupModel, labels = built.labels, sequences = built.sequences, opts = built.opts;
     var groups = groupNames(groupModel);
     var entries = groupEntries(groupModel);
-    entries.forEach(function(e) {
-      var seqs = [];
-      for (var i = 0; i < sequences.length; i++) { if (labels[i] === e[0]) seqs.push(sequences[i]); }
-      e[1].data = seqs;
-    });
 
     // Also build single model if not yet done
     if (!S.model) {
@@ -9649,7 +9788,10 @@ function runGroup(ra, fv) {
   // Info
   var info = document.createElement('div');
   info.style.cssText = 'font-size:12px;color:#666;margin-bottom:12px';
-  info.textContent = groups.length + ' groups: ' + groups.join(', ') + ' | ' + sequences.length + ' total sequences';
+  var fromTxt = from === 'clusters' ? 'from the clusters (Cluster sequences)' :
+    from === 'mmm' ? 'from the mixture clusters (Mixture Markov model)' : 'from column "' + groupCol + '"';
+  info.textContent = groups.length + ' groups ' + fromTxt + ': ' + groups.join(', ') + ' | ' + sequences.length +
+    ' total sequences. Cells below that work by group now use these groups.';
   ra.appendChild(info);
 
   // Figure / Table toggle
@@ -10413,6 +10555,40 @@ function runSequences(ra, fv) {
   }
 }
 
+// "Use as groups" on a clustering result: a Groups cell built from these
+// clusters goes right below and runs, so every later cell that works by group
+// — Sequences (every view), Centrality, Compare, Patterns, HON — follows the
+// clusters (2026-11-18, the owner's request).
+function useClustersAsGroups(fromCellId, from) {
+  if (S.sealed) return;
+  var idx = -1;
+  for (var i = 0; i < S.cells.length; i++) if (S.cells[i].id === fromCellId) { idx = i; break; }
+  if (idx < 0) return;
+  insertCell('group', idx + 1);
+  var cs = S.cells[idx + 1];
+  cs.formValues = { groupFrom: from };
+  setTimeout(function() {
+    var sel = document.querySelector('#' + cs.id + ' [data-field="groupFrom"]');
+    if (sel) sel.value = from;
+    runCell(cs.id, 'group');
+  }, 60);
+}
+window.useClustersAsGroups = useClustersAsGroups;
+function _useAsGroupsButton(ra, from) {
+  var cell = ra.closest ? ra.closest('.cell') : null;
+  if (!cell) return null;
+  var b = document.createElement('button');
+  b.type = 'button';
+  b.className = 'btn-secondary use-as-groups';
+  b.textContent = 'Use these clusters as groups \u2192';
+  b.title = 'Adds a Groups cell built from these clusters below this one. Every later cell that works by group then uses the clusters.';
+  b.style.cssText = 'margin:0 0 10px;font-size:11px;padding:4px 10px';
+  // Inline, like every control in a result: re-renders round-trip a result
+  // through innerHTML, which drops listeners (audit: dead after one use).
+  b.setAttribute('onclick', "useClustersAsGroups('" + cell.id + "','" + from + "')");
+  return b;
+}
+
 function runClustering(ra, fv) {
   if (!S.sequences || !S.data) { ra.innerHTML = '<div style="color:#e15759;font-size:12px">Save the data settings first.</div>'; return; }
 
@@ -10432,7 +10608,13 @@ function runClustering(ra, fv) {
   var type = fv.type || 'tna';
 
   ra.innerHTML = '<div style="color:#888;font-size:12px;padding:8px">Clustering sequences (k=' + k + ', ' + dissimilarity + ', ' + method + ')...</div>';
+  // A Groups cell built from these clusters must never read the previous
+  // run's labels: they go before the new ones exist, and runCell waits on the
+  // returned promise, so Run All / Build re-runs see the new ones (audit,
+  // 2026-11-18: a rebuild with a new k kept grouping by the old clusters).
+  S.clusterLabels = null; S.clusterAssignments = null;
 
+  return new Promise(function(resolveRun) {
   setTimeout(function() {
     try {
       var result;
@@ -10460,6 +10642,8 @@ function runClustering(ra, fv) {
       info.style.cssText = 'font-size:12px;color:#666;margin-bottom:8px';
       info.textContent = k + ' clusters | ' + dissimilarity.toUpperCase() + ' distance | ' + method + ' | Silhouette: ' + fmt(result.silhouette) + ' | Sizes: ' + result.sizes.join(', ');
       ra.appendChild(info);
+      var useBtn = _useAsGroupsButton(ra, 'clusters');
+      if (useBtn) ra.appendChild(useBtn);
 
       var stateLabels = _labelsFromSequences(S.sequences);
       var colorMap = {};
@@ -10567,7 +10751,9 @@ function runClustering(ra, fv) {
     } catch (err) {
       ra.innerHTML = '<div style="color:#dc2626;font-size:12px;padding:8px;background:#fef2f2;border:1px solid #fecaca;border-radius:4px">' + esc(err.message || String(err)) + '</div>';
     }
+    resolveRun();
   }, 50);
+  });
 }
 
 // Mixture Markov Model clustering. clusterMmm() returns a structurally
@@ -10643,6 +10829,8 @@ function runMmm(ra, fv) {
         (cl.nStarts > 1 ? ' | ' + cl.nStarts + ' restarts' : '') +
         ' | Sizes: ' + sizes.join(', ');
       ra.appendChild(info);
+      var useMmmBtn = _useAsGroupsButton(ra, 'mmm');
+      if (useMmmBtn) ra.appendChild(useMmmBtn);
 
       // Fit-quality table (always shown)
       var qHeaders = ['Cluster', 'Mixing', 'AvePP', 'Sequences'];
@@ -13174,8 +13362,43 @@ function runBetweenness(ra, fv) {
 // per discovered order plus a top-N edge table sorted by probability × count.
 // Experimental — no force-layout viz yet; the HON edge list is the primary
 // deliverable since HON graphs are typically too dense to plot meaningfully.
+// HON for the whole data set, or one HON per group (PRV-86: "Higher Order
+// Network calculated by group is missing"). Groups come from the same
+// sources the Compare verbs use (resolveGroupSource): the data card's Group
+// column, the last clustering, or the groups the last Groups cell built.
+var HON_GROUP_SOURCES = {
+  column:   { label: 'Group column',  missing: 'Pick a Group column in the data card first.' },
+  clusters: { label: 'Clusters',      missing: 'Run a Cluster sequences cell first.' },
+  auto:     { label: 'Groups cell',   missing: 'Run a Groups cell first.' }
+};
 function runHon(ra, fv) {
   if (!S.sequences) { ra.innerHTML = '<div style="color:#e15759;font-size:12px">Load data and build the base network first.</div>'; return; }
+  var mode = fv.honGroups || 'none';
+  var src = HON_GROUP_SOURCES[mode];
+  if (!src) return _runHonOne(ra, fv, S.sequences);
+  var g = resolveGroupSource(mode);
+  if (!g) { ra.innerHTML = '<div style="color:#e15759;font-size:12px">' + esc(src.missing) + '</div>'; return; }
+  var entries = groupEntries(g.groupModel);
+  ra.innerHTML = '';
+  var info = document.createElement('div');
+  info.style.cssText = 'font-size:12px;color:#666;margin-bottom:6px';
+  info.innerHTML = '<b>HON by group</b> — ' + esc(src.label) + ': ' + entries.length + ' group' + (entries.length === 1 ? '' : 's') +
+    '. Each group\'s sequences get their own HON with the settings above.';
+  ra.appendChild(info);
+  entries.forEach(function(e) {
+    var seqs = e[1].data || [];
+    ra.appendChild(sectionDiv('Group: ' + e[0] + ' (' + seqs.length + ' sequence' + (seqs.length === 1 ? '' : 's') + ')'));
+    var host = document.createElement('div');
+    host.className = 'hon-group';
+    host.setAttribute('data-hon-group', e[0]);
+    ra.appendChild(host);
+    if (!seqs.length) { host.innerHTML = '<div style="color:#888;font-size:12px">No sequences in this group.</div>'; return; }
+    _runHonOne(host, fv, seqs);
+  });
+}
+
+// One HON over `seqs`, rendered into `ra`.
+function _runHonOne(ra, fv, seqs) {
   var maxOrder = parseInt(fv.maxOrder) || 5;
   var minFreq  = parseInt(fv.minFreq)  || 1;
   var method   = fv.method || 'hon+';
@@ -13192,7 +13415,7 @@ function runHon(ra, fv) {
 
   setTimeout(function() {
     try {
-      var result = buildHon(S.sequences, { maxOrder: maxOrder, minFreq: minFreq, method: method, collapseRepeats: collapse });
+      var result = buildHon(seqs, { maxOrder: maxOrder, minFreq: minFreq, method: method, collapseRepeats: collapse });
       ra.innerHTML = '';
 
       // Header
@@ -13230,7 +13453,7 @@ function runHon(ra, fv) {
         try {
           var ordersInUse = {};
           result.edges.forEach(function(e) { ordersInUse[e.fromOrder] = true; });
-          var trajectories = S.sequences.map(function(seq) { return seq.filter(function(v) { return v != null; }); });
+          var trajectories = seqs.map(function(seq) { return seq.filter(function(v) { return v != null; }); });
           Object.keys(ordersInUse).forEach(function(k) {
             var hk = parseInt(k, 10);
             if (!(hk >= 1)) return;
@@ -16396,7 +16619,7 @@ function _kde(vals, points) {
 function _metricHelp(label) {
   var tip = INDICES_TOOLTIP[label];
   if (!tip) return '';
-  return ' <span title="' + esc(tip) + '" style="display:inline-block;width:13px;height:13px;line-height:13px;text-align:center;border-radius:50%;background:#e5e7eb;color:#666;font-size:9px;font-weight:700;cursor:help;vertical-align:middle">?</span>';
+  return ' <span class="help-tip-inline" data-no-export title="' + esc(tip) + '" style="display:inline-block;width:13px;height:13px;line-height:13px;text-align:center;border-radius:50%;background:#e5e7eb;color:#666;font-size:9px;font-weight:700;cursor:help;vertical-align:middle">?</span>';
 }
 
 // Render one boxplot per metric, with each group as a side-by-side box inside it.
@@ -17908,10 +18131,24 @@ function captureFormValues(id) {
   return vals;
 }
 
+// Method pickers whose change swaps in another settings form. Restoring the
+// picker's value fires no change event, so the form stayed the default
+// method's and every saved setting of the chosen method was dropped on
+// reopen — and Run then used that method's defaults (found with PRV-86,
+// 2026-11-18: HON "By group" came back empty).
+var SUBFORM_PICKERS = { hoMethod: 'swapHighOrderSubform', pmMethod: 'swapProcessMiningSubform' };
 function restoreFormValues(id, vals) {
   if (!vals) return;
   var el = document.getElementById(id);
   if (!el) return;
+  // The method first, so its own form is there for the fields that follow.
+  Object.keys(SUBFORM_PICKERS).forEach(function(k) {
+    if (vals[k] == null) return;
+    var picker = el.querySelector('[data-field="' + k + '"]');
+    if (!picker || picker.value === vals[k]) return;
+    picker.value = vals[k];
+    if (picker.value === vals[k]) window[SUBFORM_PICKERS[k]](picker, id);
+  });
   Object.keys(vals).forEach(function(k) {
     if (k === '_measures') return;
     var f = el.querySelector('[data-field="' + k + '"]');
@@ -18084,7 +18321,7 @@ window.unpublish = function() {
 // Flush persistence NOW, bypassing the 2s autosave debounce — so a seal/lock
 // can't be lost by an immediate refresh (the root cause of "lock disappears").
 // Per-notebook build id — injected by build-notebook.cjs; 'dev' under vite.
-var CARM_BUILD = 'fc7ad9c·20261117';
+var CARM_BUILD = '8483f85·20261118';
 if (/^__CARM/.test(CARM_BUILD)) CARM_BUILD = 'dev';
 
 // ── Reproducibility certificate (Certified tier) ───────────────────────────
@@ -18477,6 +18714,11 @@ function persistCurrentToLibrary() {
 // Download .html — the portable save. Filename is the notebook title.
 function save() {
   document.querySelectorAll('.file-drop.show,.export-drop.show').forEach(function(d) { d.classList.remove('show'); });
+  _downloadText(notebookFileHtml(), safeFilename(S.notebookTitle || 'notebook') + '.html', 'text/html');
+  flashSaved();
+}
+// The whole notebook as a self-contained .html file, its state embedded.
+function notebookFileHtml() {
   var state = persistCurrentToLibrary();
   // Escape close-tag sequences for embedding (ported from carm-sna):
   // noteHTML/cachedHTML carry raw HTML, and a literal script close tag
@@ -18487,11 +18729,7 @@ function save() {
   stateEl.textContent = JSON.stringify(state).replace(/<\//g, '<\\/');
   var html = '<!DOCTYPE html>\n' + document.documentElement.outerHTML;
   stateEl.textContent = '';
-  var blob = new Blob([html], { type: 'text/html' });
-  var a = document.createElement('a'); a.href = URL.createObjectURL(blob);
-  a.download = safeFilename(S.notebookTitle || 'notebook') + '.html';
-  a.click(); URL.revokeObjectURL(a.href);
-  flashSaved();
+  return html;
 }
 document.getElementById('btn-save').addEventListener('click', save);
 
@@ -18532,23 +18770,255 @@ function autoSave() {
   persistCurrentToLibrary(); flashSaved();
 }
 
-// Save As — duplicate the current notebook into a NEW id with a new title.
+// Save As — the notebook becomes a NEW notebook (new id, new title; the
+// original stays in the library) and is written to a file under that name.
+// It used to only retitle the in-browser copy behind a prompt(): nothing
+// visible happened, and where prompt() is blocked nothing happened at all
+// (PRV-86). Where the browser has a system Save dialog (Chrome, Edge) that
+// dialog picks the folder and name; elsewhere an in-page dialog asks for the
+// name and the file downloads like Save.
 function saveAs() {
+  document.querySelectorAll('.file-drop.show,.export-drop.show').forEach(function(d) { d.classList.remove('show'); });
   var suggested = S.notebookTitle ? (S.notebookTitle + ' (copy)') : nbDefaultTitle();
-  var title = prompt('Save as — new notebook title:', suggested);
-  if (!title || !title.trim()) return;
-  persistCurrentToLibrary(); // ensure current is safe
+  if (typeof window.showSaveFilePicker === 'function') {
+    var suggestedFile = safeFilename(suggested) + '.html';
+    // Called straight from the click: the picker needs the user's gesture.
+    window.showSaveFilePicker({
+      suggestedName: suggestedFile,
+      types: [{ description: 'CarmNote notebook', accept: { 'text/html': ['.html'] } }]
+    }).then(function(handle) {
+      // The notebook becomes the copy only once the file can be written, and
+      // goes back to being the original if the write fails: a failed Save As
+      // must not leave a renamed notebook that exists in no file.
+      return handle.createWritable().then(function(w) {
+        var prev = { id: S.notebookId, title: S.notebookTitle };
+        // Keep the typed-in title when the file name is the suggested one.
+        var title = handle.name === suggestedFile ? suggested : handle.name.replace(/\.html?$/i, '');
+        _adoptSaveAsTitle(title);
+        return Promise.resolve().then(function() { return w.write(notebookFileHtml()); })
+          .then(function() { return w.close(); })
+          .then(function() { flashSaved('Saved as ' + handle.name); }, function(err) {
+            nbRemoveLibraryEntry(S.notebookId);
+            S.notebookId = prev.id; S.notebookTitle = prev.title;
+            persistCurrentToLibrary(); updateTitleInput();
+            if (w.abort) w.abort().catch(function() {});
+            flashSaved('⚠ Save As failed: ' + (err && err.message || err));
+          });
+      }, function(err) {
+        flashSaved('⚠ Save As could not write ' + handle.name + ': ' + (err && err.message || err));
+      });
+    }, function(err) {
+      if (err && err.name === 'AbortError') return;   // the user cancelled the dialog
+      // The system dialog itself is refused here (a sandboxed frame, a
+      // policy): ask for the name in the page and download instead.
+      console.warn('[carm-tna] system Save dialog refused (' + (err && err.name) + '); using the in-page dialog.');
+      openSaveAsDialog(suggested);
+    });
+    return;
+  }
+  openSaveAsDialog(suggested);
+}
+function _adoptSaveAsTitle(title) {
+  persistCurrentToLibrary();   // the original keeps its own slot
   S.notebookId = nbGenId();
-  S.notebookTitle = title.trim();
+  S.notebookTitle = title;
   persistCurrentToLibrary();
   updateTitleInput();
 }
+function openSaveAsDialog(suggested) {
+  var m = document.getElementById('saveas-modal');
+  var input = document.getElementById('saveas-name');
+  if (!m || !input) return;
+  input.value = suggested;
+  _saveAsShowFile();
+  m.classList.add('show');
+  a11yOpenModal(m, closeSaveAsDialog, input);
+  input.select();
+}
+function closeSaveAsDialog() {
+  var m = document.getElementById('saveas-modal');
+  if (m) { m.classList.remove('show'); a11yCloseModal(m); }
+}
+function _saveAsShowFile() {
+  var input = document.getElementById('saveas-name'), out = document.getElementById('saveas-file');
+  var ok = document.getElementById('btn-saveas-ok');
+  var t = (input.value || '').trim();
+  out.textContent = t ? 'File: ' + safeFilename(t) + '.html' : 'Type a name for the copy.';
+  ok.disabled = !t;
+}
+function confirmSaveAs() {
+  var t = (document.getElementById('saveas-name').value || '').trim();
+  if (!t) { _saveAsShowFile(); return; }
+  closeSaveAsDialog();
+  _adoptSaveAsTitle(t);
+  save();
+  flashSaved('Saved as ' + safeFilename(t) + '.html');
+}
+document.getElementById('saveas-name').addEventListener('input', _saveAsShowFile);
+document.getElementById('saveas-name').addEventListener('keydown', function(e) {
+  if (e.key === 'Enter') { e.preventDefault(); confirmSaveAs(); }
+});
+document.getElementById('btn-saveas-ok').addEventListener('click', confirmSaveAs);
+document.getElementById('btn-saveas-cancel').addEventListener('click', closeSaveAsDialog);
+document.getElementById('btn-saveas-close').addEventListener('click', closeSaveAsDialog);
+window.saveAs = saveAs;
+
+// ===========================================================================
+// SESSION FILE — File ▸ Export Session (.json) / Import Session (PRV-86: a
+// user missed the JSON session the CarmNote Analytics core offers). The same
+// envelope as the core's *.carmsession.json (kind, v, notebookType), so each
+// app recognises — and refuses — the other's files. A session is the RECIPE:
+// data, column mapping and every cell's settings. No results (each import
+// recomputes them on this build), no identity (each import is a new notebook)
+// and no lock (as in the core, it opens editable; the exporter is told).
+// ===========================================================================
+var SESSION_KIND = 'carmnote-session';
+var SESSION_TYPE = 'carm-tna';
+var NB_APP_VERSION = '2.4.4';
+
+function sessionPayload() {
+  var st = captureNotebookState();
+  // A file has no browser-storage quota: always the full rows, when they exist.
+  if (S.data && !S.data._rowsOmitted) {
+    st.data = { columns: S.data.columns, rows: S.data.rows, filename: S.data.filename };
+  }
+  delete st.notebookId; delete st.integrity;
+  st.published = false; st.sealed = false; st.sealedAt = null; st.lockTier = 'editable';
+  st.cells = (st.cells || []).map(function(c) {
+    var o = Object.assign({}, c);
+    delete o.cachedHTML; o.locked = false;
+    return o;
+  });
+  return {
+    kind: SESSION_KIND, v: 1,
+    notebookType: SESSION_TYPE, notebookId: SESSION_TYPE,
+    appVersion: NB_APP_VERSION,
+    savedAt: new Date().toISOString(),
+    title: S.notebookTitle || '',
+    state: st
+  };
+}
+
+function exportSession() {
+  var payload = sessionPayload();
+  var name = safeFilename(S.notebookTitle || 'session') + '.carmsession.json';
+  _downloadText(JSON.stringify(payload, null, 2), name, 'application/json');
+  if (S.data && S.data._rowsOmitted) {
+    flashSaved('⚠ Session exported without data rows (too large for this browser to keep); load the file again after importing');
+  } else if (S.lockTier && S.lockTier !== 'editable') {
+    flashSaved('Session exported — the recipe only: the ' + S.lockTier + ' protection is not included');
+  } else {
+    flashSaved('Session exported: ' + name);
+  }
+}
+
+// Checks a parsed session file. Returns the notebook state to open, or
+// throws an Error whose message tells the user what is wrong with the file.
+function sessionStateFromPayload(payload) {
+  if (!payload || payload.kind !== SESSION_KIND || !payload.state) {
+    throw new Error('That file is not a CarmNote TNA session (*.carmsession.json).');
+  }
+  var type = payload.notebookType || payload.notebookId;
+  if (type && type !== SESSION_TYPE) {
+    throw new Error('That session was written by "' + type + '", not CarmNote TNA; its cells do not belong to this notebook.');
+  }
+  if (!_isCompatibleSave(payload.state)) {
+    throw new Error('That session uses notebook format ' + payload.state.version +
+      '; this build reads format ' + NOTEBOOK_FORMAT_VERSION + '.');
+  }
+  // The shape applyState relies on, checked before anything is touched: a
+  // file that fails half-way through applyState leaves a mixed notebook.
+  var ps = payload.state, bad = null;
+  if (ps.cells != null && !Array.isArray(ps.cells)) bad = 'its cells are not a list';
+  else if ((ps.cells || []).some(function(c) { return !c || typeof c.type !== 'string' || typeof c.id !== 'string'; })) bad = 'a cell has no type or id';
+  else if (ps.data != null && (typeof ps.data !== 'object' || !Array.isArray(ps.data.columns) || !Array.isArray(ps.data.rows) ||
+           typeof ps.data.filename !== 'string')) bad = 'its data is not a table (columns, rows, filename)';
+  else if (ps.data != null && ps.data.rows.some(function(r) { return !r || typeof r !== 'object'; })) bad = 'a data row is not a record';
+  else if (ps.columns != null && typeof ps.columns !== 'object') bad = 'its column mapping is not readable';
+  if (bad) throw new Error('That session file is damaged: ' + bad + '.');
+  var st = Object.assign({}, ps);
+  st.notebookId = nbGenId();   // a new notebook, never a takeover of a library slot
+  st.notebookTitle = payload.title || st.notebookTitle || '';
+  st.published = false; st.sealed = false; st.lockTier = 'editable'; st.integrity = null;
+  st.cells = (st.cells || []).map(function(c) { return Object.assign({}, c, { cachedHTML: '', locked: false }); });
+  return st;
+}
+
+function importSession() {
+  var input = document.createElement('input');
+  input.type = 'file';
+  input.accept = '.json,application/json';
+  input.style.display = 'none';
+  input.addEventListener('change', function() {
+    var f = input.files && input.files[0];
+    input.remove();
+    if (!f) return;
+    f.text().then(function(text) {
+      var payload;
+      try { payload = JSON.parse(text); }
+      catch (e) { throw new Error('That file is not valid JSON (' + e.message + ').'); }
+      openSessionState(sessionStateFromPayload(payload), payload.appVersion);
+    }).catch(function(err) {
+      flashSaved('⚠ Import failed: ' + (err && err.message || err));
+    });
+  });
+  document.body.appendChild(input);
+  input.click();
+}
+
+// Opens a checked session state as the current notebook and re-runs every
+// cell, Network cells first, so every number comes from this build.
+function openSessionState(st, fromVersion) {
+  persistCurrentToLibrary();   // the notebook open now keeps its own slot
+  // Shape is checked by sessionStateFromPayload, but should applyState still
+  // fail, put the open notebook back exactly as it was (its in-memory data
+  // included, which browser storage may not hold) rather than leave a mix.
+  var before = Object.assign({}, S);
+  try {
+    applyState(st);
+  } catch (err) {
+    var _rb = document.getElementById('carm-restore-banner');
+    if (_rb) _rb.remove();
+    Object.keys(S).forEach(function(k) { if (!(k in before)) delete S[k]; });
+    Object.assign(S, before);
+    document.body.classList.toggle('published', !!S.published);
+    document.body.classList.toggle('sealed', !!S.sealed);
+    renderAllCells();
+    renderLockMenuState();
+    updateTitleInput();
+    throw new Error('That session could not be opened (' + (err && err.message || err) + '); your notebook is unchanged.');
+  }
+  persistCurrentToLibrary();
+  updateTitleInput();
+  var from = fromVersion && fromVersion !== NB_APP_VERSION ? ' from ' + fromVersion : '';
+  if (!(S.sequences && S.sequences.length)) {
+    flashSaved('⚠ Session imported' + from + ' without its data rows — load the data file to run the cells');
+    return;
+  }
+  // Say what happened only once every cell has run, and count the ones that
+  // ended in an error instead of claiming they all reproduced (audit).
+  var runnable = S.cells.filter(function(c) { return c.type !== 'text' && !c.locked; });
+  flashSaved('Session imported' + from + ' — re-running ' + runnable.length + ' cell' + (runnable.length === 1 ? '' : 's') + '…');
+  return Promise.resolve(_rerunCells(true)).then(function() {
+    var failed = runnable.filter(function(c) {
+      var ra = document.querySelector('[data-result="' + c.id + '"]');
+      return !ra || !ra.innerHTML.trim() || !!ra.querySelector('div[style*="#e15759"], div[style*="#dc2626"]');
+    });
+    flashSaved(failed.length
+      ? '⚠ Session imported' + from + ' — ' + failed.length + ' of ' + runnable.length + ' cells did not run: ' +
+        failed.map(function(c) { return c.id; }).join(', ')
+      : 'Session imported' + from + ' — ' + runnable.length + ' cell' + (runnable.length === 1 ? '' : 's') + ' re-run');
+  });
+}
+window.exportSession = exportSession;
+window.importSession = importSession;
 
 // New Notebook — create a fresh empty notebook without disturbing the current.
 // The current was already autosaved to its own slot; just switch identity.
 function newNotebook() {
   persistCurrentToLibrary();
   S.data = null; S.sequences = null; S.model = null; S.groupModel = null; S.groupLabels = null;
+  DERIVED_STATE_KEYS.forEach(function(k) { S[k] = null; });   // clusterings too
   S.columns = null; S.cells = []; S.published = false;
   S.gapThreshold = -1; S.nid = 0;
   S.notebookId = nbGenId();
@@ -18571,6 +19041,7 @@ function newNotebook() {
 function clearAll() {
   if ((S.data || S.cells.length) && !confirm('Clear data and cells for "' + (S.notebookTitle || 'this notebook') + '"? The notebook stays in your library.')) return;
   S.data = null; S.sequences = null; S.model = null; S.groupModel = null; S.groupLabels = null;
+  DERIVED_STATE_KEYS.forEach(function(k) { S[k] = null; });   // clusterings too
   S.columns = null; S.cells = []; S.published = false;
   S.gapThreshold = -1; S.nid = 0;
   S.sealed = false;
@@ -18638,24 +19109,185 @@ function _tnaInsertTable() {
 // Code cells were removed in 2026-05; legacy cells are migrated to text on load.
 
 // ===========================================================================
+// EXPORT — what a result looks like on paper
+// ===========================================================================
+// Every document export (Word, HTML report, Copy All, a cell's Word export)
+// goes through exportableResult(): the result's on-screen HTML minus its
+// controls, with each table at full length and each figure as a picture.
+// Copying innerHTML as-is put the figure toolbar's buttons and the SVG's text
+// nodes into Word — "CopyPNGSVG⛶ Fullscreen⚙ Settings.09.11.19…" where the
+// network should be (PRV-86, 2026-11-18).
+//
+// Never on paper: the same controls the print stylesheet hides, plus form
+// controls, the screen-reader transcript of each chart and data islands.
+var EXPORT_DROP_SELECTOR = [
+  'button', 'select', 'input', 'textarea', 'script', 'noscript',
+  '.plot-bar', '.cnr-fig-bar', '.view-toggle', '.view-head', '.run-tools',
+  '.carm-tbl-toolbar', '.carm-exp-wrap', '.carm-exp-menu', '.carm-net-settings-chip',
+  '.net-fs-close', '.eng-busy', 'details.a11y-chart-transcript', '.sr-only', '.help-tip', '.help-bubble', '[data-no-export]'
+].join(',');
+
+// `figures`: 'png' → each <svg> becomes <img src="data:image/png…"> (Word,
+// clipboard); 'svg' → each <svg> becomes a standalone SVG with its computed
+// styles inlined (HTML report: stays vector and needs no notebook CSS).
+// Resolves { html, figures, failed }; a figure that cannot be drawn is
+// replaced by a visible note and counted in `failed`, never dropped silently.
+async function exportableResult(ra, figures) {
+  var clone = ra.cloneNode(true);
+  var live = ra.querySelectorAll('*'), copy = clone.querySelectorAll('*');
+  var drop = [], svgs = [], tables = [];
+  for (var i = 0; i < live.length && i < copy.length; i++) {
+    var el = live[i];
+    var tag = el.tagName.toLowerCase();
+    var inSvg = tag !== 'svg' && el.closest('svg');
+    if (inSvg) continue;
+    if (el.matches(EXPORT_DROP_SELECTOR)) { drop.push(copy[i]); continue; }
+    // Hidden on screen by its own style (the Table half of a Figure/Table
+    // view, a closed panel): not part of what the reader chose to see.
+    // Checked on the element itself, so a collapsed cell still exports.
+    if (getComputedStyle(el).display === 'none') { drop.push(copy[i]); continue; }
+    if (tag === 'svg') svgs.push([el, copy[i]]);
+    else if (tag === 'table' && el.__carmFullData) tables.push([el, copy[i]]);
+  }
+  drop.forEach(function(n) { if (n.parentNode) n.parentNode.removeChild(n); });
+  tables.forEach(function(p) { if (clone.contains(p[1])) p[1].outerHTML = _carmFullTableHtml(p[0]); });
+  var failed = 0, made = 0;
+  for (var k = 0; k < svgs.length; k++) {
+    var src = svgs[k][0], dst = svgs[k][1];
+    if (!clone.contains(dst)) continue;   // inside something dropped
+    if (figures === 'svg') {
+      try { dst.outerHTML = cnrSvgToString(src); made++; }
+      catch (e) { failed++; dst.outerHTML = _exportFigureNote(e); }
+      continue;
+    }
+    try {
+      var png = await cnrSvgToPngDataUrl(src, 2);
+      // Fit the page: Word places images at their pixel size, and a 900 px
+      // network runs off a 6.5 in (624 px) text column.
+      var w = Math.min(png.width, 620), h = Math.round(png.height * (w / png.width));
+      dst.outerHTML = '<img src="' + png.dataUrl + '" width="' + Math.round(w) + '" height="' + h +
+        '" alt="' + esc(src.getAttribute('aria-label') || 'Figure').replace(/"/g, '&quot;') + '" style="max-width:100%;height:auto">';
+      made++;
+    } catch (e2) {
+      failed++;
+      dst.outerHTML = _exportFigureNote(e2);
+    }
+  }
+  return { html: clone.innerHTML, figures: made, failed: failed };
+}
+function _exportFigureNote(err) {
+  return '<p style="color:#b91c1c;font-style:italic">[Figure not exported: ' + esc(err && err.message || String(err)) + ']</p>';
+}
+
+// The exportable body of every cell, in order, as one HTML string.
+async function exportableNotebookBody(figures) {
+  var parts = [], made = 0, failed = 0;
+  for (var c = 0; c < S.cells.length; c++) {
+    var cs = S.cells[c];
+    var el = document.getElementById(cs.id);
+    if (!el) continue;
+    if (cs.type === 'text') {
+      var ne = el.querySelector('.note-editor');
+      var note = ne ? ne.innerHTML : (cs.noteHTML || '');
+      if (note.trim()) parts.push('<div>' + note + '</div>');
+      continue;
+    }
+    var ra = el.querySelector('[data-result="' + cs.id + '"]');
+    if (!ra || !ra.innerHTML.trim() || _resPending(ra)) continue;
+    var r = await exportableResult(ra, figures);
+    made += r.figures; failed += r.failed;
+    parts.push('<div style="margin-bottom:16px">' + r.html + '</div>');
+  }
+  return { html: parts.join('\n'), figures: made, failed: failed };
+}
+
+// Word reads a .doc written as MHTML (a web page with its pictures packed in,
+// the format Word itself writes for "Single File Web Page"). Images are MIME
+// parts the page refers to by location; Word does not show data: URLs.
+var WORD_DOC_STYLE = 'body{font-family:Calibri,Arial,sans-serif;font-size:11pt}' +
+  'table{border-collapse:collapse;width:100%;font-family:Times New Roman,serif;font-size:12pt;margin:8pt 0}' +
+  'th{border-top:2px solid #000;border-bottom:1px solid #000;padding:6px 10px;text-align:left;font-weight:bold}' +
+  'td{padding:5px 10px;border-bottom:1px solid #eee}tbody tr:last-child td{border-bottom:2px solid #000}';
+function buildWordDocument(bodyHtml) {
+  var parts = [], n = 0;
+  // Figures (PNG) and pictures pasted into notes (JPEG, GIF, …) alike.
+  var html = bodyHtml.replace(/src="data:image\/(png|jpeg|jpg|gif|bmp);base64,([A-Za-z0-9+\/=]+)"/g, function(_m, kind, b64) {
+    n++;
+    var ext = kind === 'jpeg' ? 'jpg' : kind;
+    var name = 'image' + n + '.' + ext;
+    parts.push({ name: name, b64: b64, type: 'image/' + (kind === 'jpg' ? 'jpeg' : kind) });
+    return 'src="carm_files/' + name + '"';
+  });
+  var page = '<html xmlns:o="urn:schemas-microsoft-com:office:office" xmlns:w="urn:schemas-microsoft-com:office:word" ' +
+    'xmlns="http://www.w3.org/TR/REC-html40"><head><meta http-equiv="Content-Type" content="text/html; charset=utf-8">' +
+    '<style>' + WORD_DOC_STYLE + '</style></head><body>' + html + '</body></html>';
+  var B = '----=_CarmNote_' + Date.now().toString(36);
+  var out = [
+    'MIME-Version: 1.0',
+    'Content-Type: multipart/related; boundary="' + B + '"; type="text/html"',
+    '',
+    '--' + B,
+    'Content-Type: text/html; charset="utf-8"',
+    'Content-Transfer-Encoding: quoted-printable',
+    'Content-Location: file:///C:/carm/carm.htm',
+    '',
+    _quotedPrintable(page)
+  ];
+  parts.forEach(function(p) {
+    out.push('', '--' + B, 'Content-Type: ' + p.type, 'Content-Transfer-Encoding: base64',
+      'Content-Location: file:///C:/carm/carm_files/' + p.name, '');
+    for (var o = 0; o < p.b64.length; o += 76) out.push(p.b64.slice(o, o + 76));
+  });
+  out.push('', '--' + B + '--', '');
+  return out.join('\r\n');
+}
+// RFC 2045 quoted-printable of a string's UTF-8 bytes, lines ≤ 76 chars.
+function _quotedPrintable(str) {
+  var bytes = new TextEncoder().encode(str.replace(/\r?\n/g, '\n'));
+  var lines = [], line = '';
+  function put(tok) {
+    if (line.length + tok.length > 75) { lines.push(line + '='); line = ''; }
+    line += tok;
+  }
+  for (var i = 0; i < bytes.length; i++) {
+    var b = bytes[i];
+    if (b === 10) { lines.push(line); line = ''; continue; }
+    var isLast = (i + 1 >= bytes.length) || bytes[i + 1] === 10;
+    var plain = (b >= 33 && b <= 126 && b !== 61) || ((b === 32 || b === 9) && !isLast);
+    put(plain ? String.fromCharCode(b) : '=' + (b < 16 ? '0' : '') + b.toString(16).toUpperCase());
+  }
+  lines.push(line);
+  return lines.join('\r\n');
+}
+function _downloadText(text, filename, type) {
+  var blob = new Blob([text], { type: type });
+  var a = document.createElement('a');
+  a.href = URL.createObjectURL(blob);
+  a.download = filename;
+  document.body.appendChild(a); a.click(); a.remove();
+  setTimeout(function() { URL.revokeObjectURL(a.href); }, 1000);
+}
+function _exportFlash(what, r) {
+  flashSaved(r.failed
+    ? '⚠ ' + what + ': ' + r.failed + ' figure' + (r.failed === 1 ? '' : 's') + ' could not be included'
+    : what + ' ready');
+}
+
+// ===========================================================================
 // EXPORT REPORT
 // ===========================================================================
 function exportReport() {
+  return _exportReport().catch(function(err) { flashSaved('⚠ HTML report failed: ' + (err && err.message || err)); });
+}
+async function _exportReport() {
+  var body = await exportableNotebookBody('svg');
   var parts = ['<!DOCTYPE html><html><head><meta charset="utf-8"><title>TNA Report</title>',
     '<style>body{font-family:-apple-system,sans-serif;max-width:800px;margin:0 auto;padding:20px}table{border-collapse:collapse;width:100%;margin:12px 0}th{border-top:2px solid #000;border-bottom:1px solid #999;padding:6px 10px;text-align:left;font-size:11px;font-weight:700}td{padding:5px 10px;border-bottom:1px solid #eee}tbody tr:last-child td{border-bottom:2px solid #000}svg{max-width:100%;height:auto}h2{margin-top:24px;font-size:16px}</style></head><body>',
-    '<h1>' + esc(S.data ? S.data.filename.replace(/\.\w+$/,'') : 'TNA Report') + '</h1>'];
-  S.cells.forEach(function(cs) {
-    var el = document.getElementById(cs.id);
-    if (!el) return;
-    if (cs.type === 'text' && cs.noteHTML) { parts.push('<div>' + cs.noteHTML + '</div>'); return; }
-    var ra = el.querySelector('[data-result="' + cs.id + '"]');
-    if (ra && ra.innerHTML.trim() && !_resPending(ra)) { parts.push('<div style="margin-bottom:16px">' + ra.innerHTML + '</div>'); }
-  });
-  parts.push('</body></html>');
-  var blob = new Blob([parts.join('\n')], { type: 'text/html' });
-  var a = document.createElement('a'); a.href = URL.createObjectURL(blob);
-  a.download = (S.data ? S.data.filename.replace(/\.\w+$/,'') : 'report') + '-report.html';
-  a.click(); URL.revokeObjectURL(a.href);
+    '<h1>' + esc(S.data ? S.data.filename.replace(/\.\w+$/,'') : 'TNA Report') + '</h1>',
+    body.html,
+    '</body></html>'];
+  _downloadText(parts.join('\n'), (S.data ? S.data.filename.replace(/\.\w+$/,'') : 'report') + '-report.html', 'text/html');
+  _exportFlash('HTML report', body);
 }
 
 // ===========================================================================
@@ -18693,12 +19325,14 @@ function exportCell(id, action) {
         tb += '<tr>'; r.forEach(function(v) { tb += '<td>' + esc(String(v == null ? '' : v)) + '</td>'; }); tb += '</tr>';
       });
       inner = '<table><thead><tr>' + th + '</tr></thead><tbody>' + tb + '</tbody></table>';
+      _downloadText(buildWordDocument(inner), 'cell.doc', 'application/msword');
     } else {
-      inner = ra.innerHTML;
+      // A figure cell: pictures, not the SVG's text (PRV-86).
+      exportableResult(ra, 'png').then(function(r) {
+        _downloadText(buildWordDocument(r.html), 'cell.doc', 'application/msword');
+        _exportFlash('Word document', r);
+      }, function(err) { flashSaved('\u26a0 Word export failed: ' + (err && err.message || err)); });
     }
-    var html = '\ufeff<html xmlns:o="urn:schemas-microsoft-com:office:office" xmlns:w="urn:schemas-microsoft-com:office:word"><head><meta charset="utf-8"><style>table{border-collapse:collapse;width:100%;font-family:Times New Roman,serif;font-size:12pt}th{border-top:2px solid #000;border-bottom:1px solid #000;padding:6px 10px;text-align:left;font-weight:bold}td{padding:5px 10px;border-bottom:1px solid #eee}tbody tr:last-child td{border-bottom:2px solid #000}</style></head><body>' + inner + '</body></html>';
-    var blob = new Blob([html], { type: 'application/msword' });
-    var a = document.createElement('a'); a.href = URL.createObjectURL(blob); a.download = 'cell.doc'; a.click();
   } else if (action === 'png' || action === 'svg') {
     var fig = ra.querySelector('.net-plot');
     if (!fig) { var anySvg = ra.querySelector('svg'); fig = anySvg ? (anySvg.closest('.net-plot') || anySvg.parentNode) : null; }
@@ -18708,65 +19342,46 @@ function exportCell(id, action) {
 }
 
 function copyAll() {
-  var allHTML = '';
-  S.cells.forEach(function(cs) {
-    if (cs.type === 'text') {
-      var el = document.getElementById(cs.id);
-      if (el) { var ne = el.querySelector('.note-editor'); if (ne) allHTML += ne.innerHTML + '<br>'; }
-      else if (cs.noteHTML) allHTML += cs.noteHTML + '<br>';
-    } else {
-      var el = document.getElementById(cs.id);
-      if (el) { var ra = el.querySelector('[data-result="' + cs.id + '"]'); if (ra) allHTML += ra.innerHTML; }
-    }
+  // Any rendered output at all? Checked before the async work so an empty
+  // notebook answers at once instead of writing an empty clipboard.
+  var any = S.cells.some(function(cs) {
+    var el = document.getElementById(cs.id);
+    if (!el) return false;
+    if (cs.type === 'text') { var ne = el.querySelector('.note-editor'); return !!((ne ? ne.innerHTML : cs.noteHTML) || '').trim(); }
+    var ra = el.querySelector('[data-result="' + cs.id + '"]');
+    return !!(ra && ra.innerHTML.trim() && !_resPending(ra));
   });
-  // Nothing rendered yet (cells added but never run) — a silent return here
-  // reads as a broken menu item, so say what happened.
-  if (!allHTML) { flashSaved('Nothing to copy — run a cell first'); return; }
-  var plain = allHTML.replace(/<[^>]+>/g, ' ').replace(/\s+/g, ' ').trim();
-  if (navigator.clipboard && navigator.clipboard.write) {
-    navigator.clipboard.write([new ClipboardItem({
-      'text/html': new Blob([allHTML], { type: 'text/html' }),
-      'text/plain': new Blob([plain], { type: 'text/plain' })
-    })]);
-  } else if (navigator.clipboard) {
-    navigator.clipboard.writeText(plain);
+  if (!any) { flashSaved('Nothing to copy — run a cell first'); return; }
+  // Figures go to the clipboard as pictures and controls stay behind (PRV-86).
+  // The ClipboardItem takes promises so the write is registered inside the
+  // click, as Safari requires, while the figures are still being drawn.
+  var bodyP = exportableNotebookBody('png');
+  var htmlP = bodyP.then(function(b) { return new Blob([b.html], { type: 'text/html' }); });
+  var textP = bodyP.then(function(b) {
+    var plain = b.html.replace(/<img[^>]*>/g, ' [figure] ').replace(/<[^>]+>/g, ' ').replace(/\s+/g, ' ').trim();
+    return new Blob([plain], { type: 'text/plain' });
+  });
+  var done = function() { bodyP.then(function(b) { _exportFlash('Copied', b); }); };
+  var fail = function(err) { flashSaved('⚠ Copy failed: ' + (err && err.message || err)); };
+  if (navigator.clipboard && navigator.clipboard.write && typeof ClipboardItem !== 'undefined') {
+    navigator.clipboard.write([new ClipboardItem({ 'text/html': htmlP, 'text/plain': textP })]).then(done, fail);
+  } else if (navigator.clipboard && navigator.clipboard.writeText) {
+    textP.then(function(b) { return b.text(); }).then(function(t) { return navigator.clipboard.writeText(t); }).then(done, fail);
+  } else {
+    fail(new Error('this browser gives no clipboard access'));
   }
 }
 
 function exportDoc() {
+  return _exportDoc().catch(function(err) { flashSaved('⚠ Word export failed: ' + (err && err.message || err)); });
+}
+async function _exportDoc() {
   var title = (S.data ? S.data.filename : 'TNA Report').replace(/\.\w+$/, '');
-  var body = '<h1>' + esc(title) + '</h1>';
-  body += '<p style="font-size:11px;color:#666">Generated by CarmNote TNA on ' + new Date().toLocaleDateString() + '</p>';
-  S.cells.forEach(function(cs) {
-    var el = document.getElementById(cs.id);
-    if (!el) return;
-    if (cs.type === 'text') {
-      var ne = el.querySelector('.note-editor');
-      if (ne) body += '<div>' + ne.innerHTML + '</div>';
-    } else {
-      var ra = el.querySelector('[data-result="' + cs.id + '"]');
-      if (ra) {
-        // Swap every enhanced table for its FULL data-backed version so the
-        // report's tables are never clipped by pagination / truncation.
-        var clone = ra.cloneNode(true);
-        var liveT = ra.querySelectorAll('table.apa-table');
-        var cloneT = clone.querySelectorAll('table.apa-table');
-        for (var ti = 0; ti < cloneT.length; ti++) {
-          if (liveT[ti] && liveT[ti].__carmFullData && typeof _carmFullTableHtml === 'function') {
-            cloneT[ti].outerHTML = _carmFullTableHtml(liveT[ti]);
-          }
-        }
-        body += clone.innerHTML;
-      }
-    }
-  });
-  var html = '\ufeff<html xmlns:o="urn:schemas-microsoft-com:office:office" xmlns:w="urn:schemas-microsoft-com:office:word"><head><meta charset="utf-8"><style>table{border-collapse:collapse;width:100%;font-family:Times New Roman,serif;font-size:12pt}th{border-top:2px solid #000;border-bottom:1px solid #000;padding:6px 10px;text-align:left;font-weight:bold}td{padding:5px 10px;border-bottom:1px solid #eee}tbody tr:last-child td{border-bottom:2px solid #000}</style></head><body>' + body + '</body></html>';
-  var blob = new Blob([html], { type: 'application/msword' });
-  var a = document.createElement('a');
-  a.href = URL.createObjectURL(blob);
-  a.download = esc(title) + '.doc';
-  a.click();
-  URL.revokeObjectURL(a.href);
+  var body = await exportableNotebookBody('png');
+  var head = '<h1>' + esc(title) + '</h1>' +
+    '<p style="font-size:9pt;color:#666">Generated by CarmNote TNA on ' + esc(new Date().toLocaleDateString()) + '</p>';
+  _downloadText(buildWordDocument(head + body.html), safeFilename(title) + '.doc', 'application/msword');
+  _exportFlash('Word document', body);
 }
 
 async function runAll() {
@@ -19045,6 +19660,8 @@ function showSequenceDataModal() {
     if (action === 'new') newNotebook();
     else if (action === 'open') openNotebookPicker();
     else if (action === 'save-as') saveAs();
+    else if (action === 'export-session') exportSession();
+    else if (action === 'import-session') importSession();
     else if (action === 'delete') deleteCurrentNotebook();
     else if (action === 'load') $fi.click();
     else if (action === 'sample') openSampleGenerator();
@@ -19425,11 +20042,11 @@ function applyExperimentalFilter() {
   var tag = document.getElementById('nb-version-tag');
   if (tag) {
     if (on) {
-      tag.innerHTML = '2.4.3j·B';
+      tag.innerHTML = '2.4.4j·B';
       tag.title = 'Experimental mode on — HON / HONEM / HYPA / Mogen / DFG / Path Dep / Case-dropping (edges) visible';
       tag.style.color = '#e07a3a';
     } else {
-      tag.innerHTML = '2.4.3j';
+      tag.innerHTML = '2.4.4j';
       tag.title = 'Curated mode — Markov Order, Stability, Simplicial Complex (toggle the flask in the header to reveal experimentals)';
       tag.style.color = '#9aa0a6';
     }
@@ -19716,7 +20333,26 @@ function _flagOlderLibraryEntry(id, version) {
   } catch (e) { /* best-effort */ }
 }
 
+// Everything S derives from a notebook's data at run time. A notebook opened
+// on top of another starts with none of it: when the incoming state brings no
+// rows (_rowsOmitted, no data, no mapping) nothing below rebuilds these, and
+// the previous notebook's sequences and model ran the new notebook's cells
+// (found by the PRV-86 audit, 2026-11-18).
+var DERIVED_STATE_KEYS = ['sequences', 'model', 'groupModel', 'groupLabels', 'actorIds', 'sessionIds',
+  'rowSpans', 'eventTimes', 'meta', 'metaCols', 'columnWarnings',
+  'clusterLabels', 'clusterK', 'clusterMethod', 'clusterAssignments', 'clusterSilhouette', 'clusterDissimilarity',
+  'mmmLabels', 'mmmK', 'mmmAssignments'];
 function applyState(sv) {
+  DERIVED_STATE_KEYS.forEach(function(k) { S[k] = null; });
+  // The open notebook's cells leave the page first. renderAllCells() reads
+  // each cell's form and result back from the element with the same id, and
+  // ids repeat across notebooks (c1, c2, …): opening a notebook over another
+  // gave its cells the OTHER notebook's settings and figures (found by the
+  // PRV-86 tests, 2026-11-18).
+  if (typeof $stack !== 'undefined' && $stack) {
+    Array.prototype.slice.call($stack.querySelectorAll('.cell')).forEach(function(c) { c.remove(); });
+  }
+  document.body.classList.remove('published', 'sealed', 'tampered');
   S.notebookId = sv.notebookId || nbGenId();
   // Migrate the legacy literal default ("Untitled notebook") — and any
   // blank — to a fresh memorable name so old library entries stop
@@ -19799,18 +20435,41 @@ function applyState(sv) {
       S.metaCols = result.metaCols || null;
       if (S.sequences && S.sequences.length >= 2) {
         try {
-          S.model = tna(S.sequences, { meta: actorMeta(S.actorIds, S.sequences.length) }); S.model.data = S.sequences;
+          // Rebuild with the notebook's own Network settings (the last Network
+          // cell, as a Run All leaves it), not a default tna(): Type, Scaling,
+          // Prune and START/END must survive a reopen (PRV-86).
+          var _netCells = S.cells.filter(function(c) { return c.type === 'network'; });
+          var _netFv = _netCells.length ? (_netCells[_netCells.length - 1].formValues || {}) : {};
+          S.model = buildNetworkModel(_netFv);
         } catch(me) {
           console.warn('Could not rebuild model:', me);
           _restoreErrors.push({ what: 'network model', msg: String(me && me.message || me) });
         }
-        // Rebuild group model if group column was set
-        if (result.groups && result.groups.length === S.sequences.length && S.model) {
-          var uniqueGroups = []; result.groups.forEach(function(g) { if (uniqueGroups.indexOf(g) < 0) uniqueGroups.push(g); });
-          if (uniqueGroups.length >= 2) {
+        // Clusterings are saved with the column mapping (runClustering /
+        // runMmm keep their labels in S.columns); they come back while they
+        // still label these sequences one to one.
+        if (S.columns && Array.isArray(S.columns._clusterLabels) && S.columns._clusterLabels.length === S.sequences.length) {
+          S.clusterLabels = S.columns._clusterLabels.slice();
+        }
+        if (S.columns && Array.isArray(S.columns._mmmLabels) && S.columns._mmmLabels.length === S.sequences.length) {
+          S.mmmLabels = S.columns._mmmLabels.slice();
+        }
+        // The group model exists only when the notebook ran a Groups cell —
+        // the last one that ran, with its settings and its source — as a Run
+        // All builds it. Mapping a Group column alone never made one in a
+        // session, nor does a Groups cell that was added but never run, so a
+        // reopen must not either: Centrality and the other verbs turn
+        // per-group when one exists (PRV-86 tests and audit, 2026-11-18).
+        var _grpCells = S.cells.filter(function(c) { return c.type === 'group' && c.runtimeMs != null; });
+        if (_grpCells.length && S.model) {
+          var _gFv = _grpCells[_grpCells.length - 1].formValues || {};
+          var _gFrom = _gFv.groupFrom || 'column';
+          var _gCol = _gFv.groupCol || (S.columns && S.columns.group);
+          if (_gFrom !== 'column' || _gCol) {
             try {
-              S.groupModel = groupTna(S.sequences, result.groups, { labels: S.model.labels, meta: actorMeta(S.actorIds, S.sequences.length) });
-              S.groupLabels = result.groups;
+              var _g = buildGroupModel(_gCol, _gFv);
+              S.groupModel = _g.groupModel;
+              S.groupLabels = _g.labels;
             } catch(ge) {
               console.warn('Could not rebuild group model:', ge);
               _restoreErrors.push({ what: 'group model', msg: String(ge && ge.message || ge) });
