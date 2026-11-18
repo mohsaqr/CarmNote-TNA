@@ -13,7 +13,7 @@ the browser on the local machine, and the file works without a server, an
 account or an internet connection.
 
 This guide follows one analysis from an empty notebook to a sealed,
-shareable copy. Every figure is a screenshot of CarmNote TNA 2.3.102
+shareable copy. Every figure is a screenshot of CarmNote TNA 2.5.0
 running on the seeded sample data that the notebook generates itself, and
 every number quoted in the text is read from those screenshots. The
 settings tables list each control with the default it has in that release
@@ -67,78 +67,54 @@ with those packages is checked by the notebook's release tests.
 
 ## Getting the notebook
 
-CarmNote TNA is distributed as four HTML files per release. They combine two
-computational engines with two packagings.
+CarmNote TNA is one HTML file. The file ending in `-min-j.html` on the
+[CarmNote Store](https://carmstore.lacarm.com/#/note/tna) is the standard
+download. It opens in any current browser with a double-click and needs no
+installation, account or internet connection.
 
-| File ending | Engine | Packaging | Typical use |
-|---|---|---|---|
-| `-min-j.html` | JavaScript | minified | Standard download; routine analysis and teaching |
-| `-min-w.html` | WebAssembly | minified | Larger datasets and heavier resampling |
-| `-full-j.html` | JavaScript | readable | Archiving and code review |
-| `-full-w.html` | WebAssembly | readable | Review of the WebAssembly build |
-
-The two engines produce the same results. The WebAssembly build moves
-selected numerical kernels to compiled code, which shortens long
-computations on large data. The minified and readable files contain the same
-application; the readable file is easier to inspect and to compare across
-versions, and the minified file is smaller.
-
-The files are available on the [CarmNote Store](https://carmstore.lacarm.com/#/note/tna),
-on the [CarmNote TNA page](https://lacarm.com/CarmNote/tna/) and in the
-[release repository](https://github.com/mohsaqr/CarmNote-TNA). A downloaded
-file keeps its `.html` extension and opens in any current browser with a
-double-click. When GitHub displays the HTML source instead of downloading
-the file, the Download raw file button retrieves the file itself. The
-version in the file name matches the version badge in the notebook header.
+Each release also has a WebAssembly build (`-min-w.html`), which runs long
+resampling on large data faster and gives the same results, and readable
+copies of both builds (`-full-j.html`, `-full-w.html`) for archiving and
+review. The version in the file name is the version shown in the notebook
+header.
 
 ## The notebook window
 
 <figure>
-<a href="guide/01-start.webp"><img src="guide/01-start.webp" alt="A new notebook. The header carries the title and the controls for the whole notebook; the toolbar below it holds the File menu and the analysis menus; the drop zone and the sample-data button take the first dataset." width="1440" height="900" loading="lazy"></a>
-<figcaption>A new notebook. The header carries the title and the controls for the whole notebook; the toolbar below it holds the File menu and the analysis menus; the drop zone and the sample-data button take the first dataset.</figcaption>
+<a href="guide/01-start.webp" aria-label="Full-size screenshot"><img src="guide/01-start.webp" alt="" width="1440" height="900" loading="lazy"></a>
+<figcaption>A new notebook, ready for data.</figcaption>
 </figure>
 
-A new notebook opens with an empty workspace. The header and the toolbar
-stay at the top of the window while the notebook scrolls.
+A new notebook starts empty. Data enters by dropping a CSV or TSV file on
+the page or with Generate sample data (see [Data](#data)).
 
 <figure>
-<a href="guide/02-header.webp"><img src="guide/02-header.webp" alt="The header and the toolbar." width="1440" height="78" loading="lazy"></a>
-<figcaption>The header and the toolbar.</figcaption>
+<a href="guide/02-header.webp" aria-label="Full-size screenshot"><img src="guide/02-header.webp" alt="" width="1440" height="78" loading="lazy"></a>
+<figcaption>The header and the menu bar.</figcaption>
 </figure>
 
-The header holds the controls that act on the whole notebook.
+The header names the notebook. The name becomes the file name on saving,
+and a click on it renames the notebook. Save (Ctrl+S or Cmd+S) downloads
+the whole notebook, with its data, settings and results, as one `.html`
+file. The browser also keeps a copy of every notebook automatically, so
+closing the tab loses nothing. The build stamp in the middle of the header
+identifies the exact build when a problem is reported.
 
-| Control | Purpose |
-|---|---|
-| Carm TNA and the version badge | The release and engine variant, for example 2.3.102 with `j` for JavaScript. |
-| Notebook title | The name of the notebook. It becomes the file name when the notebook is saved. A new notebook receives a generated name such as "Amber Raven NG4". |
-| Saved indicator | The time of the last automatic save to the browser's storage. |
-| Build ID | The commit and the date of the exact build, as in the figure above. |
-| Standard / Wide / Full | Cycles the width of the notebook column. The choice is remembered by the browser. |
-| Flask | Experimental mode. In this release every method is already listed in the menus, so the flask only marks the version badge. |
-| Accessibility | A large, high-contrast view of the whole notebook. |
-| Save | Downloads the notebook as a self-contained `.html` file (Ctrl+S or Cmd+S). |
+The menu bar holds the rest.
 
-The toolbar below the header holds the commands for content.
+- File opens, saves and exports notebooks. It saves a copy under a new
+  name, writes the analysis to Word or HTML, and exports or imports a
+  session file (see [Saving, opening and sharing](#saving-opening-and-sharing)).
+- Build, Describe, Validate, Analyze, Sequences, Pattern mining, Compare,
+  Process mining and High-order add analysis cells, and Note adds a text
+  cell.
+- Sequence Data shows the sequences the notebook built from the data.
+- Run All runs every unlocked cell again, from top to bottom.
 
-| Control | Purpose |
-|---|---|
-| New | Starts a blank notebook. The current notebook stays in the browser's notebook library. |
-| File | Opening, saving, exporting and resetting (see [Saving, opening and sharing](#saving-opening-and-sharing)). |
-| Build, Describe, Validate, Analyze, Sequences, Pattern mining, Compare | Menus that add analysis cells. |
-| Process mining, High-order, Note | Single commands that add a cell directly. |
-| Sequence Data | Opens the processed sequences in a window. |
-| Run All | Runs every unlocked cell from top to bottom. |
-| Lock icon | Locks or unlocks every cell at once. |
-
-The button in the lower-left corner, Lock: Editable, sets the sharing state
-of the notebook (see [Locking and sealing](#locking-and-sealing)). The
-footer links to About, License and How to cite.
-
-<figure>
-<a href="guide/11c-accessibility-view.webp"><img src="guide/11c-accessibility-view.webp" alt="The accessibility view enlarges text and controls and raises contrast across the notebook. The same button returns to the standard view." width="1440" height="640" loading="lazy"></a>
-<figcaption>The accessibility view enlarges text and controls and raises contrast across the notebook. The same button returns to the standard view.</figcaption>
-</figure>
+The Lock button in the lower-left corner makes the notebook read-only or
+seals it for sharing (see [Locking and sealing](#locking-and-sealing)). The
+width button in the header widens the page, and the accessibility button
+switches to large text and high contrast.
 
 ## Data
 
@@ -150,7 +126,7 @@ bundled in the notebook file; the data are drawn from a seeded model at the
 moment of the click, so the same settings always produce the same data.
 
 <figure>
-<a href="guide/03-sample-dialog.webp"><img src="guide/03-sample-dialog.webp" alt="The sample-data dialog. The summary line states what will be produced: 1,000 sequences of 10 events over 8 states, saved under the name sample_learning_100x10x10_seed14.csv." width="600" height="362" loading="lazy"></a>
+<a href="guide/03-sample-dialog.webp" aria-label="Full-size screenshot"><img src="guide/03-sample-dialog.webp" alt="" width="600" height="362" loading="lazy"></a>
 <figcaption>The sample-data dialog. The summary line states what will be produced: 1,000 sequences of 10 events over 8 states, saved under the name sample_learning_100x10x10_seed14.csv.</figcaption>
 </figure>
 
@@ -209,7 +185,7 @@ its guess in the Format selector, where it can be changed.
 ### Mapping a long file
 
 <figure>
-<a href="guide/04-data-card.webp"><img src="guide/04-data-card.webp" alt="The data card after the sample data are loaded: file name and size, the Format selector, a preview of the first rows and the column mapping. The notebook recognized student as Actor, action as Action, timestamp as Time, session as Session and achievement as Group." width="860" height="284" loading="lazy"></a>
+<a href="guide/04-data-card.webp" aria-label="Full-size screenshot"><img src="guide/04-data-card.webp" alt="" width="860" height="284" loading="lazy"></a>
 <figcaption>The data card after the sample data are loaded: file name and size, the Format selector, a preview of the first rows and the column mapping. The notebook recognized student as Actor, action as Action, timestamp as Time, session as Session and achievement as Group.</figcaption>
 </figure>
 
@@ -241,7 +217,7 @@ session as Session give 1,000 sequences of ten events each.
 ### Mapping a wide file
 
 <figure>
-<a href="guide/04b-wide-format.webp"><img src="guide/04b-wide-format.webp" alt="A wide file of 40 sequences. The id column holds the sequence identifier, the states run from T1 to T6, and group stays outside the span as metadata." width="860" height="284" loading="lazy"></a>
+<a href="guide/04b-wide-format.webp" aria-label="Full-size screenshot"><img src="guide/04b-wide-format.webp" alt="" width="860" height="284" loading="lazy"></a>
 <figcaption>A wide file of 40 sequences. The id column holds the sequence identifier, the states run from T1 to T6, and group stays outside the span as metadata.</figcaption>
 </figure>
 
@@ -264,7 +240,7 @@ transition network that the network analyses need. Clear All keeps the data
 but removes the sequences, the model and every cell.
 
 <figure>
-<a href="guide/06-collapsed-card.webp"><img src="guide/06-collapsed-card.webp" alt="After the first build the data card folds into one line with the file name, its size and the saved mapping. A click on the line opens it again." width="860" height="44" loading="lazy"></a>
+<a href="guide/06-collapsed-card.webp" aria-label="Full-size screenshot"><img src="guide/06-collapsed-card.webp" alt="" width="860" height="44" loading="lazy"></a>
 <figcaption>After the first build the data card folds into one line with the file name, its size and the saved mapping. A click on the line opens it again.</figcaption>
 </figure>
 
@@ -277,7 +253,7 @@ notebook to its empty state for a new file.
 ### Checking the sequences
 
 <figure>
-<a href="guide/07-sequence-data.webp"><img src="guide/07-sequence-data.webp" alt="The Sequence Data window lists every processed sequence with its actor and length. Here: 1,000 sequences over 8 unique states. CSV downloads the list." width="1440" height="900" loading="lazy"></a>
+<a href="guide/07-sequence-data.webp" aria-label="Full-size screenshot"><img src="guide/07-sequence-data.webp" alt="" width="1440" height="900" loading="lazy"></a>
 <figcaption>The Sequence Data window lists every processed sequence with its actor and length. Here: 1,000 sequences over 8 unique states. CSV downloads the list.</figcaption>
 </figure>
 
@@ -291,7 +267,7 @@ order of states within them.
 ### Adding a cell
 
 <figure>
-<a href="guide/09-validate-menu.webp"><img src="guide/09-validate-menu.webp" alt="The Validate menu. Each item names a cell and gives a one-line description of it." width="700" height="460" loading="lazy"></a>
+<a href="guide/09-validate-menu.webp" aria-label="Full-size screenshot"><img src="guide/09-validate-menu.webp" alt="" width="700" height="460" loading="lazy"></a>
 <figcaption>The Validate menu. Each item names a cell and gives a one-line description of it.</figcaption>
 </figure>
 
@@ -303,7 +279,7 @@ for example that the data settings must be saved first.
 ### The parts of a cell
 
 <figure>
-<a href="guide/05-network-cell.webp"><img src="guide/05-network-cell.webp" alt="A Network cell. The header row carries the cell type, a help button, the run time and the cell controls; below it are the form, the run button and the result." width="860" height="1046" loading="lazy"></a>
+<a href="guide/05-network-cell.webp" aria-label="Full-size screenshot"><img src="guide/05-network-cell.webp" alt="" width="860" height="961" loading="lazy"></a>
 <figcaption>A Network cell. The header row carries the cell type, a help button, the run time and the cell controls; below it are the form, the run button and the result.</figcaption>
 </figure>
 
@@ -326,12 +302,12 @@ options. Under each figure, Accessible chart text holds a text description
 of what the chart shows.
 
 <figure>
-<a href="guide/12-network-table.webp"><img src="guide/12-network-table.webp" alt="The Table tab of the Network cell lists the edges with their weights." width="860" height="1006" loading="lazy"></a>
+<a href="guide/12-network-table.webp" aria-label="Full-size screenshot"><img src="guide/12-network-table.webp" alt="" width="860" height="559" loading="lazy"></a>
 <figcaption>The Table tab of the Network cell lists the edges with their weights.</figcaption>
 </figure>
 
 <figure>
-<a href="guide/10-cell-export.webp"><img src="guide/10-cell-export.webp" alt="The Export menu in the cell header: CSV, Word, PNG and SVG files of the cell's result, or a copy to the clipboard." width="440" height="300" loading="lazy"></a>
+<a href="guide/10-cell-export.webp" aria-label="Full-size screenshot"><img src="guide/10-cell-export.webp" alt="" width="440" height="300" loading="lazy"></a>
 <figcaption>The Export menu in the cell header: CSV, Word, PNG and SVG files of the cell's result, or a copy to the clipboard.</figcaption>
 </figure>
 
@@ -341,17 +317,16 @@ it as CSV, TSV, JSON, Markdown, HTML or Word.
 
 ### Plot options
 
-The Plot settings button above a network plot, and Settings in its toolbar,
-open the plot options. The options apply at once to every network plot in
+Settings, in the toolbar above a network plot, opens the plot options. The options apply at once to every network plot in
 the notebook; they change the drawing only and leave the model unchanged.
 
 <figure>
-<a href="guide/11-plot-settings.webp"><img src="guide/11-plot-settings.webp" alt="The plot options open beside the notebook. Changes apply immediately to every network plot." width="1440" height="900" loading="lazy"></a>
+<a href="guide/11-plot-settings.webp" aria-label="Full-size screenshot"><img src="guide/11-plot-settings.webp" alt="" width="1440" height="900" loading="lazy"></a>
 <figcaption>The plot options open beside the notebook. Changes apply immediately to every network plot.</figcaption>
 </figure>
 
 <figure>
-<a href="guide/11b-plot-options-panel.webp"><img src="guide/11b-plot-options-panel.webp" alt="The complete plot options panel." width="360" height="1070" loading="lazy"></a>
+<a href="guide/11b-plot-options-panel.webp" aria-label="Full-size screenshot"><img src="guide/11b-plot-options-panel.webp" alt="" width="360" height="1070" loading="lazy"></a>
 <figcaption>The complete plot options panel.</figcaption>
 </figure>
 
@@ -402,7 +377,7 @@ added by Build → Network or by the Build Network button of the data card,
 and the network analyses use the model it builds.
 
 <figure>
-<a href="guide/05b-network-form.webp"><img src="guide/05b-network-form.webp" alt="The Network cell's settings." width="860" height="127" loading="lazy"></a>
+<a href="guide/05b-network-form.webp" aria-label="Full-size screenshot"><img src="guide/05b-network-form.webp" alt="" width="860" height="127" loading="lazy"></a>
 <figcaption>The Network cell's settings.</figcaption>
 </figure>
 
@@ -442,15 +417,20 @@ strongest self-loop is Watch → Watch (.31).
 ### Groups
 
 <figure class="fig-tall">
-<a href="guide/cell-group.webp"><img src="guide/cell-group.webp" alt="Groups on the achievement column: one network for the 530 sequences of the High group and one for the 470 sequences of the Low group, followed by summary tables." width="860" height="2860" loading="lazy"></a>
+<a href="guide/cell-group.webp" aria-label="Full-size screenshot"><img src="guide/cell-group.webp" alt="" width="860" height="2768" loading="lazy"></a>
 <figcaption>Groups on the achievement column: one network for the 530 sequences of the High group and one for the 470 sequences of the Low group, followed by summary tables.</figcaption>
 </figure>
 
-The Groups cell estimates one network per value of a grouping column. It is
-the basis for every comparison of groups.
+The Groups cell estimates one network per group. It is the basis for every
+comparison of groups. Groups from takes the groups from a column of the
+data, from the clusters of the last Cluster sequences run or from the
+components of the last Mixture Markov model. Once built, the groups are
+used by every later cell that works by group, from Sequences and
+Centrality measures to the Compare cells and HON.
 
 | Control | Default | What it sets |
 |---|---|---|
+| Groups from | Group column | Where the groups come from.; Group column — a column of the data; Clusters — the last Cluster sequences run; Mixture clusters — the last Mixture Markov model run Once built, every later cell that works by group uses these groups. |
 | Group | achievement | Options: student, session, timestamp, action, achievement. |
 | Type | tna | Options: tna, ftna, ctna, atna. |
 | Scaling | None | Options: None, Min-Max, Max, Rank. |
@@ -464,7 +444,7 @@ with the Compare cells before they are interpreted.
 ### Cluster sequences
 
 <figure class="fig-tall">
-<a href="guide/cell-cluster.webp"><img src="guide/cell-cluster.webp" alt="Three clusters from Hamming distances and PAM. The header line reports a silhouette of 0.028 and cluster sizes of 486, 281 and 233; each cluster is shown as a state distribution plot." width="860" height="1618" loading="lazy"></a>
+<a href="guide/cell-cluster.webp" aria-label="Full-size screenshot"><img src="guide/cell-cluster.webp" alt="" width="860" height="1638" loading="lazy"></a>
 <figcaption>Three clusters from Hamming distances and PAM. The header line reports a silhouette of 0.028 and cluster sizes of 486, 281 and 233; each cluster is shown as a state distribution plot.</figcaption>
 </figure>
 
@@ -488,12 +468,14 @@ Jaro-Winkler). Hamming suits aligned sequences of equal length. The
 silhouette coefficient in the header measures how well separated the
 clusters are; values near zero, as in the sample data, indicate that the
 sequences do not form distinct clusters. Show selects state distribution
-plots, a membership table, or a TNA network per cluster.
+plots, a membership table, or a TNA network per cluster. Use these clusters
+as groups, under the result, adds a Groups cell built from the clusters, so
+that the later cells analyse each cluster as a group.
 
 ### Mixture Markov model
 
 <figure class="fig-tall">
-<a href="guide/cell-mmm.webp"><img src="guide/cell-mmm.webp" alt="A two-component mixture Markov model with five restarts. The header reports the log-likelihood (−19402.60), the BIC (39682.5), the average posterior probability (0.854), convergence in 104 iterations and component sizes of 495 and 505." width="860" height="1346" loading="lazy"></a>
+<a href="guide/cell-mmm.webp" aria-label="Full-size screenshot"><img src="guide/cell-mmm.webp" alt="" width="860" height="1370" loading="lazy"></a>
 <figcaption>A two-component mixture Markov model with five restarts. The header reports the log-likelihood (−19402.60), the BIC (39682.5), the average posterior probability (0.854), convergence in 104 iterations and component sizes of 495 and 505.</figcaption>
 </figure>
 
@@ -520,14 +502,15 @@ refitted with a higher cap. The fit-quality table gives each component's
 mixing proportion, its average posterior probability (AvePP) and its
 size; an AvePP close to one indicates well-separated components. Alpha adds
 a small count to every transition so that transitions unseen in a component
-keep a non-zero probability.
+keep a non-zero probability. Use these clusters as groups, under the result,
+turns the components into groups for the later cells.
 
 ## Describe
 
 ### State frequencies
 
 <figure>
-<a href="guide/cell-states-freq.webp"><img src="guide/cell-states-freq.webp" alt="State frequencies for the High and Low groups. Watch accounts for 8.7% of High events and 24.6% of Low events." width="860" height="560" loading="lazy"></a>
+<a href="guide/cell-states-freq.webp" aria-label="Full-size screenshot"><img src="guide/cell-states-freq.webp" alt="" width="860" height="560" loading="lazy"></a>
 <figcaption>State frequencies for the High and Low groups. Watch accounts for 8.7% of High events and 24.6% of Low events.</figcaption>
 </figure>
 
@@ -545,11 +528,14 @@ about the order of states.
 ### State mosaic
 
 <figure>
-<a href="guide/cell-states-mosaic.webp"><img src="guide/cell-states-mosaic.webp" alt="The state mosaic for High and Low. Column widths follow group size and row heights follow state frequency; colors show standardized residuals. The test of independence gives χ²(7) = 598.95." width="860" height="686" loading="lazy"></a>
+<a href="guide/cell-states-mosaic.webp" aria-label="Full-size screenshot"><img src="guide/cell-states-mosaic.webp" alt="" width="860" height="641" loading="lazy"></a>
 <figcaption>The state mosaic for High and Low. Column widths follow group size and row heights follow state frequency; colors show standardized residuals. The test of independence gives χ²(7) = 598.95.</figcaption>
 </figure>
 
-*This cell has no settings; it runs on the current model.*
+| Control | Default | What it sets |
+|---|---|---|
+| Nested by actor (student) | off | Sequences nested in the mapped Actor column (several sessions per actor). Adds association tests that allow for counts from one actor being alike (Nestimate mosaic_test). Off = sequence-level, as before. |
+| GLMM (slow) | off | Add the log-linear Poisson mixed model (lme4::glmer, nAGQ = 0). It fits iteratively and can take several seconds. |
 
 For groups, the mosaic crosses group and state and colors each cell by its
 standardized residual under independence: blue cells occur more often than
@@ -560,7 +546,7 @@ practical terms. For a single network the cell plots a transition mosaic.
 ### Transition weights
 
 <figure>
-<a href="guide/cell-states-weights.webp"><img src="guide/cell-states-weights.webp" alt="The edge-weight histogram and the weight matrix. The mean edge weight is 0.125 and the median 0.105." width="860" height="955" loading="lazy"></a>
+<a href="guide/cell-states-weights.webp" aria-label="Full-size screenshot"><img src="guide/cell-states-weights.webp" alt="" width="860" height="896" loading="lazy"></a>
 <figcaption>The edge-weight histogram and the weight matrix. The mean edge weight is 0.125 and the median 0.105.</figcaption>
 </figure>
 
@@ -588,7 +574,7 @@ order. The resampling methods answer different questions.
 ### Bootstrap (edges)
 
 <figure class="fig-tall">
-<a href="guide/cell-bootstrap.webp"><img src="guide/cell-bootstrap.webp" alt="Bootstrap of the High and Low networks with 1,000 resamples: 35 of 64 edges are significant in the High network. Significant edges are drawn solid and the others dashed; the table lists each edge's weight, bootstrap mean, confidence interval and p-value." width="860" height="2620" loading="lazy"></a>
+<a href="guide/cell-bootstrap.webp" aria-label="Full-size screenshot"><img src="guide/cell-bootstrap.webp" alt="" width="860" height="2609" loading="lazy"></a>
 <figcaption>Bootstrap of the High and Low networks with 1,000 resamples: 35 of 64 edges are significant in the High network. Significant edges are drawn solid and the others dashed; the table lists each edge's weight, bootstrap mean, confidence interval and p-value.</figcaption>
 </figure>
 
@@ -609,6 +595,7 @@ the probability cutoff, when its bootstrap mean is at or above the cutoff.
 | Seed | 14 | Seed for reproducibility (default 14). Clear to use the engine's default seed. |
 | Network | on | — |
 | Table | on | — |
+| Nested by actor (student) | off | Sequences nested in the mapped Actor column (several sessions per actor). Resamples whole actors with all their sequences (cluster bootstrap, Nestimate actor =). Off = sequence-level, as before. |
 
 The table reports for each edge the original weight, the bootstrap mean,
 the confidence interval and the p-value. A thousand iterations are the usual
@@ -617,7 +604,7 @@ minimum; an edge close to the threshold needs more.
 ### Centrality stability
 
 <figure class="fig-tall">
-<a href="guide/cell-stability.webp"><img src="guide/cell-stability.webp" alt="Case-dropping curves for the High and Low groups. The correlation between centralities in the full data and in the reduced data is plotted against the share of sequences dropped; the dashed line marks the threshold of 0.7." width="860" height="1556" loading="lazy"></a>
+<a href="guide/cell-stability.webp" aria-label="Full-size screenshot"><img src="guide/cell-stability.webp" alt="" width="860" height="1526" loading="lazy"></a>
 <figcaption>Case-dropping curves for the High and Low groups. The correlation between centralities in the full data and in the reduced data is plotted against the share of sequences dropped; the dashed line marks the threshold of 0.7.</figcaption>
 </figure>
 
@@ -636,6 +623,7 @@ share of resamples.
 | Correlation | Pearson | Correlation method used to compare centrality vectors across drops Options: Pearson, Spearman, Kendall. |
 | Loops | off | Include self-loops when computing centralities. R default: FALSE (estimate_cs in tna 1.2.1). |
 | Seed | 14 | Seed for reproducibility (default 14). Clear to use the engine's default seed. |
+| Nested by actor (student) | off | Sequences nested in the mapped Actor column (several sessions per actor). Drops whole actors with all their sequences; drop proportions are shares of actors (tna::estimate_cs actor =). Off = sequence-level, as before. |
 | Group axis | Auto (active) | Group axis: Auto=last-built group/clustering; Clusters=last clustering run; Column=re-derive from group column; Last observation=group by final state of each sequence. Options: Auto (active), Group column, Clusters, Last observation. |
 | Case-dropping plot | on | — |
 | Table | on | — |
@@ -650,7 +638,7 @@ the Low network are not interpretable.
 ### Case-dropping (edges)
 
 <figure>
-<a href="guide/cell-edge-reliab.webp"><img src="guide/cell-edge-reliab.webp" alt="Edge stability under case-dropping: correlation and absolute differences between the full and reduced edge weights. The CS coefficient for the edges is 0.90." width="860" height="813" loading="lazy"></a>
+<a href="guide/cell-edge-reliab.webp" aria-label="Full-size screenshot"><img src="guide/cell-edge-reliab.webp" alt="" width="860" height="805" loading="lazy"></a>
 <figcaption>Edge stability under case-dropping: correlation and absolute differences between the full and reduced edge weights. The CS coefficient for the edges is 0.90.</figcaption>
 </figure>
 
@@ -666,11 +654,12 @@ level, and an edge-stability coefficient defined like the CS coefficient.
 | Method | Pearson | Correlation method used to compare edge-weight vectors. R default: pearson. Options: Pearson, Spearman, Kendall. |
 | Threshold | 0.7 | Threshold the correlation has to maintain (default 0.7) |
 | Seed | 14 | Seed for reproducibility (default 14). Clear to use the engine's default seed. |
+| Nested by actor (student) | off | Sequences nested in the mapped Actor column (several sessions per actor). Drops whole actors with all their sequences; drop proportions are shares of actors (Nestimate casedrop_reliability actor =). Off = sequence-level, as before. |
 
 ### Reliability (whole model)
 
 <figure>
-<a href="guide/cell-reliability.webp"><img src="guide/cell-reliability.webp" alt="Split-half reliability with 1,000 random splits. The mean absolute difference between the two halves' edge weights averages 0.016, and their Pearson correlation averages 0.953." width="860" height="1235" loading="lazy"></a>
+<a href="guide/cell-reliability.webp" aria-label="Full-size screenshot"><img src="guide/cell-reliability.webp" alt="" width="860" height="1205" loading="lazy"></a>
 <figcaption>Split-half reliability with 1,000 random splits. The mean absolute difference between the two halves' edge weights averages 0.016, and their Pearson correlation averages 0.953.</figcaption>
 </figure>
 
@@ -690,7 +679,7 @@ many splits show how consistently the data determine the network.
 ### Markov order test
 
 <figure>
-<a href="guide/cell-markov-order.webp"><img src="guide/cell-markov-order.webp" alt="The Markov order test selects order 1: the permutation likelihood-ratio test, BIC and AIC all favour the first-order model." width="860" height="1021" loading="lazy"></a>
+<a href="guide/cell-markov-order.webp" aria-label="Full-size screenshot"><img src="guide/cell-markov-order.webp" alt="" width="860" height="1012" loading="lazy"></a>
 <figcaption>The Markov order test selects order 1: the permutation likelihood-ratio test, BIC and AIC all favour the first-order model.</figcaption>
 </figure>
 
@@ -718,7 +707,7 @@ order, so orders above 2 or 3 can exhaust memory on large data.
 ### Centrality measures
 
 <figure class="fig-tall">
-<a href="guide/cell-centrality.webp"><img src="guide/cell-centrality.webp" alt="Centralities for the High and Low networks. In the High network Write has the highest InStrength (1.225)." width="860" height="2511" loading="lazy"></a>
+<a href="guide/cell-centrality.webp" aria-label="Full-size screenshot"><img src="guide/cell-centrality.webp" alt="" width="860" height="2466" loading="lazy"></a>
 <figcaption>Centralities for the High and Low networks. In the High network Write has the highest InStrength (1.225).</figcaption>
 </figure>
 
@@ -753,7 +742,7 @@ Centralities are interpreted together with their stability (see
 ### Edge betweenness plot
 
 <figure class="fig-tall">
-<a href="guide/cell-betweenness.webp"><img src="guide/cell-betweenness.webp" alt="Edge betweenness of the High and Low networks. The width of each edge is its betweenness." width="860" height="2819" loading="lazy"></a>
+<a href="guide/cell-betweenness.webp" aria-label="Full-size screenshot"><img src="guide/cell-betweenness.webp" alt="" width="860" height="2786" loading="lazy"></a>
 <figcaption>Edge betweenness of the High and Low networks. The width of each edge is its betweenness.</figcaption>
 </figure>
 
@@ -773,7 +762,7 @@ transition probability.
 ### Community detection
 
 <figure>
-<a href="guide/cell-community.webp"><img src="guide/cell-community.webp" alt="Louvain communities: three in the High network and four in the Low network, with a membership table." width="860" height="1106" loading="lazy"></a>
+<a href="guide/cell-community.webp" aria-label="Full-size screenshot"><img src="guide/cell-community.webp" alt="" width="860" height="1075" loading="lazy"></a>
 <figcaption>Louvain communities: three in the High network and four in the Low network, with a membership table.</figcaption>
 </figure>
 
@@ -796,7 +785,7 @@ and edge betweenness removes bridging edges in turn.
 ### Cliques
 
 <figure class="fig-tall">
-<a href="guide/cell-cliques.webp"><img src="guide/cell-cliques.webp" alt="Cliques of at least three states in the sample network: 41 cliques, each listed with its states and plotted on the network." width="860" height="1465" loading="lazy"></a>
+<a href="guide/cell-cliques.webp" aria-label="Full-size screenshot"><img src="guide/cell-cliques.webp" alt="" width="860" height="1432" loading="lazy"></a>
 <figcaption>Cliques of at least three states in the sample network: 41 cliques, each listed with its states and plotted on the network.</figcaption>
 </figure>
 
@@ -820,7 +809,7 @@ cliques to strong transitions.
 ### Sequences
 
 <figure>
-<a href="guide/cell-sequences.webp"><img src="guide/cell-sequences.webp" alt="The state distribution plot for the High and Low groups: the share of each state at each position of the 1,000 sequences of length 10." width="860" height="705" loading="lazy"></a>
+<a href="guide/cell-sequences.webp" aria-label="Full-size screenshot"><img src="guide/cell-sequences.webp" alt="" width="860" height="674" loading="lazy"></a>
 <figcaption>The state distribution plot for the High and Low groups: the share of each state at each position of the 1,000 sequences of length 10.</figcaption>
 </figure>
 
@@ -846,7 +835,7 @@ display only; the analyses use the full sequences.
 ### Sequence indices
 
 <figure class="fig-tall">
-<a href="guide/cell-indices.webp"><img src="guide/cell-indices.webp" alt="Seventeen sequence indices for the 530 High and 470 Low sequences, summarized by group and plotted as boxplots." width="860" height="2084" loading="lazy"></a>
+<a href="guide/cell-indices.webp" aria-label="Full-size screenshot"><img src="guide/cell-indices.webp" alt="" width="860" height="2063" loading="lazy"></a>
 <figcaption>Seventeen sequence indices for the 530 High and 470 Low sequences, summarized by group and plotted as boxplots.</figcaption>
 </figure>
 
@@ -879,7 +868,7 @@ table with every index for every sequence.
 ### Discover patterns
 
 <figure>
-<a href="guide/cell-patterns.webp"><img src="guide/cell-patterns.webp" alt="Contiguous patterns of length 2 and 3: 367 patterns pass the filters. Watch → Watch is the most widespread, present in 27.0% of the sequences." width="860" height="1129" loading="lazy"></a>
+<a href="guide/cell-patterns.webp" aria-label="Full-size screenshot"><img src="guide/cell-patterns.webp" alt="" width="860" height="1070" loading="lazy"></a>
 <figcaption>Contiguous patterns of length 2 and 3: 367 patterns pass the filters. Watch → Watch is the most widespread, present in 27.0% of the sequences.</figcaption>
 </figure>
 
@@ -907,7 +896,7 @@ chi-square test of the difference.
 ### Pattern comparison (heatmap)
 
 <figure>
-<a href="guide/cell-compare.webp"><img src="guide/cell-compare.webp" alt="Standardized residuals of pattern frequencies in the High and Low groups. Watch → Watch has a residual of −17.6 in High and 17.6 in Low." width="860" height="1275" loading="lazy"></a>
+<a href="guide/cell-compare.webp" aria-label="Full-size screenshot"><img src="guide/cell-compare.webp" alt="" width="860" height="1238" loading="lazy"></a>
 <figcaption>Standardized residuals of pattern frequencies in the High and Low groups. Watch → Watch has a residual of −17.6 in High and 17.6 in Low.</figcaption>
 </figure>
 
@@ -925,6 +914,7 @@ in the group than independence predicts, negative values less frequent.
 | Iterations | 999 | — |
 | Seed | 14 | Seed for reproducibility (default 14). Clear to use the engine's default seed. |
 | Group axis | Auto (active) | Group axis: Auto=last-built group/clustering; Clusters=last clustering run; Column=re-derive from group column; Last observation=group by final state of each sequence. Options: Auto (active), Group column, Clusters, Last observation. |
+| Nested by actor (student) | off | Sequences nested in the mapped Actor column (several sessions per actor). The pattern permutation test reassigns whole actors between groups (Nestimate actor =). Frequencies and residuals do not change. Off = sequence-level, as before. |
 
 The permutation test shuffles group labels and recomputes the residuals,
 and gives each pattern a p-value. Residuals are read together with the
@@ -934,7 +924,7 @@ differences.
 ### Pattern comparison (pyramid)
 
 <figure>
-<a href="guide/cell-compare-pyramid.webp"><img src="guide/cell-compare-pyramid.webp" alt="The pyramid for High and Low: the 15 patterns with the largest residuals as back-to-back bars, with Benjamini–Hochberg adjusted permutation p-values in the centre." width="860" height="863" loading="lazy"></a>
+<a href="guide/cell-compare-pyramid.webp" aria-label="Full-size screenshot"><img src="guide/cell-compare-pyramid.webp" alt="" width="860" height="854" loading="lazy"></a>
 <figcaption>The pyramid for High and Low: the 15 patterns with the largest residuals as back-to-back bars, with Benjamini–Hochberg adjusted permutation p-values in the centre.</figcaption>
 </figure>
 
@@ -951,11 +941,12 @@ back-to-back bars. Three or more groups use the heatmap.
 | Iterations | 999 | Permutation iterations. Only used when Show p-values is checked. |
 | Seed | 14 | Seed for reproducibility. Clear to use the engine's default seed. |
 | Group axis | Auto (active) | Group axis: Auto=last-built group/clustering; Clusters=last clustering run; Column=re-derive from group column; Last observation=group by final state of each sequence. Options: Auto (active), Group column, Clusters, Last observation. |
+| Nested by actor (student) | off | Sequences nested in the mapped Actor column (several sessions per actor). The pattern permutation test reassigns whole actors between groups (Nestimate actor =). Frequencies and residuals do not change. Off = sequence-level, as before. |
 
 ### Pattern × outcome
 
 <figure>
-<a href="guide/cell-pattern-outcome.webp"><img src="guide/cell-pattern-outcome.webp" alt="The ten most frequent patterns, each split by the last state of the sequence (8 categories)." width="860" height="1149" loading="lazy"></a>
+<a href="guide/cell-pattern-outcome.webp" aria-label="Full-size screenshot"><img src="guide/cell-pattern-outcome.webp" alt="" width="860" height="1090" loading="lazy"></a>
 <figcaption>The ten most frequent patterns, each split by the last state of the sequence (8 categories).</figcaption>
 </figure>
 
@@ -977,7 +968,7 @@ regression tests the associations.
 ### Outcome regression
 
 <figure class="fig-tall">
-<a href="guide/cell-outcome.webp"><img src="guide/cell-outcome.webp" alt="Outcome regression with achievement as a binary outcome (reference High, target Low). The univariate table and forest plot give each pattern's odds ratio; the joint logistic regression adjusts each pattern for the others." width="860" height="2837" loading="lazy"></a>
+<a href="guide/cell-outcome.webp" aria-label="Full-size screenshot"><img src="guide/cell-outcome.webp" alt="" width="860" height="2803" loading="lazy"></a>
 <figcaption>Outcome regression with achievement as a binary outcome (reference High, target Low). The univariate table and forest plot give each pattern's odds ratio; the joint logistic regression adjusts each pattern for the others.</figcaption>
 </figure>
 
@@ -1020,7 +1011,7 @@ sequences or Mixture Markov model.
 ### Network properties
 
 <figure class="fig-tall">
-<a href="guide/cell-compare-props.webp"><img src="guide/cell-compare-props.webp" alt="Distances and similarities between the High and Low networks. The edge weights correlate at 0.291 (Pearson) and the cosine similarity is 0.811." width="860" height="1679" loading="lazy"></a>
+<a href="guide/cell-compare-props.webp" aria-label="Full-size screenshot"><img src="guide/cell-compare-props.webp" alt="" width="860" height="1620" loading="lazy"></a>
 <figcaption>Distances and similarities between the High and Low networks. The edge weights correlate at 0.291 (Pearson) and the cosine similarity is 0.811.</figcaption>
 </figure>
 
@@ -1035,7 +1026,7 @@ maximum absolute differences), correlations, distances and similarities.
 ### Difference network
 
 <figure class="fig-tall">
-<a href="guide/cell-compare-diff.webp"><img src="guide/cell-compare-diff.webp" alt="The difference network and the heatmap of weight differences (High − Low). Green edges are stronger in High and red edges in Low." width="860" height="2167" loading="lazy"></a>
+<a href="guide/cell-compare-diff.webp" aria-label="Full-size screenshot"><img src="guide/cell-compare-diff.webp" alt="" width="860" height="2106" loading="lazy"></a>
 <figcaption>The difference network and the heatmap of weight differences (High − Low). Green edges are stronger in High and red edges in Low.</figcaption>
 </figure>
 
@@ -1053,31 +1044,35 @@ permutation test.
 ### Permutation test
 
 <figure class="fig-tall">
-<a href="guide/cell-compare-perm.webp"><img src="guide/cell-compare-perm.webp" alt="The permutation test for High and Low with 1,000 permutations and Benjamini–Hochberg adjustment: 40 edges differ significantly." width="860" height="1407" loading="lazy"></a>
-<figcaption>The permutation test for High and Low with 1,000 permutations and Benjamini–Hochberg adjustment: 40 edges differ significantly.</figcaption>
+<a href="guide/cell-compare-perm.webp" aria-label="Full-size screenshot"><img src="guide/cell-compare-perm.webp" alt="" width="860" height="1370" loading="lazy"></a>
+<figcaption>The permutation test for High and Low with 1,000 permutations and no adjustment, the default: 42 edges differ at p < .05.</figcaption>
 </figure>
 
 The permutation test shuffles group membership among the sequences many
 times and compares the observed edge differences with the shuffled ones.
-Each edge receives a p-value, adjusted for the number of edges tested.
+Each edge receives a p-value. As in tna::permutation_test, the p-values are
+not adjusted for the number of edges tested by default; Adjust applies a
+Benjamini–Hochberg, Holm or Bonferroni correction.
 
 | Control | Default | What it sets |
 |---|---|---|
 | Iterations | 1000 | Permutation iterations |
 | α | 0.05 | Significance threshold for permutation p-values |
-| Adjust | BH (FDR) | Multiple-comparison correction Options: BH (FDR), Holm, Bonferroni, FDR, None. |
+| Adjust | None (R default) | Multiple-comparison correction across the edge p-values. None is the R default (tna::permutation_test adjust = "none"). Options: None (R default), BH (FDR), Holm, Bonferroni, FDR. |
 | Seed | 14 | Seed for reproducibility (default 14) |
 | Group axis | Auto (active) | Group axis: Auto=last-built group/clustering; Clusters=last clustering run; Column=re-derive from group column; Last observation=group by final state of each sequence. Options: Auto (active), Group column, Clusters, Last observation. |
+| Nested by actor (student) | off | Sequences nested in the mapped Actor column (several sessions per actor). Permutation reassigns whole actors between groups, or shuffles labels within an actor whose sequences sit in both groups (Nestimate actor =). Off = sequence-level, as before. |
+| Compare with sequence-level test | off | Also run the permutation test without the nesting on the same seed and show what changed (Nestimate permutation_diagnostics). Doubles the run time. |
 
 The test assumes that sequences are exchangeable between groups under the
 null hypothesis. When one actor contributes several sequences, those
-sequences are not independent, and the p-values are interpreted with that in
-mind.
+sequences are not independent; Nested by actor then reassigns whole actors
+between the groups instead of single sequences.
 
 ### Position-wise JSD
 
 <figure>
-<a href="guide/cell-compare-pos.webp"><img src="guide/cell-compare-pos.webp" alt="The Jensen–Shannon divergence between the High and Low state distributions at each position, with the positions of largest divergence listed below." width="860" height="1048" loading="lazy"></a>
+<a href="guide/cell-compare-pos.webp" aria-label="Full-size screenshot"><img src="guide/cell-compare-pos.webp" alt="" width="860" height="989" loading="lazy"></a>
 <figcaption>The Jensen–Shannon divergence between the High and Low state distributions at each position, with the positions of largest divergence listed below.</figcaption>
 </figure>
 
@@ -1103,7 +1098,7 @@ selector switches between a process map and directly-follows tables.
 ### Process map
 
 <figure class="fig-tall">
-<a href="guide/cell-process-mining-process-map.webp"><img src="guide/cell-process-mining-process-map.webp" alt="The process map of the sample data. Boxes are activities with their share of all events; arrows are hand-offs with the share of the source activity's outflow. The note above the map states that the coverage settings hid 16 arrows." width="860" height="1786" loading="lazy"></a>
+<a href="guide/cell-process-mining-process-map.webp" aria-label="Full-size screenshot"><img src="guide/cell-process-mining-process-map.webp" alt="" width="860" height="1743" loading="lazy"></a>
 <figcaption>The process map of the sample data. Boxes are activities with their share of all events; arrows are hand-offs with the share of the source activity's outflow. The note above the map states that the coverage settings hid 16 arrows.</figcaption>
 </figure>
 
@@ -1145,7 +1140,7 @@ computed on the full log, and the note above the map states what was hidden.
 ### Directly-follows graph
 
 <figure>
-<a href="guide/cell-process-mining-dfg.webp"><img src="guide/cell-process-mining-dfg.webp" alt="The directly-follows tables: 1,000 cases (student × session) with 9,000 hand-offs. Watch is the most frequent activity with 1,619 events." width="860" height="1024" loading="lazy"></a>
+<a href="guide/cell-process-mining-dfg.webp" aria-label="Full-size screenshot"><img src="guide/cell-process-mining-dfg.webp" alt="" width="860" height="1024" loading="lazy"></a>
 <figcaption>The directly-follows tables: 1,000 cases (student × session) with 9,000 hand-offs. Watch is the most frequent activity with 1,619 events.</figcaption>
 </figure>
 
@@ -1169,7 +1164,7 @@ interactions among groups of states.
 ### Simplicial complex (pattern motifs)
 
 <figure class="fig-tall">
-<a href="guide/cell-high-order-simplicial.webp"><img src="guide/cell-high-order-simplicial.webp" alt="Pattern motifs of orders 3 and 4: the nine most frequent pathways drawn as simplices, above a table of 2,130 pathways with HYPA statistics." width="860" height="1851" loading="lazy"></a>
+<a href="guide/cell-high-order-simplicial.webp" aria-label="Full-size screenshot"><img src="guide/cell-high-order-simplicial.webp" alt="" width="860" height="1850" loading="lazy"></a>
 <figcaption>Pattern motifs of orders 3 and 4: the nine most frequent pathways drawn as simplices, above a table of 2,130 pathways with HYPA statistics.</figcaption>
 </figure>
 
@@ -1193,7 +1188,7 @@ red. With Compute significance, each pathway is tested with HYPA (below).
 ### Homology: Betti numbers, Euler characteristic and q-analysis
 
 <figure class="fig-tall">
-<a href="guide/cell-high-order-homology.webp"><img src="guide/cell-high-order-homology.webp" alt="Homology of the sample network at a threshold of 0.05: all 8 states form one clique, so the complex is a single 7-dimensional simplex with f-vector [8, 28, 56, 70, 56, 28, 8, 1], Betti numbers [1, 0, …] and Euler characteristic 1." width="860" height="1475" loading="lazy"></a>
+<a href="guide/cell-high-order-homology.webp" aria-label="Full-size screenshot"><img src="guide/cell-high-order-homology.webp" alt="" width="860" height="1468" loading="lazy"></a>
 <figcaption>Homology of the sample network at a threshold of 0.05: all 8 states form one clique, so the complex is a single 7-dimensional simplex with f-vector [8, 28, 56, 70, 56, 28, 8, 1], Betti numbers [1, 0, …] and Euler characteristic 1.</figcaption>
 </figure>
 
@@ -1222,7 +1217,7 @@ topological feature is interpreted.
 ### Hypergraph centrality
 
 <figure>
-<a href="guide/cell-high-order-hyper-cent.webp"><img src="guide/cell-high-order-hyper-cent.webp" alt="Hypergraph centrality from sessions: 1,000 hyperedges of 3 to 8 states. Read has the highest clique-expansion eigenvector centrality (0.3853)." width="860" height="988" loading="lazy"></a>
+<a href="guide/cell-high-order-hyper-cent.webp" aria-label="Full-size screenshot"><img src="guide/cell-high-order-hyper-cent.webp" alt="" width="860" height="958" loading="lazy"></a>
 <figcaption>Hypergraph centrality from sessions: 1,000 hyperedges of 3 to 8 states. Read has the highest clique-expansion eigenvector centrality (0.3853).</figcaption>
 </figure>
 
@@ -1251,7 +1246,7 @@ cell says so and computes CEC only.
 ### HYPA: path anomaly
 
 <figure class="fig-tall">
-<a href="guide/cell-high-order-hypa.webp"><img src="guide/cell-high-order-hypa.webp" alt="HYPA at k = 2: of 512 paths tested, 21 are over-represented, 11 under-represented and 480 within expectation." width="860" height="1418" loading="lazy"></a>
+<a href="guide/cell-high-order-hypa.webp" aria-label="Full-size screenshot"><img src="guide/cell-high-order-hypa.webp" alt="" width="860" height="1389" loading="lazy"></a>
 <figcaption>HYPA at k = 2: of 512 paths tested, 21 are over-represented, 11 under-represented and 480 within expectation.</figcaption>
 </figure>
 
@@ -1280,7 +1275,7 @@ under-represented only when it was expected at least that often.
 ### MOGen: order selection
 
 <figure>
-<a href="guide/cell-high-order-mogen.webp"><img src="guide/cell-high-order-mogen.webp" alt="MOGen selects order 1 by AIC. The per-order table gives AIC, BIC, log-likelihood and degrees of freedom for orders 0 to 5." width="860" height="1291" loading="lazy"></a>
+<a href="guide/cell-high-order-mogen.webp" aria-label="Full-size screenshot"><img src="guide/cell-high-order-mogen.webp" alt="" width="860" height="1262" loading="lazy"></a>
 <figcaption>MOGen selects order 1 by AIC. The per-order table gives AIC, BIC, log-likelihood and degrees of freedom for orders 0 to 5.</figcaption>
 </figure>
 
@@ -1303,7 +1298,7 @@ orders.
 ### HON: higher-order network
 
 <figure class="fig-tall">
-<a href="guide/cell-high-order-hon.webp"><img src="guide/cell-high-order-hon.webp" alt="A higher-order network (HON+) with 577 nodes and 2,376 edges; histories of up to five states are kept where they change the next-state distribution." width="860" height="1810" loading="lazy"></a>
+<a href="guide/cell-high-order-hon.webp" aria-label="Full-size screenshot"><img src="guide/cell-high-order-hon.webp" alt="" width="860" height="1817" loading="lazy"></a>
 <figcaption>A higher-order network (HON+) with 577 nodes and 2,376 edges; histories of up to five states are kept where they change the next-state distribution.</figcaption>
 </figure>
 
@@ -1318,6 +1313,7 @@ of each dependency itself up to Max order.
 | Min freq | 1 | Drop tuples with raw count below this threshold |
 | Method | HON+ (default) | HON+ (Saebi et al. 2020): builds higher orders lazily with a MaxDivergence pre-check. HON: classical Xu et al. 2016 Options: HON+ (default), HON (classical). |
 | Collapse repeats | off | Collapse runs of the same state into one (A,A,A→A). The reference pyHON always collapses repeats; leaving them in keeps self-transitions, which carry meaning in TNA data. |
+| By group | None (all sequences) | Build one HON per group, each from that group's sequences, one after another.; Group column — the Group column picked in the data card; Clusters — the last Cluster sequences run; Groups cell — the groups the last Groups cell built Options: None (all sequences), Group column, Clusters, Groups cell. |
 | From rank | 1 | Show edges ranked from this position (1-based, sorted by probability × count desc) |
 | To rank | 50 | Show edges through this rank (inclusive). E.g. From 1 To 50 = top 50. |
 | Order filter | empty (all) | Restrict the edge table to specific source orders (blank = all). Accepts 2, 2-4, 2,3. |
@@ -1333,12 +1329,13 @@ of each dependency itself up to Max order.
 The nodes of a higher-order network represent histories, for example
 "Watch after Read", and not new states. The reference implementation always
 collapses repeated states; the notebook keeps them by default because
-repetition carries meaning in TNA data.
+repetition carries meaning in TNA data. By group builds one higher-order
+network per group, from the group column, the clusters or the Groups cell.
 
 ### HONEM: HON embeddings
 
 <figure>
-<a href="guide/cell-high-order-honem.webp"><img src="guide/cell-high-order-honem.webp" alt="HONEM embeddings: 134 higher-order nodes in 8 dimensions from a HON of maximum order 3, plotted on the first two components with the singular values below." width="860" height="954" loading="lazy"></a>
+<a href="guide/cell-high-order-honem.webp" aria-label="Full-size screenshot"><img src="guide/cell-high-order-honem.webp" alt="" width="860" height="950" loading="lazy"></a>
 <figcaption>HONEM embeddings: 134 higher-order nodes in 8 dimensions from a HON of maximum order 3, plotted on the first two components with the singular values below.</figcaption>
 </figure>
 
@@ -1356,7 +1353,7 @@ experimental.
 ### Path dependence
 
 <figure>
-<a href="guide/cell-high-order-path-dep.webp"><img src="guide/cell-high-order-path-dep.webp" alt="Path dependence at order 2: 64 contexts with at least 5 occurrences, of which 19 change the most likely next state compared with the first-order model." width="860" height="727" loading="lazy"></a>
+<a href="guide/cell-high-order-path-dep.webp" aria-label="Full-size screenshot"><img src="guide/cell-high-order-path-dep.webp" alt="" width="860" height="727" loading="lazy"></a>
 <figcaption>Path dependence at order 2: 64 contexts with at least 5 occurrences, of which 19 change the most likely next state compared with the first-order model.</figcaption>
 </figure>
 
@@ -1375,7 +1372,7 @@ information-theoretic description and not a test.
 ## Note
 
 <figure>
-<a href="guide/cell-text.webp"><img src="guide/cell-text.webp" alt="A Note cell with a title and formatted text between analysis cells." width="860" height="167" loading="lazy"></a>
+<a href="guide/cell-text.webp" aria-label="Full-size screenshot"><img src="guide/cell-text.webp" alt="" width="860" height="167" loading="lazy"></a>
 <figcaption>A Note cell with a title and formatted text between analysis cells.</figcaption>
 </figure>
 
@@ -1387,7 +1384,7 @@ to, and they are included in the saved notebook and in the exports.
 ## Saving, opening and sharing
 
 <figure>
-<a href="guide/08-file-menu.webp"><img src="guide/08-file-menu.webp" alt="The File menu." width="520" height="700" loading="lazy"></a>
+<a href="guide/08-file-menu.webp" aria-label="Full-size screenshot"><img src="guide/08-file-menu.webp" alt="" width="520" height="700" loading="lazy"></a>
 <figcaption>The File menu.</figcaption>
 </figure>
 
@@ -1405,7 +1402,7 @@ one computer and is cleared with the browser's site data, so the downloaded
 file is the copy that is kept.
 
 <figure>
-<a href="guide/14-open-notebook.webp"><img src="guide/14-open-notebook.webp" alt="The notebook library lists the notebooks stored in this browser." width="1440" height="900" loading="lazy"></a>
+<a href="guide/14-open-notebook.webp" aria-label="Full-size screenshot"><img src="guide/14-open-notebook.webp" alt="" width="1440" height="900" loading="lazy"></a>
 <figcaption>The notebook library lists the notebooks stored in this browser.</figcaption>
 </figure>
 
@@ -1415,10 +1412,12 @@ file is the copy that is kept.
 | Open Notebook… | Opens the library of notebooks stored in this browser. |
 | Load Data… | Opens a CSV or TSV file. |
 | Generate sample data… | Opens the sample-data dialog. |
-| Save As… | Stores a copy under a new name in the browser library. Save still produces the file. |
+| Save As… | Saves the notebook under a new name as a new notebook and writes it to a file, through the browser's Save dialog where there is one. The original stays in the library. |
+| Export Session (.json)… | Downloads the analysis as a small `.carmsession.json`: the data, the mapping and every cell's settings, without results. |
+| Import Session… | Opens a session file as a new notebook and runs every cell again. |
 | Publish | Switches the notebook to a read-only report view: every cell is locked with its current result and the editing controls are hidden. The bar at the top offers Edit, which returns to editing and clears the cached results, and Duplicate to editable copy. |
 | Copy All | Copies the notebook's results for pasting into a document. |
-| Word (.doc) | Downloads a Word document with the notes and results. |
+| Word (.doc) | Downloads a Word document with the notes, the tables and every figure as a picture. |
 | HTML Report | Downloads a report of the results as a web page; the report is not an editable notebook. |
 | Print / PDF | Opens the browser's print dialog, which can save a PDF. |
 | Clear data & cells | Removes the data, the model and the cells from the current notebook. |
@@ -1430,7 +1429,7 @@ file is the copy that is kept.
 ### Locking and sealing
 
 <figure>
-<a href="guide/13-lock-menu.webp"><img src="guide/13-lock-menu.webp" alt="The notebook lock menu in the lower-left corner." width="520" height="480" loading="lazy"></a>
+<a href="guide/13-lock-menu.webp" aria-label="Full-size screenshot"><img src="guide/13-lock-menu.webp" alt="" width="520" height="480" loading="lazy"></a>
 <figcaption>The notebook lock menu in the lower-left corner.</figcaption>
 </figure>
 
@@ -1450,7 +1449,7 @@ locked or sealed.
 ## About, license and citation
 
 <figure>
-<a href="guide/15-about.webp"><img src="guide/15-about.webp" alt="The About window, opened from the footer." width="1440" height="900" loading="lazy"></a>
+<a href="guide/15-about.webp" aria-label="Full-size screenshot"><img src="guide/15-about.webp" alt="" width="1440" height="900" loading="lazy"></a>
 <figcaption>The About window, opened from the footer.</figcaption>
 </figure>
 
