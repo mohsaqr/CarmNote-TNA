@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Carm TNA 2.4.4j — Transition Network Analysis Notebook</title>
+<title>Carm TNA 2.5.0j — Transition Network Analysis Notebook</title>
 <style>
 /* === Reset + Base === */
 * { margin: 0; padding: 0; box-sizing: border-box; }
@@ -1546,7 +1546,7 @@ Exhibit B - "Incompatible With Secondary Licenses" Notice
 <header>
   <!-- Row 1 — identity: brand, notebook title, save -->
   <div class="hdr-row-1">
-    <h1>Carm <b>TNA</b><sup id="nb-version-tag" style="font-size:9px;color:#9aa0a6;font-weight:500;margin-left:4px;letter-spacing:0.5px">2.4.4j</sup></h1>
+    <h1>Carm <b>TNA</b><sup id="nb-version-tag" style="font-size:9px;color:#9aa0a6;font-weight:500;margin-left:4px;letter-spacing:0.5px">2.5.0j</sup></h1>
     <div class="hdr-sep"></div>
     <input id="nb-title-input" class="nb-title-input" type="text" aria-label="Notebook title" placeholder="Name this notebook…" autocomplete="off" spellcheck="false">
     <span id="nb-saved-indicator" class="nb-saved-indicator"></span>
@@ -18321,7 +18321,7 @@ window.unpublish = function() {
 // Flush persistence NOW, bypassing the 2s autosave debounce — so a seal/lock
 // can't be lost by an immediate refresh (the root cause of "lock disappears").
 // Per-notebook build id — injected by build-notebook.cjs; 'dev' under vite.
-var CARM_BUILD = '8483f85·20261118';
+var CARM_BUILD = '93250b6·20261118';
 if (/^__CARM/.test(CARM_BUILD)) CARM_BUILD = 'dev';
 
 // ── Reproducibility certificate (Certified tier) ───────────────────────────
@@ -18874,7 +18874,7 @@ window.saveAs = saveAs;
 // ===========================================================================
 var SESSION_KIND = 'carmnote-session';
 var SESSION_TYPE = 'carm-tna';
-var NB_APP_VERSION = '2.4.4';
+var NB_APP_VERSION = '2.5.0';
 
 function sessionPayload() {
   var st = captureNotebookState();
@@ -20042,11 +20042,11 @@ function applyExperimentalFilter() {
   var tag = document.getElementById('nb-version-tag');
   if (tag) {
     if (on) {
-      tag.innerHTML = '2.4.4j·B';
+      tag.innerHTML = '2.5.0j·B';
       tag.title = 'Experimental mode on — HON / HONEM / HYPA / Mogen / DFG / Path Dep / Case-dropping (edges) visible';
       tag.style.color = '#e07a3a';
     } else {
-      tag.innerHTML = '2.4.4j';
+      tag.innerHTML = '2.5.0j';
       tag.title = 'Curated mode — Markov Order, Stability, Simplicial Complex (toggle the flask in the header to reveal experimentals)';
       tag.style.color = '#9aa0a6';
     }
