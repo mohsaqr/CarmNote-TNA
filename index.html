@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Carm TNA 2.5.0j — Transition Network Analysis Notebook</title>
+<title>Carm TNA 2.5.3j — Transition Network Analysis Notebook</title>
 <style>
 /* === Reset + Base === */
 * { margin: 0; padding: 0; box-sizing: border-box; }
@@ -1546,7 +1546,7 @@ Exhibit B - "Incompatible With Secondary Licenses" Notice
 <header>
   <!-- Row 1 — identity: brand, notebook title, save -->
   <div class="hdr-row-1">
-    <h1>Carm <b>TNA</b><sup id="nb-version-tag" style="font-size:9px;color:#9aa0a6;font-weight:500;margin-left:4px;letter-spacing:0.5px">2.5.0j</sup></h1>
+    <h1>Carm <b>TNA</b><sup id="nb-version-tag" style="font-size:9px;color:#9aa0a6;font-weight:500;margin-left:4px;letter-spacing:0.5px">2.5.3j</sup></h1>
     <div class="hdr-sep"></div>
     <input id="nb-title-input" class="nb-title-input" type="text" aria-label="Notebook title" placeholder="Name this notebook…" autocomplete="off" spellcheck="false">
     <span id="nb-saved-indicator" class="nb-saved-indicator"></span>
@@ -18178,6 +18178,7 @@ var LS_KEY = 'carm-tna-state';          // legacy single-slot key (migrated on b
 var LS_LIBRARY = 'carm-tna-library';     // JSON array of {id,title,updatedAt,rows,cells}
 var LS_CURRENT = 'carm-tna-current';     // id of the active notebook
 var LS_NB_PREFIX = 'carm-tna-nb:';       // per-notebook state key: LS_NB_PREFIX + id
+var SS_TAB_NOTEBOOK = 'carm-tna-tab-notebook'; // sessionStorage: this tab's notebook id
 
 // Saved-state format version. Bumped 2 → 3 on 2026-05-25 because the
 // Pattern mining pill (V2.3.47), state-freq cell re-style, treemap default,
@@ -18321,7 +18322,7 @@ window.unpublish = function() {
 // Flush persistence NOW, bypassing the 2s autosave debounce — so a seal/lock
 // can't be lost by an immediate refresh (the root cause of "lock disappears").
 // Per-notebook build id — injected by build-notebook.cjs; 'dev' under vite.
-var CARM_BUILD = '93250b6·20261118';
+var CARM_BUILD = '51f6946·20261119';
 if (/^__CARM/.test(CARM_BUILD)) CARM_BUILD = 'dev';
 
 // ── Reproducibility certificate (Certified tier) ───────────────────────────
@@ -18702,6 +18703,9 @@ function persistCurrentToLibrary() {
     }
   }
   try { localStorage.setItem(LS_CURRENT, S.notebookId); } catch (e) { /* secondary key — quota covered by primary */ }
+  // This tab's own notebook: with notebooks open in several tabs, LS_CURRENT
+  // is whichever saved last, and a reload must come back to this tab's.
+  try { sessionStorage.setItem(SS_TAB_NOTEBOOK, S.notebookId); } catch (e) { /* no sessionStorage: LS_CURRENT decides */ }
   nbUpsertLibraryEntry(S.notebookId, S.notebookTitle, {
     rows: S.data ? S.data.rows.length : 0,
     cells: S.cells.length,
@@ -18874,7 +18878,7 @@ window.saveAs = saveAs;
 // ===========================================================================
 var SESSION_KIND = 'carmnote-session';
 var SESSION_TYPE = 'carm-tna';
-var NB_APP_VERSION = '2.5.0';
+var NB_APP_VERSION = '2.5.3';
 
 function sessionPayload() {
   var st = captureNotebookState();
@@ -18975,7 +18979,7 @@ function openSessionState(st, fromVersion) {
   // included, which browser storage may not hold) rather than leave a mix.
   var before = Object.assign({}, S);
   try {
-    applyState(st);
+    applyState(st, { rerun: false });   // re-run below, with a report
   } catch (err) {
     var _rb = document.getElementById('carm-restore-banner');
     if (_rb) _rb.remove();
@@ -19036,6 +19040,22 @@ function newNotebook() {
   renderAllCells();
   flashSaved('New notebook');
 }
+
+// New (header button, File ▸ New Notebook): the open notebook stays in this
+// tab and a blank one opens in a new tab (2026-11-19, the owner: "Can new keep
+// this and open a new one in another tab?"). The new tab is the same file with
+// #new, which the boot below reads. Where the browser blocks the tab, the
+// blank notebook opens here as before, and the header says why.
+function openNewNotebookTab() {
+  persistCurrentToLibrary();
+  var url = location.href.split('#')[0] + '#new';
+  var w = null;
+  try { w = window.open(url, '_blank'); } catch (e) { w = null; }
+  if (w) { try { w.opener = null; } catch (e) {} flashSaved('New notebook opened in a new tab'); return; }
+  newNotebook();
+  flashSaved('New notebook (the browser did not open a new tab)');
+}
+window.openNewNotebookTab = openNewNotebookTab;
 
 // Clear — wipe data + cells but keep the current notebook slot (still in library).
 function clearAll() {
@@ -19469,7 +19489,7 @@ document.addEventListener('change', function(e) {
 
 (function() {
   var newBtn = document.getElementById('btn-new');
-  if (newBtn) newBtn.addEventListener('click', function() { newNotebook(); });
+  if (newBtn) newBtn.addEventListener('click', function() { openNewNotebookTab(); });
 })();
 
 // Dynalytics-style "Sequence Data" inspector — overlay modal listing the
@@ -19657,7 +19677,7 @@ function showSequenceDataModal() {
     if (!btn) return;
     fileDrop.classList.remove('show');
     var action = btn.getAttribute('data-action');
-    if (action === 'new') newNotebook();
+    if (action === 'new') openNewNotebookTab();
     else if (action === 'open') openNotebookPicker();
     else if (action === 'save-as') saveAs();
     else if (action === 'export-session') exportSession();
@@ -20042,11 +20062,11 @@ function applyExperimentalFilter() {
   var tag = document.getElementById('nb-version-tag');
   if (tag) {
     if (on) {
-      tag.innerHTML = '2.5.0j·B';
+      tag.innerHTML = '2.5.3j·B';
       tag.title = 'Experimental mode on — HON / HONEM / HYPA / Mogen / DFG / Path Dep / Case-dropping (edges) visible';
       tag.style.color = '#e07a3a';
     } else {
-      tag.innerHTML = '2.5.0j';
+      tag.innerHTML = '2.5.3j';
       tag.title = 'Curated mode — Markov Order, Stability, Simplicial Complex (toggle the flask in the header to reveal experimentals)';
       tag.style.color = '#9aa0a6';
     }
@@ -20262,6 +20282,20 @@ function restoreFromEmbedded() {
 
 function autoRestore() {
   try {
+    // A reload restores this tab's own notebook first (several tabs share one
+    // library and one LS_CURRENT), even under a new build: a refresh never
+    // takes the work off screen. A new build opened in a NEW tab has no tab
+    // pointer, so the per-build fresh start below still applies to it — the
+    // same rule as the analytics core ("THIS TAB's own, always").
+    var tabId = null;
+    try { tabId = sessionStorage.getItem(SS_TAB_NOTEBOOK); } catch (e) { tabId = null; }
+    if (tabId) {
+      var rawTab = localStorage.getItem(LS_NB_PREFIX + tabId);
+      if (rawTab) {
+        var svTab = JSON.parse(rawTab);
+        if (_isCompatibleSave(svTab)) { applyState(svTab); return true; }
+      }
+    }
     // Prefer the per-id slot pointed to by LS_CURRENT.
     var currentId = localStorage.getItem(LS_CURRENT);
     if (currentId) {
@@ -20342,7 +20376,8 @@ var DERIVED_STATE_KEYS = ['sequences', 'model', 'groupModel', 'groupLabels', 'ac
   'rowSpans', 'eventTimes', 'meta', 'metaCols', 'columnWarnings',
   'clusterLabels', 'clusterK', 'clusterMethod', 'clusterAssignments', 'clusterSilhouette', 'clusterDissimilarity',
   'mmmLabels', 'mmmK', 'mmmAssignments'];
-function applyState(sv) {
+// opts.rerun === false: the caller re-runs the cells itself (session import).
+function applyState(sv, opts) {
   DERIVED_STATE_KEYS.forEach(function(k) { S[k] = null; });
   // The open notebook's cells leave the page first. renderAllCells() reads
   // each cell's form and result back from the element with the same id, and
@@ -20510,6 +20545,15 @@ function applyState(sv) {
   renderSealStamp();
   renderLockMenuState();
   if (S.lockTier === 'sealed') verifyIntegrity();   // async, non-blocking
+  // Results are not restored (above: they are recomputed), so the cells run
+  // again now. Nothing ran them before: every reopened notebook — New then
+  // Open, a reload, a saved file — showed empty cells that read as a wiped
+  // analysis (2026-11-19, the owner: "The new icon wipes out all existing
+  // note?"). Locked cells keep their frozen result and are skipped.
+  if (!(opts && opts.rerun === false) && S.sequences && S.sequences.length &&
+      S.cells.some(function(c) { return !c.locked && c.type !== 'text'; })) {
+    setTimeout(function() { _rerunCells(true); }, 0);
+  }
 }
 
 // INIT — embedded state takes priority over localStorage
@@ -20618,7 +20662,19 @@ PO_NUMERIC.forEach(function(f) {
 var _carmPoReset = document.getElementById('po-reset');
 if (_carmPoReset) _carmPoReset.addEventListener('click', function() { setTimeout(_carmSaveNS, 0); });
 
-if (!restoreFromEmbedded() && !autoRestore()) {
+// A tab opened by New (#new) starts a blank notebook of its own, even when
+// this file carries a saved notebook; the address loses the #new so a reload
+// restores the tab's notebook.
+var _newTabBoot = location.hash === '#new';
+if (_newTabBoot) {
+  try { history.replaceState(null, '', location.href.split('#')[0]); } catch (e) {}
+  var _embeddedState = document.getElementById('carm-tna-state');
+  if (_embeddedState) _embeddedState.textContent = '';
+  S.notebookId = null; S.notebookTitle = '';
+  ensureNotebookIdentity();
+  persistCurrentToLibrary();
+  renderAllCells();
+} else if (!restoreFromEmbedded() && !autoRestore()) {
   ensureNotebookIdentity();
   persistCurrentToLibrary();
   renderAllCells();
