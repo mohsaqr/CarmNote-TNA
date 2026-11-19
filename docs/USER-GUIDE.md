@@ -13,7 +13,7 @@ the browser on the local machine, and the file works without a server, an
 account or an internet connection.
 
 This guide follows one analysis from an empty notebook to a sealed,
-shareable copy. Every figure is a screenshot of CarmNote TNA 2.5.3
+shareable copy. Every figure is a screenshot of CarmNote TNA 2.5.5
 running on the seeded sample data that the notebook generates itself, and
 every number quoted in the text is read from those screenshots. The
 settings tables list each control with the default it has in that release
@@ -81,7 +81,7 @@ header.
 ## The notebook window
 
 <figure>
-<a href="guide/01-start.webp?v=2.5.3" aria-label="Full-size screenshot"><img src="guide/01-start.webp?v=2.5.3" alt="" width="1440" height="900" loading="lazy"></a>
+<a href="guide/01-start.webp?v=2.5.5" aria-label="Full-size screenshot"><img src="guide/01-start.webp?v=2.5.5" alt="" width="1440" height="900" loading="lazy"></a>
 <figcaption>A new notebook, ready for data.</figcaption>
 </figure>
 
@@ -89,7 +89,7 @@ A new notebook starts empty. Data enters by dropping a CSV or TSV file on
 the page or with Generate sample data (see [Data](#data)).
 
 <figure>
-<a href="guide/02-header.webp?v=2.5.3" aria-label="Full-size screenshot"><img src="guide/02-header.webp?v=2.5.3" alt="" width="1440" height="78" loading="lazy"></a>
+<a href="guide/02-header.webp?v=2.5.5" aria-label="Full-size screenshot"><img src="guide/02-header.webp?v=2.5.5" alt="" width="1440" height="78" loading="lazy"></a>
 <figcaption>The header and the menu bar.</figcaption>
 </figure>
 
@@ -128,7 +128,7 @@ bundled in the notebook file; the data are drawn from a seeded model at the
 moment of the click, so the same settings always produce the same data.
 
 <figure>
-<a href="guide/03-sample-dialog.webp?v=2.5.3" aria-label="Full-size screenshot"><img src="guide/03-sample-dialog.webp?v=2.5.3" alt="" width="600" height="362" loading="lazy"></a>
+<a href="guide/03-sample-dialog.webp?v=2.5.5" aria-label="Full-size screenshot"><img src="guide/03-sample-dialog.webp?v=2.5.5" alt="" width="600" height="362" loading="lazy"></a>
 <figcaption>The sample-data dialog. The summary line states what will be produced: 1,000 sequences of 10 events over 8 states, saved under the name sample_learning_100x10x10_seed14.csv.</figcaption>
 </figure>
 
@@ -187,7 +187,7 @@ its guess in the Format selector, where it can be changed.
 ### Mapping a long file
 
 <figure>
-<a href="guide/04-data-card.webp?v=2.5.3" aria-label="Full-size screenshot"><img src="guide/04-data-card.webp?v=2.5.3" alt="" width="860" height="284" loading="lazy"></a>
+<a href="guide/04-data-card.webp?v=2.5.5" aria-label="Full-size screenshot"><img src="guide/04-data-card.webp?v=2.5.5" alt="" width="860" height="284" loading="lazy"></a>
 <figcaption>The data card after the sample data are loaded: file name and size, the Format selector, a preview of the first rows and the column mapping. The notebook recognized student as Actor, action as Action, timestamp as Time, session as Session and achievement as Group.</figcaption>
 </figure>
 
@@ -219,7 +219,7 @@ session as Session give 1,000 sequences of ten events each.
 ### Mapping a wide file
 
 <figure>
-<a href="guide/04b-wide-format.webp?v=2.5.3" aria-label="Full-size screenshot"><img src="guide/04b-wide-format.webp?v=2.5.3" alt="" width="860" height="284" loading="lazy"></a>
+<a href="guide/04b-wide-format.webp?v=2.5.5" aria-label="Full-size screenshot"><img src="guide/04b-wide-format.webp?v=2.5.5" alt="" width="860" height="284" loading="lazy"></a>
 <figcaption>A wide file of 40 sequences. The id column holds the sequence identifier, the states run from T1 to T6, and group stays outside the span as metadata.</figcaption>
 </figure>
 
@@ -242,7 +242,7 @@ transition network that the network analyses need. Clear All keeps the data
 but removes the sequences, the model and every cell.
 
 <figure>
-<a href="guide/06-collapsed-card.webp?v=2.5.3" aria-label="Full-size screenshot"><img src="guide/06-collapsed-card.webp?v=2.5.3" alt="" width="860" height="44" loading="lazy"></a>
+<a href="guide/06-collapsed-card.webp?v=2.5.5" aria-label="Full-size screenshot"><img src="guide/06-collapsed-card.webp?v=2.5.5" alt="" width="860" height="44" loading="lazy"></a>
 <figcaption>After the first build the data card folds into one line with the file name, its size and the saved mapping. A click on the line opens it again.</figcaption>
 </figure>
 
@@ -255,7 +255,7 @@ notebook to its empty state for a new file.
 ### Checking the sequences
 
 <figure>
-<a href="guide/07-sequence-data.webp?v=2.5.3" aria-label="Full-size screenshot"><img src="guide/07-sequence-data.webp?v=2.5.3" alt="" width="1440" height="900" loading="lazy"></a>
+<a href="guide/07-sequence-data.webp?v=2.5.5" aria-label="Full-size screenshot"><img src="guide/07-sequence-data.webp?v=2.5.5" alt="" width="1440" height="900" loading="lazy"></a>
 <figcaption>The Sequence Data window lists every processed sequence with its actor and length. Here: 1,000 sequences over 8 unique states. CSV downloads the list.</figcaption>
 </figure>
 
@@ -269,7 +269,7 @@ order of states within them.
 ### Adding a cell
 
 <figure>
-<a href="guide/09-validate-menu.webp?v=2.5.3" aria-label="Full-size screenshot"><img src="guide/09-validate-menu.webp?v=2.5.3" alt="" width="700" height="460" loading="lazy"></a>
+<a href="guide/09-validate-menu.webp?v=2.5.5" aria-label="Full-size screenshot"><img src="guide/09-validate-menu.webp?v=2.5.5" alt="" width="700" height="460" loading="lazy"></a>
 <figcaption>The Validate menu. Each item names a cell and gives a one-line description of it.</figcaption>
 </figure>
 
@@ -281,7 +281,7 @@ for example that the data settings must be saved first.
 ### The parts of a cell
 
 <figure>
-<a href="guide/05-network-cell.webp?v=2.5.3" aria-label="Full-size screenshot"><img src="guide/05-network-cell.webp?v=2.5.3" alt="" width="860" height="961" loading="lazy"></a>
+<a href="guide/05-network-cell.webp?v=2.5.5" aria-label="Full-size screenshot"><img src="guide/05-network-cell.webp?v=2.5.5" alt="" width="860" height="961" loading="lazy"></a>
 <figcaption>A Network cell. The header row carries the cell type, a help button, the run time and the cell controls; below it are the form, the run button and the result.</figcaption>
 </figure>
 
@@ -304,12 +304,12 @@ options. Under each figure, Accessible chart text holds a text description
 of what the chart shows.
 
 <figure>
-<a href="guide/12-network-table.webp?v=2.5.3" aria-label="Full-size screenshot"><img src="guide/12-network-table.webp?v=2.5.3" alt="" width="860" height="559" loading="lazy"></a>
+<a href="guide/12-network-table.webp?v=2.5.5" aria-label="Full-size screenshot"><img src="guide/12-network-table.webp?v=2.5.5" alt="" width="860" height="559" loading="lazy"></a>
 <figcaption>The Table tab of the Network cell lists the edges with their weights.</figcaption>
 </figure>
 
 <figure>
-<a href="guide/10-cell-export.webp?v=2.5.3" aria-label="Full-size screenshot"><img src="guide/10-cell-export.webp?v=2.5.3" alt="" width="440" height="300" loading="lazy"></a>
+<a href="guide/10-cell-export.webp?v=2.5.5" aria-label="Full-size screenshot"><img src="guide/10-cell-export.webp?v=2.5.5" alt="" width="440" height="300" loading="lazy"></a>
 <figcaption>The Export menu in the cell header: CSV, Word, PNG and SVG files of the cell's result, or a copy to the clipboard.</figcaption>
 </figure>
 
@@ -323,12 +323,12 @@ Settings, in the toolbar above a network plot, opens the plot options. The optio
 the notebook; they change the drawing only and leave the model unchanged.
 
 <figure>
-<a href="guide/11-plot-settings.webp?v=2.5.3" aria-label="Full-size screenshot"><img src="guide/11-plot-settings.webp?v=2.5.3" alt="" width="1440" height="900" loading="lazy"></a>
+<a href="guide/11-plot-settings.webp?v=2.5.5" aria-label="Full-size screenshot"><img src="guide/11-plot-settings.webp?v=2.5.5" alt="" width="1440" height="900" loading="lazy"></a>
 <figcaption>The plot options open beside the notebook. Changes apply immediately to every network plot.</figcaption>
 </figure>
 
 <figure>
-<a href="guide/11b-plot-options-panel.webp?v=2.5.3" aria-label="Full-size screenshot"><img src="guide/11b-plot-options-panel.webp?v=2.5.3" alt="" width="360" height="1070" loading="lazy"></a>
+<a href="guide/11b-plot-options-panel.webp?v=2.5.5" aria-label="Full-size screenshot"><img src="guide/11b-plot-options-panel.webp?v=2.5.5" alt="" width="360" height="1070" loading="lazy"></a>
 <figcaption>The complete plot options panel.</figcaption>
 </figure>
 
@@ -346,20 +346,36 @@ appearance. Hide edges changes only what is drawn. The Prune setting of the
 Network cell removes edges from the model itself, which changes every
 analysis downstream.
 
-### Group axis
+### Analyze: the whole network, groups or clusters
 
-Many cells have a Group axis control. It decides whether the cell analyses
-one network or one network per group, and which grouping it uses.
+Every analysis cell has an Analyze control. It decides what the cell runs on.
 
-| Option | Grouping |
+| Option | What the cell analyses |
 |---|---|
-| Auto (active) | The grouping of the most recent Groups, Cluster sequences or Mixture Markov model cell; one network when none exists. |
-| Group column | The Group column of the data mapping. |
-| Clusters | The clusters of the most recent clustering cell. |
-| Last observation | Groups sequences by their final state. |
+| Whole network | All sequences, with the network the Network cell built. |
+| *set*: every group | Each group of a set, side by side or one after another. |
+| *set*: *group* | One group on its own, for example Clusters (k=3): Cluster 2. |
 
-In this guide a Groups cell on achievement is added first, so the cells that
-follow show the High and Low groups side by side.
+A set is the Group column of the data card, or the groups a Groups, Cluster
+sequences or Mixture Markov model cell built; each such cell adds its set to
+every Analyze list once it has run. The network of each cluster, of each
+mixture component and of each value of the Group column is built as the
+Network cell builds the whole network (Type, Scaling, Prune, start and end
+states); the networks of a Groups cell keep the Type and Scaling chosen in
+that cell.
+
+A cell that analyses one population starts on the Whole network, and a
+comparison cell (the Compare and Pattern comparison cells) starts on the most
+recently built set; a comparison never offers one network. The choice is
+saved with the notebook. When it can no longer be honoured, because the cell
+that built the set was removed or a cluster no longer exists after a new
+clustering, the cell says so and names what to pick. Cells run one at a time,
+and Run All runs the Network cells first, then the cells that build sets,
+then the rest, so a cell may analyse a set that a cell further down builds.
+
+In this guide a Groups cell on achievement is added first, and the cells that
+follow analyse its every group, so they show the High and Low groups side by
+side.
 
 ### Running and locking
 
@@ -379,7 +395,7 @@ added by Build → Network or by the Build Network button of the data card,
 and the network analyses use the model it builds.
 
 <figure>
-<a href="guide/05b-network-form.webp?v=2.5.3" aria-label="Full-size screenshot"><img src="guide/05b-network-form.webp?v=2.5.3" alt="" width="860" height="127" loading="lazy"></a>
+<a href="guide/05b-network-form.webp?v=2.5.5" aria-label="Full-size screenshot"><img src="guide/05b-network-form.webp?v=2.5.5" alt="" width="860" height="127" loading="lazy"></a>
 <figcaption>The Network cell's settings.</figcaption>
 </figure>
 
@@ -419,16 +435,15 @@ strongest self-loop is Watch → Watch (.31).
 ### Groups
 
 <figure class="fig-tall">
-<a href="guide/cell-group.webp?v=2.5.3" aria-label="Full-size screenshot"><img src="guide/cell-group.webp?v=2.5.3" alt="" width="860" height="2768" loading="lazy"></a>
+<a href="guide/cell-group.webp?v=2.5.5" aria-label="Full-size screenshot"><img src="guide/cell-group.webp?v=2.5.5" alt="" width="860" height="2768" loading="lazy"></a>
 <figcaption>Groups on the achievement column: one network for the 530 sequences of the High group and one for the 470 sequences of the Low group, followed by summary tables.</figcaption>
 </figure>
 
 The Groups cell estimates one network per group. It is the basis for every
 comparison of groups. Groups from takes the groups from a column of the
 data, from the clusters of the last Cluster sequences run or from the
-components of the last Mixture Markov model. Once built, the groups are
-used by every later cell that works by group, from Sequences and
-Centrality measures to the Compare cells and HON.
+components of the last Mixture Markov model. Once built, the groups appear
+in the Analyze control of every cell (see [Analyze](#analyze-the-whole-network-groups-or-clusters)).
 
 | Control | Default | What it sets |
 |---|---|---|
@@ -446,7 +461,7 @@ with the Compare cells before they are interpreted.
 ### Cluster sequences
 
 <figure class="fig-tall">
-<a href="guide/cell-cluster.webp?v=2.5.3" aria-label="Full-size screenshot"><img src="guide/cell-cluster.webp?v=2.5.3" alt="" width="860" height="1638" loading="lazy"></a>
+<a href="guide/cell-cluster.webp?v=2.5.5" aria-label="Full-size screenshot"><img src="guide/cell-cluster.webp?v=2.5.5" alt="" width="860" height="1660" loading="lazy"></a>
 <figcaption>Three clusters from Hamming distances and PAM. The header line reports a silhouette of 0.028 and cluster sizes of 486, 281 and 233; each cluster is shown as a state distribution plot.</figcaption>
 </figure>
 
@@ -470,14 +485,14 @@ Jaro-Winkler). Hamming suits aligned sequences of equal length. The
 silhouette coefficient in the header measures how well separated the
 clusters are; values near zero, as in the sample data, indicate that the
 sequences do not form distinct clusters. Show selects state distribution
-plots, a membership table, or a TNA network per cluster. Use these clusters
-as groups, under the result, adds a Groups cell built from the clusters, so
-that the later cells analyse each cluster as a group.
+plots, a membership table, or a TNA network per cluster. Once the cell has
+run, its clusters appear in the Analyze control of every cell, each one or
+every one, and the comparison cells use them by default.
 
 ### Mixture Markov model
 
 <figure class="fig-tall">
-<a href="guide/cell-mmm.webp?v=2.5.3" aria-label="Full-size screenshot"><img src="guide/cell-mmm.webp?v=2.5.3" alt="" width="860" height="1370" loading="lazy"></a>
+<a href="guide/cell-mmm.webp?v=2.5.5" aria-label="Full-size screenshot"><img src="guide/cell-mmm.webp?v=2.5.5" alt="" width="860" height="1392" loading="lazy"></a>
 <figcaption>A two-component mixture Markov model with five restarts. The header reports the log-likelihood (−19402.60), the BIC (39682.5), the average posterior probability (0.854), convergence in 104 iterations and component sizes of 495 and 505.</figcaption>
 </figure>
 
@@ -504,20 +519,21 @@ refitted with a higher cap. The fit-quality table gives each component's
 mixing proportion, its average posterior probability (AvePP) and its
 size; an AvePP close to one indicates well-separated components. Alpha adds
 a small count to every transition so that transitions unseen in a component
-keep a non-zero probability. Use these clusters as groups, under the result,
-turns the components into groups for the later cells.
+keep a non-zero probability. Once the cell has run, its components appear in
+the Analyze control of every cell, as the clusters of Cluster sequences do.
 
 ## Describe
 
 ### State frequencies
 
 <figure>
-<a href="guide/cell-states-freq.webp?v=2.5.3" aria-label="Full-size screenshot"><img src="guide/cell-states-freq.webp?v=2.5.3" alt="" width="860" height="560" loading="lazy"></a>
+<a href="guide/cell-states-freq.webp?v=2.5.5" aria-label="Full-size screenshot"><img src="guide/cell-states-freq.webp?v=2.5.5" alt="" width="860" height="1001" loading="lazy"></a>
 <figcaption>State frequencies for the High and Low groups. Watch accounts for 8.7% of High events and 24.6% of Low events.</figcaption>
 </figure>
 
 | Control | Default | What it sets |
 |---|---|---|
+| Analyze | Whole network | What this analysis runs on: the whole network, every group of a set (each analysed on its own), or one group. Sets are the Group column and what Groups, Cluster sequences and Mixture Markov model cells built. |
 | Treemap | on | — |
 | Bar chart | off | — |
 | Frequency table | on | — |
@@ -530,12 +546,13 @@ about the order of states.
 ### State mosaic
 
 <figure>
-<a href="guide/cell-states-mosaic.webp?v=2.5.3" aria-label="Full-size screenshot"><img src="guide/cell-states-mosaic.webp?v=2.5.3" alt="" width="860" height="641" loading="lazy"></a>
+<a href="guide/cell-states-mosaic.webp?v=2.5.5" aria-label="Full-size screenshot"><img src="guide/cell-states-mosaic.webp?v=2.5.5" alt="" width="860" height="676" loading="lazy"></a>
 <figcaption>The state mosaic for High and Low. Column widths follow group size and row heights follow state frequency; colors show standardized residuals. The test of independence gives χ²(7) = 598.95.</figcaption>
 </figure>
 
 | Control | Default | What it sets |
 |---|---|---|
+| Analyze | Whole network | What this analysis runs on: the whole network, every group of a set (each analysed on its own), or one group. Sets are the Group column and what Groups, Cluster sequences and Mixture Markov model cells built. |
 | Nested by actor (student) | off | Sequences nested in the mapped Actor column (several sessions per actor). Adds association tests that allow for counts from one actor being alike (Nestimate mosaic_test). Off = sequence-level, as before. |
 | GLMM (slow) | off | Add the log-linear Poisson mixed model (lme4::glmer, nAGQ = 0). It fits iteratively and can take several seconds. |
 
@@ -548,12 +565,13 @@ practical terms. For a single network the cell plots a transition mosaic.
 ### Transition weights
 
 <figure>
-<a href="guide/cell-states-weights.webp?v=2.5.3" aria-label="Full-size screenshot"><img src="guide/cell-states-weights.webp?v=2.5.3" alt="" width="860" height="896" loading="lazy"></a>
+<a href="guide/cell-states-weights.webp?v=2.5.5" aria-label="Full-size screenshot"><img src="guide/cell-states-weights.webp?v=2.5.5" alt="" width="860" height="931" loading="lazy"></a>
 <figcaption>The edge-weight histogram and the weight matrix. The mean edge weight is 0.125 and the median 0.105.</figcaption>
 </figure>
 
 | Control | Default | What it sets |
 |---|---|---|
+| Analyze | Whole network | What this analysis runs on: the whole network, every group of a set (each analysed on its own), or one group. Sets are the Group column and what Groups, Cluster sequences and Mixture Markov model cells built. |
 | Weight matrix table | on | — |
 | Edge-weight histogram | on | — |
 
@@ -576,7 +594,7 @@ order. The resampling methods answer different questions.
 ### Bootstrap (edges)
 
 <figure class="fig-tall">
-<a href="guide/cell-bootstrap.webp?v=2.5.3" aria-label="Full-size screenshot"><img src="guide/cell-bootstrap.webp?v=2.5.3" alt="" width="860" height="2609" loading="lazy"></a>
+<a href="guide/cell-bootstrap.webp?v=2.5.5" aria-label="Full-size screenshot"><img src="guide/cell-bootstrap.webp?v=2.5.5" alt="" width="860" height="2644" loading="lazy"></a>
 <figcaption>Bootstrap of the High and Low networks with 1,000 resamples: 35 of 64 edges are significant in the High network. Significant edges are drawn solid and the others dashed; the table lists each edge's weight, bootstrap mean, confidence interval and p-value.</figcaption>
 </figure>
 
@@ -588,6 +606,7 @@ the probability cutoff, when its bootstrap mean is at or above the cutoff.
 
 | Control | Default | What it sets |
 |---|---|---|
+| Analyze | Whole network | What this analysis runs on: the whole network, every group of a set (each analysed on its own), or one group. Sets are the Group column and what Groups, Cluster sequences and Mixture Markov model cells built. |
 | Iterations | 1000 | — |
 | Significance | 0.05 | — |
 | Edge filter | consistency range | Consistency range: keep edges whose bootstrap mean falls in [lower, upper]. Probability cutoff: keep edges whose bootstrap mean ≥ cutoff. Options: consistency range, probability cutoff. |
@@ -606,7 +625,7 @@ minimum; an edge close to the threshold needs more.
 ### Centrality stability
 
 <figure class="fig-tall">
-<a href="guide/cell-stability.webp?v=2.5.3" aria-label="Full-size screenshot"><img src="guide/cell-stability.webp?v=2.5.3" alt="" width="860" height="1526" loading="lazy"></a>
+<a href="guide/cell-stability.webp?v=2.5.5" aria-label="Full-size screenshot"><img src="guide/cell-stability.webp?v=2.5.5" alt="" width="860" height="1560" loading="lazy"></a>
 <figcaption>Case-dropping curves for the High and Low groups. The correlation between centralities in the full data and in the reduced data is plotted against the share of sequences dropped; the dashed line marks the threshold of 0.7.</figcaption>
 </figure>
 
@@ -618,6 +637,7 @@ share of resamples.
 
 | Control | Default | What it sets |
 |---|---|---|
+| Analyze | Whole network | What this analysis runs on: the whole network, every group of a set (each analysed on its own), or one group. Sets are the Group column and what Groups, Cluster sequences and Mixture Markov model cells built. |
 | Iterations | 1000 | Resamples per drop proportion. R default: 1000 (estimate_cs in tna 1.2.1). Lower for quick exploration. |
 | Drop % | 0.1,0.2,0.3,0.4,0.5,0.6,0.7,0.8,0.9 | Comma-separated proportions of cases to drop at each step (engine default 0.1,0.2,…,0.9). Empty = engine default. |
 | Threshold | 0.7 | CS threshold the correlation has to maintain (default 0.7) |
@@ -626,7 +646,6 @@ share of resamples.
 | Loops | off | Include self-loops when computing centralities. R default: FALSE (estimate_cs in tna 1.2.1). |
 | Seed | 14 | Seed for reproducibility (default 14). Clear to use the engine's default seed. |
 | Nested by actor (student) | off | Sequences nested in the mapped Actor column (several sessions per actor). Drops whole actors with all their sequences; drop proportions are shares of actors (tna::estimate_cs actor =). Off = sequence-level, as before. |
-| Group axis | Auto (active) | Group axis: Auto=last-built group/clustering; Clusters=last clustering run; Column=re-derive from group column; Last observation=group by final state of each sequence. Options: Auto (active), Group column, Clusters, Last observation. |
 | Case-dropping plot | on | — |
 | Table | on | — |
 
@@ -640,7 +659,7 @@ the Low network are not interpretable.
 ### Case-dropping (edges)
 
 <figure>
-<a href="guide/cell-edge-reliab.webp?v=2.5.3" aria-label="Full-size screenshot"><img src="guide/cell-edge-reliab.webp?v=2.5.3" alt="" width="860" height="805" loading="lazy"></a>
+<a href="guide/cell-edge-reliab.webp?v=2.5.5" aria-label="Full-size screenshot"><img src="guide/cell-edge-reliab.webp?v=2.5.5" alt="" width="860" height="840" loading="lazy"></a>
 <figcaption>Edge stability under case-dropping: correlation and absolute differences between the full and reduced edge weights. The CS coefficient for the edges is 0.90.</figcaption>
 </figure>
 
@@ -651,6 +670,7 @@ level, and an edge-stability coefficient defined like the CS coefficient.
 
 | Control | Default | What it sets |
 |---|---|---|
+| Analyze | Whole network | What this analysis runs on: the whole network, every group of a set (each analysed on its own), or one group. Sets are the Group column and what Groups, Cluster sequences and Mixture Markov model cells built. |
 | Iterations | 1000 | Number of case-drop iterations per proportion. R default: 1000 (estimate_es in tna 1.2.1). Lower for quick exploration. |
 | Drop % | 0.05,0.10,0.15,0.20,0.25,0.30,0.35,0.40,0.45,0.50,0.55,0.60,0.65,0.70,0.75,0.80,0.85,0.90 | Comma-separated proportions of cases to drop. R default: seq(0.05, 0.9, by = 0.05) — 5 % steps. |
 | Method | Pearson | Correlation method used to compare edge-weight vectors. R default: pearson. Options: Pearson, Spearman, Kendall. |
@@ -661,7 +681,7 @@ level, and an edge-stability coefficient defined like the CS coefficient.
 ### Reliability (whole model)
 
 <figure>
-<a href="guide/cell-reliability.webp?v=2.5.3" aria-label="Full-size screenshot"><img src="guide/cell-reliability.webp?v=2.5.3" alt="" width="860" height="1205" loading="lazy"></a>
+<a href="guide/cell-reliability.webp?v=2.5.5" aria-label="Full-size screenshot"><img src="guide/cell-reliability.webp?v=2.5.5" alt="" width="860" height="1249" loading="lazy"></a>
 <figcaption>Split-half reliability with 1,000 random splits. The mean absolute difference between the two halves' edge weights averages 0.016, and their Pearson correlation averages 0.953.</figcaption>
 </figure>
 
@@ -672,6 +692,7 @@ many splits show how consistently the data determine the network.
 
 | Control | Default | What it sets |
 |---|---|---|
+| Analyze | Whole network | What this analysis runs on: the whole network, every group of a set (each analysed on its own), or one group. Sets are the Group column and what Groups, Cluster sequences and Mixture Markov model cells built. |
 | Iterations | 1000 | Number of random splits to perform. R default: 1000 (reliability in tna 1.2.1). Lower for quick exploration. |
 | Split ratio | 0.5 | Fraction of sequences placed in the first half (the rest go to the second half) |
 | Scaling | None | Scaling applied to the split-half models before comparison. Leave None to inherit from the parent network. Options: None, Min-Max, Max, Rank. |
@@ -681,7 +702,7 @@ many splits show how consistently the data determine the network.
 ### Markov order test
 
 <figure>
-<a href="guide/cell-markov-order.webp?v=2.5.3" aria-label="Full-size screenshot"><img src="guide/cell-markov-order.webp?v=2.5.3" alt="" width="860" height="1012" loading="lazy"></a>
+<a href="guide/cell-markov-order.webp?v=2.5.5" aria-label="Full-size screenshot"><img src="guide/cell-markov-order.webp?v=2.5.5" alt="" width="860" height="1047" loading="lazy"></a>
 <figcaption>The Markov order test selects order 1: the permutation likelihood-ratio test, BIC and AIC all favour the first-order model.</figcaption>
 </figure>
 
@@ -694,6 +715,7 @@ order.
 
 | Control | Default | What it sets |
 |---|---|---|
+| Analyze | Whole network | What this analysis runs on: the whole network, every group of a set (each analysed on its own), or one group. Sets are the Group column and what Groups, Cluster sequences and Mixture Markov model cells built. |
 | Max order | 2 | Highest Markov order to test. 2 is a safe default; order ≥3 can OOM on large datasets because the k-gram state space grows fast. |
 | Permutations | 500 | Within-context permutations per order |
 | α | 0.05 | Significance level for sequential order selection |
@@ -709,7 +731,7 @@ order, so orders above 2 or 3 can exhaust memory on large data.
 ### Centrality measures
 
 <figure class="fig-tall">
-<a href="guide/cell-centrality.webp?v=2.5.3" aria-label="Full-size screenshot"><img src="guide/cell-centrality.webp?v=2.5.3" alt="" width="860" height="2466" loading="lazy"></a>
+<a href="guide/cell-centrality.webp?v=2.5.5" aria-label="Full-size screenshot"><img src="guide/cell-centrality.webp?v=2.5.5" alt="" width="860" height="2488" loading="lazy"></a>
 <figcaption>Centralities for the High and Low networks. In the High network Write has the highest InStrength (1.225).</figcaption>
 </figure>
 
@@ -717,9 +739,9 @@ Centralities rank states by their position in the network.
 
 | Control | Default | What it sets |
 |---|---|---|
+| Analyze | Whole network | What this analysis runs on: the whole network, every group of a set (each analysed on its own), or one group. Sets are the Group column and what Groups, Cluster sequences and Mixture Markov model cells built. |
 | Normalize | off | — |
 | Include loops in centrality | off | Include self-loops when computing centralities. R default: FALSE (matches centralities() in tna 1.2.1). |
-| Group axis | Auto (active) | Group axis: Auto=last-built group/clustering; Clusters=last clustering run; Column=re-derive from group column; Last observation=group by final state of each sequence. Options: Auto (active), Group column, Clusters, Last observation. |
 | Charts | on | — |
 | Table | on | — |
 
@@ -744,7 +766,7 @@ Centralities are interpreted together with their stability (see
 ### Edge betweenness plot
 
 <figure class="fig-tall">
-<a href="guide/cell-betweenness.webp?v=2.5.3" aria-label="Full-size screenshot"><img src="guide/cell-betweenness.webp?v=2.5.3" alt="" width="860" height="2786" loading="lazy"></a>
+<a href="guide/cell-betweenness.webp?v=2.5.5" aria-label="Full-size screenshot"><img src="guide/cell-betweenness.webp?v=2.5.5" alt="" width="860" height="2821" loading="lazy"></a>
 <figcaption>Edge betweenness of the High and Low networks. The width of each edge is its betweenness.</figcaption>
 </figure>
 
@@ -755,16 +777,16 @@ transition probability.
 
 | Control | Default | What it sets |
 |---|---|---|
+| Analyze | Whole network | What this analysis runs on: the whole network, every group of a set (each analysed on its own), or one group. Sets are the Group column and what Groups, Cluster sequences and Mixture Markov model cells built. |
 | Network | on | — |
 | Edges table | on | — |
 | Top edges | 25 | Show only the top-N edges in the table |
 | Layout | Stacked (full width) | Options: Stacked (full width), Grid 2-col, Grid 3-col. |
-| Group axis | Auto (active) | Group axis: Auto=last-built group/clustering; Clusters=last clustering run; Column=re-derive from group column; Last observation=group by final state of each sequence. Options: Auto (active), Group column, Clusters, Last observation. |
 
 ### Community detection
 
 <figure>
-<a href="guide/cell-community.webp?v=2.5.3" aria-label="Full-size screenshot"><img src="guide/cell-community.webp?v=2.5.3" alt="" width="860" height="1075" loading="lazy"></a>
+<a href="guide/cell-community.webp?v=2.5.5" aria-label="Full-size screenshot"><img src="guide/cell-community.webp?v=2.5.5" alt="" width="860" height="1110" loading="lazy"></a>
 <figcaption>Louvain communities: three in the High network and four in the Low network, with a membership table.</figcaption>
 </figure>
 
@@ -773,8 +795,8 @@ themselves than to the rest of the network.
 
 | Control | Default | What it sets |
 |---|---|---|
+| Analyze | Whole network | What this analysis runs on: the whole network, every group of a set (each analysed on its own), or one group. Sets are the Group column and what Groups, Cluster sequences and Mixture Markov model cells built. |
 | Method | louvain | Options: louvain, walktrap, fast_greedy, label_prop, leading_eigen, edge_betweenness. |
-| Group axis | Auto (active) | Group axis: Auto=last-built group/clustering; Clusters=last clustering run; Column=re-derive from group column; Last observation=group by final state of each sequence. Options: Auto (active), Group column, Clusters, Last observation. |
 | Network | on | — |
 | Table | on | — |
 
@@ -787,7 +809,7 @@ and edge betweenness removes bridging edges in turn.
 ### Cliques
 
 <figure class="fig-tall">
-<a href="guide/cell-cliques.webp?v=2.5.3" aria-label="Full-size screenshot"><img src="guide/cell-cliques.webp?v=2.5.3" alt="" width="860" height="1432" loading="lazy"></a>
+<a href="guide/cell-cliques.webp?v=2.5.5" aria-label="Full-size screenshot"><img src="guide/cell-cliques.webp?v=2.5.5" alt="" width="860" height="1467" loading="lazy"></a>
 <figcaption>Cliques of at least three states in the sample network: 41 cliques, each listed with its states and plotted on the network.</figcaption>
 </figure>
 
@@ -797,6 +819,7 @@ both directions by edges at or above the weight threshold, as in R's
 
 | Control | Default | What it sets |
 |---|---|---|
+| Analyze | Whole network | What this analysis runs on: the whole network, every group of a set (each analysed on its own), or one group. Sets are the Group column and what Groups, Cluster sequences and Mixture Markov model cells built. |
 | Min size | 3 | Minimum number of nodes in a clique |
 | Weight ≥ | 0 | Ignore edges below this weight when detecting cliques |
 | Networks | on | — |
@@ -811,7 +834,7 @@ cliques to strong transitions.
 ### Sequences
 
 <figure>
-<a href="guide/cell-sequences.webp?v=2.5.3" aria-label="Full-size screenshot"><img src="guide/cell-sequences.webp?v=2.5.3" alt="" width="860" height="674" loading="lazy"></a>
+<a href="guide/cell-sequences.webp?v=2.5.5" aria-label="Full-size screenshot"><img src="guide/cell-sequences.webp?v=2.5.5" alt="" width="860" height="709" loading="lazy"></a>
 <figcaption>The state distribution plot for the High and Low groups: the share of each state at each position of the 1,000 sequences of length 10.</figcaption>
 </figure>
 
@@ -819,6 +842,7 @@ The Sequences cell plots the sequences themselves.
 
 | Control | Default | What it sets |
 |---|---|---|
+| Analyze | Whole network | What this analysis runs on: the whole network, every group of a set (each analysed on its own), or one group. Sets are the Group column and what Groups, Cluster sequences and Mixture Markov model cells built. |
 | State distribution | on | — |
 | Entropy over time | off | — |
 | Mean time in state | off | — |
@@ -837,7 +861,7 @@ display only; the analyses use the full sequences.
 ### Sequence indices
 
 <figure class="fig-tall">
-<a href="guide/cell-indices.webp?v=2.5.3" aria-label="Full-size screenshot"><img src="guide/cell-indices.webp?v=2.5.3" alt="" width="860" height="2063" loading="lazy"></a>
+<a href="guide/cell-indices.webp?v=2.5.5" aria-label="Full-size screenshot"><img src="guide/cell-indices.webp?v=2.5.5" alt="" width="860" height="2090" loading="lazy"></a>
 <figcaption>Seventeen sequence indices for the 530 High and 470 Low sequences, summarized by group and plotted as boxplots.</figcaption>
 </figure>
 
@@ -853,13 +877,13 @@ favorable.
 
 | Control | Default | What it sets |
 |---|---|---|
+| Analyze | Whole network | What this analysis runs on: the whole network, every group of a set (each analysed on its own), or one group. Sets are the Group column and what Groups, Cluster sequences and Mixture Markov model cells built. |
 | Favorable states | none | States considered Options: Discuss, Plan, Practice, Read, Reflect, Review, Watch, Write. (Shown only with some settings.) |
 | Omega | 1 | Time-weighting exponent for time-weighted indices. 1 = uniform weight across positions (default); &gt;1 weights later positions more; &lt;1 weights earlier positions more. |
 | Plots | on | — |
 | Summary table | on | — |
 | Per-sequence detail | off | — |
 | Plot type | Boxplots | Comparison plot type Options: Boxplots, Densities, Histograms. |
-| Group axis | Auto (active) | Group axis: Auto=last-built group/clustering; Clusters=last clustering run; Column=re-derive from group column; Last observation=group by final state of each sequence. Options: Auto (active), Group column, Clusters, Last observation. |
 
 Favorable states is a substantive choice made by the analyst; the indices
 that use it are computed only when it is set. Per-sequence detail adds a
@@ -870,7 +894,7 @@ table with every index for every sequence.
 ### Discover patterns
 
 <figure>
-<a href="guide/cell-patterns.webp?v=2.5.3" aria-label="Full-size screenshot"><img src="guide/cell-patterns.webp?v=2.5.3" alt="" width="860" height="1070" loading="lazy"></a>
+<a href="guide/cell-patterns.webp?v=2.5.5" aria-label="Full-size screenshot"><img src="guide/cell-patterns.webp?v=2.5.5" alt="" width="860" height="1086" loading="lazy"></a>
 <figcaption>Contiguous patterns of length 2 and 3: 367 patterns pass the filters. Watch → Watch is the most widespread, present in 27.0% of the sequences.</figcaption>
 </figure>
 
@@ -878,6 +902,7 @@ Discover patterns finds recurring subsequences.
 
 | Control | Default | What it sets |
 |---|---|---|
+| Analyze | Whole network | What this analysis runs on: the whole network, every group of a set (each analysed on its own), or one group. Sets are the Group column and what Groups, Cluster sequences and Mixture Markov model cells built. |
 | Type | Contiguous n-gram | ngram: contiguous windows (A→B→C). gapped: pairs with wildcard gaps (A→*→B). repeated: runs of a single state (A→A→A). Options: Contiguous n-gram, Gapped pair, Repeated state. |
 | Lengths | 2,3 | Comma-separated window lengths (for ngram + repeated) |
 | Gaps | 1,2 | Comma-separated gap sizes (for gapped — A separated from B by this many wildcard positions) |
@@ -886,7 +911,6 @@ Discover patterns finds recurring subsequences.
 | Starts with | none | Keep only patterns starting with one of these states. Click to open, check states to include, leave empty for none. Options: Discuss, Plan, Practice, Read, Reflect, Review, Watch, Write. (Shown only with some settings.) |
 | Ends with | none | Keep only patterns ending with one of these states. Click to open, check states to include, leave empty for none. Options: Discuss, Plan, Practice, Read, Reflect, Review, Watch, Write. (Shown only with some settings.) |
 | Top N | 50 | Show at most this many patterns in the table (plot is always capped at 10) |
-| Group axis | Auto (active) | Group axis: Auto=last-built group/clustering; Clusters=last clustering run; Column=re-derive from group column; Last observation=group by final state of each sequence. Options: Auto (active), Group column, Clusters, Last observation. |
 
 Contiguous n-grams are runs of consecutive states (A → B → C). Gapped pairs
 are two states separated by a fixed number of positions (A → * → B).
@@ -898,7 +922,7 @@ chi-square test of the difference.
 ### Pattern comparison (heatmap)
 
 <figure>
-<a href="guide/cell-compare.webp?v=2.5.3" aria-label="Full-size screenshot"><img src="guide/cell-compare.webp?v=2.5.3" alt="" width="860" height="1238" loading="lazy"></a>
+<a href="guide/cell-compare.webp?v=2.5.5" aria-label="Full-size screenshot"><img src="guide/cell-compare.webp?v=2.5.5" alt="" width="860" height="1271" loading="lazy"></a>
 <figcaption>Standardized residuals of pattern frequencies in the High and Low groups. Watch → Watch has a residual of −17.6 in High and 17.6 in Low.</figcaption>
 </figure>
 
@@ -908,6 +932,7 @@ in the group than independence predicts, negative values less frequent.
 
 | Control | Default | What it sets |
 |---|---|---|
+| Analyze | Mixture (k=2): every group | Which groups this comparison compares: the Group column, or the groups a Groups, Cluster sequences or Mixture Markov model cell built. Defaults to the most recently built. Options: Group column "achievement": every group, Groups "achievement" (tna): every group, Clusters (k=3): every group, Mixture (k=2): every group. |
 | Min length | 2 | — |
 | Max length | 4 | — |
 | Min freq | 2 | — |
@@ -915,7 +940,6 @@ in the group than independence predicts, negative values less frequent.
 | Position-wise JSD | off | Position-wise Jensen-Shannon divergence between groups (which time steps differ most) |
 | Iterations | 999 | — |
 | Seed | 14 | Seed for reproducibility (default 14). Clear to use the engine's default seed. |
-| Group axis | Auto (active) | Group axis: Auto=last-built group/clustering; Clusters=last clustering run; Column=re-derive from group column; Last observation=group by final state of each sequence. Options: Auto (active), Group column, Clusters, Last observation. |
 | Nested by actor (student) | off | Sequences nested in the mapped Actor column (several sessions per actor). The pattern permutation test reassigns whole actors between groups (Nestimate actor =). Frequencies and residuals do not change. Off = sequence-level, as before. |
 
 The permutation test shuffles group labels and recomputes the residuals,
@@ -926,7 +950,7 @@ differences.
 ### Pattern comparison (pyramid)
 
 <figure>
-<a href="guide/cell-compare-pyramid.webp?v=2.5.3" aria-label="Full-size screenshot"><img src="guide/cell-compare-pyramid.webp?v=2.5.3" alt="" width="860" height="826" loading="lazy"></a>
+<a href="guide/cell-compare-pyramid.webp?v=2.5.5" aria-label="Full-size screenshot"><img src="guide/cell-compare-pyramid.webp?v=2.5.5" alt="" width="860" height="859" loading="lazy"></a>
 <figcaption>The pyramid for High and Low: the 15 patterns with the largest residuals as back-to-back bars, with Benjamini–Hochberg adjusted permutation p-values in the centre.</figcaption>
 </figure>
 
@@ -935,6 +959,7 @@ back-to-back bars. Three or more groups use the heatmap.
 
 | Control | Default | What it sets |
 |---|---|---|
+| Analyze | Mixture (k=2): every group | Which groups this comparison compares: the Group column, or the groups a Groups, Cluster sequences or Mixture Markov model cell built. Defaults to the most recently built. Options: Group column "achievement": every group, Groups "achievement" (tna): every group, Clusters (k=3): every group, Mixture (k=2): every group. |
 | Min length | 2 | — |
 | Max length | 4 | — |
 | Min freq | 2 | — |
@@ -942,13 +967,12 @@ back-to-back bars. Three or more groups use the heatmap.
 | Show p-values | on | Permutation test per pattern (shuffles group labels, recomputes residual). Adds a centre gutter showing per-pattern p-values. |
 | Iterations | 999 | Permutation iterations. Only used when Show p-values is checked. |
 | Seed | 14 | Seed for reproducibility. Clear to use the engine's default seed. |
-| Group axis | Auto (active) | Group axis: Auto=last-built group/clustering; Clusters=last clustering run; Column=re-derive from group column; Last observation=group by final state of each sequence. Options: Auto (active), Group column, Clusters, Last observation. |
 | Nested by actor (student) | off | Sequences nested in the mapped Actor column (several sessions per actor). The pattern permutation test reassigns whole actors between groups (Nestimate actor =). Frequencies and residuals do not change. Off = sequence-level, as before. |
 
 ### Pattern × outcome
 
 <figure>
-<a href="guide/cell-pattern-outcome.webp?v=2.5.3" aria-label="Full-size screenshot"><img src="guide/cell-pattern-outcome.webp?v=2.5.3" alt="" width="860" height="1090" loading="lazy"></a>
+<a href="guide/cell-pattern-outcome.webp?v=2.5.5" aria-label="Full-size screenshot"><img src="guide/cell-pattern-outcome.webp?v=2.5.5" alt="" width="860" height="1134" loading="lazy"></a>
 <figcaption>The ten most frequent patterns, each split by the last state of the sequence (8 categories).</figcaption>
 </figure>
 
@@ -959,6 +983,7 @@ regression tests the associations.
 
 | Control | Default | What it sets |
 |---|---|---|
+| Analyze | Whole network | What this analysis runs on: the whole network, every group of a set (each analysed on its own), or one group. Sets are the Group column and what Groups, Cluster sequences and Mixture Markov model cells built. |
 | Source | Last observation | Per-sequence outcome category. Continuous outcomes are not supported here — use Outcome regression for those. Options: Last observation, Group column, Clusters. |
 | Top N | 10 | Maximum number of patterns to show in the plot (sorted by total count desc). |
 | Type | Contiguous n-gram | Options: Contiguous n-gram, Gapped pair, Repeated state. |
@@ -970,7 +995,7 @@ regression tests the associations.
 ### Outcome regression
 
 <figure class="fig-tall">
-<a href="guide/cell-outcome.webp?v=2.5.3" aria-label="Full-size screenshot"><img src="guide/cell-outcome.webp?v=2.5.3" alt="" width="860" height="2803" loading="lazy"></a>
+<a href="guide/cell-outcome.webp?v=2.5.5" aria-label="Full-size screenshot"><img src="guide/cell-outcome.webp?v=2.5.5" alt="" width="860" height="2847" loading="lazy"></a>
 <figcaption>Outcome regression with achievement as a binary outcome (reference High, target Low). The univariate table and forest plot give each pattern's odds ratio; the joint logistic regression adjusts each pattern for the others.</figcaption>
 </figure>
 
@@ -978,6 +1003,7 @@ Outcome regression tests whether patterns are associated with an outcome.
 
 | Control | Default | What it sets |
 |---|---|---|
+| Analyze | Whole network | What this analysis runs on: the whole network, every group of a set (each analysed on its own), or one group. Sets are the Group column and what Groups, Cluster sequences and Mixture Markov model cells built. |
 | Source | Last observation | Vector of per-sequence outcome labels — binary outcomes use the OR + chi-square path; categorical (K&gt;2) uses 2×K chi-square with per-level OR; continuous (numeric column) triggers an OLS regression. Options: Last observation, Group column, Clusters, Numeric column (continuous). |
 | Column | — select — | Used when Outcome=Numeric column. Continuous outcome triggers an OLS regression path (β, SE, t, p, R²). Options: student, session, timestamp, action, achievement. |
 | Top N | 15 | Maximum number of patterns to test (more = more multiple-comparison correction) |
@@ -1013,7 +1039,7 @@ sequences or Mixture Markov model.
 ### Network properties
 
 <figure class="fig-tall">
-<a href="guide/cell-compare-props.webp?v=2.5.3" aria-label="Full-size screenshot"><img src="guide/cell-compare-props.webp?v=2.5.3" alt="" width="860" height="1620" loading="lazy"></a>
+<a href="guide/cell-compare-props.webp?v=2.5.5" aria-label="Full-size screenshot"><img src="guide/cell-compare-props.webp?v=2.5.5" alt="" width="860" height="1628" loading="lazy"></a>
 <figcaption>Distances and similarities between the High and Low networks. The edge weights correlate at 0.291 (Pearson) and the cosine similarity is 0.811.</figcaption>
 </figure>
 
@@ -1023,12 +1049,12 @@ maximum absolute differences), correlations, distances and similarities.
 
 | Control | Default | What it sets |
 |---|---|---|
-| Group axis | Auto (active) | Group axis: Auto=last-built group/clustering; Clusters=last clustering run; Column=re-derive from group column; Last observation=group by final state of each sequence. Options: Auto (active), Group column, Clusters, Last observation. |
+| Analyze | Mixture (k=2): every group | Which groups this comparison compares: the Group column, or the groups a Groups, Cluster sequences or Mixture Markov model cell built. Defaults to the most recently built. Options: Group column "achievement": every group, Groups "achievement" (tna): every group, Clusters (k=3): every group, Mixture (k=2): every group. |
 
 ### Difference network
 
 <figure class="fig-tall">
-<a href="guide/cell-compare-diff.webp?v=2.5.3" aria-label="Full-size screenshot"><img src="guide/cell-compare-diff.webp?v=2.5.3" alt="" width="860" height="2106" loading="lazy"></a>
+<a href="guide/cell-compare-diff.webp?v=2.5.5" aria-label="Full-size screenshot"><img src="guide/cell-compare-diff.webp?v=2.5.5" alt="" width="860" height="2128" loading="lazy"></a>
 <figcaption>The difference network and the heatmap of weight differences (High − Low). Green edges are stronger in High and red edges in Low.</figcaption>
 </figure>
 
@@ -1039,14 +1065,14 @@ permutation test.
 
 | Control | Default | What it sets |
 |---|---|---|
+| Analyze | Mixture (k=2): every group | Which groups this comparison compares: the Group column, or the groups a Groups, Cluster sequences or Mixture Markov model cell built. Defaults to the most recently built. Options: Group column "achievement": every group, Groups "achievement" (tna): every group, Clusters (k=3): every group, Mixture (k=2): every group. |
 | Per-pair diff networks | on | — |
 | Weight-diff heatmaps | on | — |
-| Group axis | Auto (active) | Group axis: Auto=last-built group/clustering; Clusters=last clustering run; Column=re-derive from group column; Last observation=group by final state of each sequence. Options: Auto (active), Group column, Clusters, Last observation. |
 
 ### Permutation test
 
 <figure class="fig-tall">
-<a href="guide/cell-compare-perm.webp?v=2.5.3" aria-label="Full-size screenshot"><img src="guide/cell-compare-perm.webp?v=2.5.3" alt="" width="860" height="1370" loading="lazy"></a>
+<a href="guide/cell-compare-perm.webp?v=2.5.5" aria-label="Full-size screenshot"><img src="guide/cell-compare-perm.webp?v=2.5.5" alt="" width="860" height="1405" loading="lazy"></a>
 <figcaption>The permutation test for High and Low with 1,000 permutations and no adjustment, the default: 42 edges differ at p < .05.</figcaption>
 </figure>
 
@@ -1058,11 +1084,11 @@ Benjamini–Hochberg, Holm or Bonferroni correction.
 
 | Control | Default | What it sets |
 |---|---|---|
+| Analyze | Mixture (k=2): every group | Which groups this comparison compares: the Group column, or the groups a Groups, Cluster sequences or Mixture Markov model cell built. Defaults to the most recently built. Options: Group column "achievement": every group, Groups "achievement" (tna): every group, Clusters (k=3): every group, Mixture (k=2): every group. |
 | Iterations | 1000 | Permutation iterations |
 | α | 0.05 | Significance threshold for permutation p-values |
 | Adjust | None (R default) | Multiple-comparison correction across the edge p-values. None is the R default (tna::permutation_test adjust = "none"). Options: None (R default), BH (FDR), Holm, Bonferroni, FDR. |
 | Seed | 14 | Seed for reproducibility (default 14) |
-| Group axis | Auto (active) | Group axis: Auto=last-built group/clustering; Clusters=last clustering run; Column=re-derive from group column; Last observation=group by final state of each sequence. Options: Auto (active), Group column, Clusters, Last observation. |
 | Nested by actor (student) | off | Sequences nested in the mapped Actor column (several sessions per actor). Permutation reassigns whole actors between groups, or shuffles labels within an actor whose sequences sit in both groups (Nestimate actor =). Off = sequence-level, as before. |
 | Compare with sequence-level test | off | Also run the permutation test without the nesting on the same seed and show what changed (Nestimate permutation_diagnostics). Doubles the run time. |
 
@@ -1074,7 +1100,7 @@ between the groups instead of single sequences.
 ### Position-wise JSD
 
 <figure>
-<a href="guide/cell-compare-pos.webp?v=2.5.3" aria-label="Full-size screenshot"><img src="guide/cell-compare-pos.webp?v=2.5.3" alt="" width="860" height="989" loading="lazy"></a>
+<a href="guide/cell-compare-pos.webp?v=2.5.5" aria-label="Full-size screenshot"><img src="guide/cell-compare-pos.webp?v=2.5.5" alt="" width="860" height="1022" loading="lazy"></a>
 <figcaption>The Jensen–Shannon divergence between the High and Low state distributions at each position, with the positions of largest divergence listed below.</figcaption>
 </figure>
 
@@ -1085,11 +1111,11 @@ have the same meaning across sequences.
 
 | Control | Default | What it sets |
 |---|---|---|
+| Analyze | Mixture (k=2): every group | Which groups this comparison compares: the Group column, or the groups a Groups, Cluster sequences or Mixture Markov model cell built. Defaults to the most recently built. Options: Group column "achievement": every group, Groups "achievement" (tna): every group, Clusters (k=3): every group, Mixture (k=2): every group. |
 | Min length | 2 | Pattern lengths used to compute per-position state distributions |
 | Max length | 4 | — |
 | Min freq | 2 | — |
 | Seed | 14 | Seed for reproducibility (default 14) |
-| Group axis | Auto (active) | Group axis: Auto=last-built group/clustering; Clusters=last clustering run; Column=re-derive from group column; Last observation=group by final state of each sequence. Options: Auto (active), Group column, Clusters, Last observation. |
 
 ## Process mining
 
@@ -1100,12 +1126,13 @@ selector switches between a process map and directly-follows tables.
 ### Process map
 
 <figure class="fig-tall">
-<a href="guide/cell-process-mining-process-map.webp?v=2.5.3" aria-label="Full-size screenshot"><img src="guide/cell-process-mining-process-map.webp?v=2.5.3" alt="" width="860" height="1743" loading="lazy"></a>
+<a href="guide/cell-process-mining-process-map.webp?v=2.5.5" aria-label="Full-size screenshot"><img src="guide/cell-process-mining-process-map.webp?v=2.5.5" alt="" width="860" height="1778" loading="lazy"></a>
 <figcaption>The process map of the sample data. Boxes are activities with their share of all events; arrows are hand-offs with the share of the source activity's outflow. The note above the map states that the coverage settings hid 16 arrows.</figcaption>
 </figure>
 
 | Control | Default | What it sets |
 |---|---|---|
+| Analyze | Whole network | What this analysis runs on: the whole network, every group of a set (each analysed on its own), or one group. Sets are the Group column and what Groups, Cluster sequences and Mixture Markov model cells built. |
 | Nodes | Frequency — relative (share of all events) | What each activity box reports (bupaR type_nodes).; Frequency — event counts, absolute or as a share of all events; Cases — how many cases visit the activity; Duration — dwell time inside the activity (needs a Time column) Options: Frequency — absolute, Frequency — relative (share of all events), Cases — absolute, Cases — relative (share of cases), Duration — mean, Duration — median, Duration — min, Duration — max, Duration — total. |
 | Arrows | Share of source outflow (transition probability) | What each arrow reports (bupaR type_edges).; Frequency — how often the hand-off occurs; Cases — how many cases contain it; Transition probability — share of the source activity’s outgoing flow; Duration — transit time between the two activities Options: Frequency — absolute, Cases — absolute, Cases — relative (share of cases), Share of source outflow (transition probability), Share of target inflow, Duration — mean, Duration — median, Duration — min, Duration — max, Duration — total. |
 | Activities | 1 | Coverage of events, as in bupaR filter_activity_frequency(): keep the most frequent activities that together account for this share of ALL events. Lower it to drop activities from the map entirely. 1 = keep everything. |
@@ -1142,7 +1169,7 @@ computed on the full log, and the note above the map states what was hidden.
 ### Directly-follows graph
 
 <figure>
-<a href="guide/cell-process-mining-dfg.webp?v=2.5.3" aria-label="Full-size screenshot"><img src="guide/cell-process-mining-dfg.webp?v=2.5.3" alt="" width="860" height="1024" loading="lazy"></a>
+<a href="guide/cell-process-mining-dfg.webp?v=2.5.5" aria-label="Full-size screenshot"><img src="guide/cell-process-mining-dfg.webp?v=2.5.5" alt="" width="860" height="1059" loading="lazy"></a>
 <figcaption>The directly-follows tables: 1,000 cases (student × session) with 9,000 hand-offs. Watch is the most frequent activity with 1,619 events.</figcaption>
 </figure>
 
@@ -1151,6 +1178,7 @@ and case counts for every activity and every hand-off.
 
 | Control | Default | What it sets |
 |---|---|---|
+| Analyze | Whole network | What this analysis runs on: the whole network, every group of a set (each analysed on its own), or one group. Sets are the Group column and what Groups, Cluster sequences and Mixture Markov model cells built. |
 | Start label | empty ((none)) | Optional start-state label to inject as the first state of every sequence |
 | End label | empty ((none)) | Optional end-state label to append to every sequence |
 | Top edges | 30 | Number of top edges (by frequency) to show in the edge table |
@@ -1166,7 +1194,7 @@ interactions among groups of states.
 ### Simplicial complex (pattern motifs)
 
 <figure class="fig-tall">
-<a href="guide/cell-high-order-simplicial.webp?v=2.5.3" aria-label="Full-size screenshot"><img src="guide/cell-high-order-simplicial.webp?v=2.5.3" alt="" width="860" height="1850" loading="lazy"></a>
+<a href="guide/cell-high-order-simplicial.webp?v=2.5.5" aria-label="Full-size screenshot"><img src="guide/cell-high-order-simplicial.webp?v=2.5.5" alt="" width="860" height="1885" loading="lazy"></a>
 <figcaption>Pattern motifs of orders 3 and 4: the nine most frequent pathways drawn as simplices, above a table of 2,130 pathways with HYPA statistics.</figcaption>
 </figure>
 
@@ -1176,6 +1204,7 @@ red. With Compute significance, each pathway is tested with HYPA (below).
 
 | Control | Default | What it sets |
 |---|---|---|
+| Analyze | Whole network | What this analysis runs on: the whole network, every group of a set (each analysed on its own), or one group. Sets are the Group column and what Groups, Cluster sequences and Mixture Markov model cells built. |
 | Orders | 3,4 | K-gram order(s). Comma list (3,4,5) or range (3-6). Mixed orders are pooled in one ranked list. |
 | Min count | 2 | Drop pathways with count below this. Default = 2 keeps signal and skips noise; set to 1 to keep every pathway, including singletons. |
 | Compute significance | on | Compute HYPA per order. Adds Observed/Expected/Ratio/p-adj/Anomaly columns; in visualizations, anomalous blobs get stronger outlines (and semantic colors when Color = HYPA anomaly). |
@@ -1190,7 +1219,7 @@ red. With Compute significance, each pathway is tested with HYPA (below).
 ### Homology: Betti numbers, Euler characteristic and q-analysis
 
 <figure class="fig-tall">
-<a href="guide/cell-high-order-homology.webp?v=2.5.3" aria-label="Full-size screenshot"><img src="guide/cell-high-order-homology.webp?v=2.5.3" alt="" width="860" height="1468" loading="lazy"></a>
+<a href="guide/cell-high-order-homology.webp?v=2.5.5" aria-label="Full-size screenshot"><img src="guide/cell-high-order-homology.webp?v=2.5.5" alt="" width="860" height="1503" loading="lazy"></a>
 <figcaption>Homology of the sample network at a threshold of 0.05: all 8 states form one clique, so the complex is a single 7-dimensional simplex with f-vector [8, 28, 56, 70, 56, 28, 8, 1], Betti numbers [1, 0, …] and Euler characteristic 1.</figcaption>
 </figure>
 
@@ -1204,6 +1233,7 @@ the Betti numbers change as the threshold rises.
 
 | Control | Default | What it sets |
 |---|---|---|
+| Analyze | Whole network | What this analysis runs on: the whole network, every group of a set (each analysed on its own), or one group. Sets are the Group column and what Groups, Cluster sequences and Mixture Markov model cells built. |
 | Threshold | 0.05 | Drop edges with weight below this threshold before building the clique complex. For TNA probability matrices most entries are &gt;0, so threshold=0 yields a near-complete graph and meaningless topology — use 0.05–0.10 (or pre-prune the network). |
 | Max dim | 8 | Cap on simplex dimension. The complex stops growing automatically when no more cliques exist at the next dimension, so high values are safe for typical TNA networks (≤ 30 states). Lower only if you need to truncate intentionally. |
 | PH steps | 15 | Number of filtration steps for the persistent-homology Betti curve |
@@ -1219,7 +1249,7 @@ topological feature is interpreted.
 ### Hypergraph centrality
 
 <figure>
-<a href="guide/cell-high-order-hyper-cent.webp?v=2.5.3" aria-label="Full-size screenshot"><img src="guide/cell-high-order-hyper-cent.webp?v=2.5.3" alt="" width="860" height="958" loading="lazy"></a>
+<a href="guide/cell-high-order-hyper-cent.webp?v=2.5.5" aria-label="Full-size screenshot"><img src="guide/cell-high-order-hyper-cent.webp?v=2.5.5" alt="" width="860" height="993" loading="lazy"></a>
 <figcaption>Hypergraph centrality from sessions: 1,000 hyperedges of 3 to 8 states. Read has the highest clique-expansion eigenvector centrality (0.3853).</figcaption>
 </figure>
 
@@ -1231,6 +1261,7 @@ pairwise links.
 
 | Control | Default | What it sets |
 |---|---|---|
+| Analyze | Whole network | What this analysis runs on: the whole network, every group of a set (each analysed on its own), or one group. Sets are the Group column and what Groups, Cluster sequences and Mixture Markov model cells built. |
 | From | Sessions (states per sequence) | Sessions: each sequence is one hyperedge holding the set of states it visited, a group interaction observed in the data. Network cliques: cliques of the thresholded transition network, which are fully determined by its pairwise links and do not show that a group interaction occurred. Options: Sessions (states per sequence), Network cliques. |
 | Threshold | 0.05 | Drop edges with weight below this threshold before extracting cliques as hyperedges. For TNA probability matrices most entries are &gt;0, so threshold=0 yields a near-complete hypergraph — use 0.05–0.10 (or pre-prune the network). (Shown only with some settings.) |
 | Max size | 8 | Maximum hyperedge size. Hyperedges are cliques of size 2..maxSize. (Shown only with some settings.) |
@@ -1248,7 +1279,7 @@ cell says so and computes CEC only.
 ### HYPA: path anomaly
 
 <figure class="fig-tall">
-<a href="guide/cell-high-order-hypa.webp?v=2.5.3" aria-label="Full-size screenshot"><img src="guide/cell-high-order-hypa.webp?v=2.5.3" alt="" width="860" height="1389" loading="lazy"></a>
+<a href="guide/cell-high-order-hypa.webp?v=2.5.5" aria-label="Full-size screenshot"><img src="guide/cell-high-order-hypa.webp?v=2.5.5" alt="" width="860" height="1424" loading="lazy"></a>
 <figcaption>HYPA at k = 2: of 512 paths tested, 21 are over-represented, 11 under-represented and 480 within expectation.</figcaption>
 </figure>
 
@@ -1260,6 +1291,7 @@ the null model predicts and under-represented when it is observed less often.
 
 | Control | Default | What it sets |
 |---|---|---|
+| Analyze | Whole network | What this analysis runs on: the whole network, every group of a set (each analysed on its own), or one group. Sets are the Group column and what Groups, Cluster sequences and Mixture Markov model cells built. |
 | k (order) | 2 | Order of the De-Bruijn graph (k=2 → pair paths; k=3 → triplet paths) |
 | α | 0.05 | Significance threshold for two-sided anomaly classification |
 | Min count | 5 | A path is labelled over-represented only if observed at least this often, under-represented only if expected at least this often. Every path is still scored and adjusted. LaRock et al. (2020) use no floor (1). |
@@ -1277,7 +1309,7 @@ under-represented only when it was expected at least that often.
 ### MOGen: order selection
 
 <figure>
-<a href="guide/cell-high-order-mogen.webp?v=2.5.3" aria-label="Full-size screenshot"><img src="guide/cell-high-order-mogen.webp?v=2.5.3" alt="" width="860" height="1262" loading="lazy"></a>
+<a href="guide/cell-high-order-mogen.webp?v=2.5.5" aria-label="Full-size screenshot"><img src="guide/cell-high-order-mogen.webp?v=2.5.5" alt="" width="860" height="1297" loading="lazy"></a>
 <figcaption>MOGen selects order 1 by AIC. The per-order table gives AIC, BIC, log-likelihood and degrees of freedom for orders 0 to 5.</figcaption>
 </figure>
 
@@ -1288,6 +1320,7 @@ orders.
 
 | Control | Default | What it sets |
 |---|---|---|
+| Analyze | Whole network | What this analysis runs on: the whole network, every group of a set (each analysed on its own), or one group. Sets are the Group column and what Groups, Cluster sequences and Mixture Markov model cells built. |
 | Max order | 5 | Highest Markov order to consider when selecting the optimal one |
 | Criterion | AIC | Criterion used to pick the optimal order Options: AIC, BIC, LRT (largest significant order). |
 | LRT α | 0.01 | Significance level used by LRT criterion (ignored for AIC / BIC) |
@@ -1300,7 +1333,7 @@ orders.
 ### HON: higher-order network
 
 <figure class="fig-tall">
-<a href="guide/cell-high-order-hon.webp?v=2.5.3" aria-label="Full-size screenshot"><img src="guide/cell-high-order-hon.webp?v=2.5.3" alt="" width="860" height="1817" loading="lazy"></a>
+<a href="guide/cell-high-order-hon.webp?v=2.5.5" aria-label="Full-size screenshot"><img src="guide/cell-high-order-hon.webp?v=2.5.5" alt="" width="860" height="1815" loading="lazy"></a>
 <figcaption>A higher-order network (HON+) with 577 nodes and 2,376 edges; histories of up to five states are kept where they change the next-state distribution.</figcaption>
 </figure>
 
@@ -1311,11 +1344,11 @@ of each dependency itself up to Max order.
 
 | Control | Default | What it sets |
 |---|---|---|
+| Analyze | Whole network | What this analysis runs on: the whole network, every group of a set (each analysed on its own), or one group. Sets are the Group column and what Groups, Cluster sequences and Mixture Markov model cells built. |
 | Max order | 5 | Longest history a node may carry. HON+ finds the order of each dependency itself, up to this cap (the reference pyHON uses 99). |
 | Min freq | 1 | Drop tuples with raw count below this threshold |
 | Method | HON+ (default) | HON+ (Saebi et al. 2020): builds higher orders lazily with a MaxDivergence pre-check. HON: classical Xu et al. 2016 Options: HON+ (default), HON (classical). |
 | Collapse repeats | off | Collapse runs of the same state into one (A,A,A→A). The reference pyHON always collapses repeats; leaving them in keeps self-transitions, which carry meaning in TNA data. |
-| By group | None (all sequences) | Build one HON per group, each from that group's sequences, one after another.; Group column — the Group column picked in the data card; Clusters — the last Cluster sequences run; Groups cell — the groups the last Groups cell built Options: None (all sequences), Group column, Clusters, Groups cell. |
 | From rank | 1 | Show edges ranked from this position (1-based, sorted by probability × count desc) |
 | To rank | 50 | Show edges through this rank (inclusive). E.g. From 1 To 50 = top 50. |
 | Order filter | empty (all) | Restrict the edge table to specific source orders (blank = all). Accepts 2, 2-4, 2,3. |
@@ -1331,13 +1364,13 @@ of each dependency itself up to Max order.
 The nodes of a higher-order network represent histories, for example
 "Watch after Read", and not new states. The reference implementation always
 collapses repeated states; the notebook keeps them by default because
-repetition carries meaning in TNA data. By group builds one higher-order
-network per group, from the group column, the clusters or the Groups cell.
+repetition carries meaning in TNA data. Analyze set to every group of a set
+builds one higher-order network per group.
 
 ### HONEM: HON embeddings
 
 <figure>
-<a href="guide/cell-high-order-honem.webp?v=2.5.3" aria-label="Full-size screenshot"><img src="guide/cell-high-order-honem.webp?v=2.5.3" alt="" width="860" height="950" loading="lazy"></a>
+<a href="guide/cell-high-order-honem.webp?v=2.5.5" aria-label="Full-size screenshot"><img src="guide/cell-high-order-honem.webp?v=2.5.5" alt="" width="860" height="985" loading="lazy"></a>
 <figcaption>HONEM embeddings: 134 higher-order nodes in 8 dimensions from a HON of maximum order 3, plotted on the first two components with the singular values below.</figcaption>
 </figure>
 
@@ -1348,6 +1381,7 @@ experimental.
 
 | Control | Default | What it sets |
 |---|---|---|
+| Analyze | Whole network | What this analysis runs on: the whole network, every group of a set (each analysed on its own), or one group. Sets are the Group column and what Groups, Cluster sequences and Mixture Markov model cells built. |
 | HON max order | 3 | Max order of the HON the embeddings are computed on |
 | Dim | 8 | Embedding dimensions (top singular components retained) |
 | Max power | 10 | Highest power of D included in S = (1/Z) Σ exp(-k) D^(k+1) |
@@ -1355,7 +1389,7 @@ experimental.
 ### Path dependence
 
 <figure>
-<a href="guide/cell-high-order-path-dep.webp?v=2.5.3" aria-label="Full-size screenshot"><img src="guide/cell-high-order-path-dep.webp?v=2.5.3" alt="" width="860" height="727" loading="lazy"></a>
+<a href="guide/cell-high-order-path-dep.webp?v=2.5.5" aria-label="Full-size screenshot"><img src="guide/cell-high-order-path-dep.webp?v=2.5.5" alt="" width="860" height="762" loading="lazy"></a>
 <figcaption>Path dependence at order 2: 64 contexts with at least 5 occurrences, of which 19 change the most likely next state compared with the first-order model.</figcaption>
 </figure>
 
@@ -1367,6 +1401,7 @@ information-theoretic description and not a test.
 
 | Control | Default | What it sets |
 |---|---|---|
+| Analyze | Whole network | What this analysis runs on: the whole network, every group of a set (each analysed on its own), or one group. Sets are the Group column and what Groups, Cluster sequences and Mixture Markov model cells built. |
 | Order | 2 | Markov order to test. Order 2 conditions on 1 previous state, order 3 on 2 previous states, etc. (Library default = 2.) |
 | Min count | 5 | Drop contexts seen fewer than this many times — smaller counts give unstable conditional distributions. |
 | Log base | 2 (bits) | Logarithm base for the entropy and KL columns. 2 = bits (default); e = nats; 10 = decit. Options: 2 (bits), e (nats), 10 (decit). |
@@ -1374,7 +1409,7 @@ information-theoretic description and not a test.
 ## Note
 
 <figure>
-<a href="guide/cell-text.webp?v=2.5.3" aria-label="Full-size screenshot"><img src="guide/cell-text.webp?v=2.5.3" alt="" width="860" height="167" loading="lazy"></a>
+<a href="guide/cell-text.webp?v=2.5.5" aria-label="Full-size screenshot"><img src="guide/cell-text.webp?v=2.5.5" alt="" width="860" height="167" loading="lazy"></a>
 <figcaption>A Note cell with a title and formatted text between analysis cells.</figcaption>
 </figure>
 
@@ -1386,7 +1421,7 @@ to, and they are included in the saved notebook and in the exports.
 ## Saving, opening and sharing
 
 <figure>
-<a href="guide/08-file-menu.webp?v=2.5.3" aria-label="Full-size screenshot"><img src="guide/08-file-menu.webp?v=2.5.3" alt="" width="520" height="700" loading="lazy"></a>
+<a href="guide/08-file-menu.webp?v=2.5.5" aria-label="Full-size screenshot"><img src="guide/08-file-menu.webp?v=2.5.5" alt="" width="520" height="700" loading="lazy"></a>
 <figcaption>The File menu.</figcaption>
 </figure>
 
@@ -1408,7 +1443,7 @@ with the browser's site data, so the downloaded file is the copy that is
 kept.
 
 <figure>
-<a href="guide/14-open-notebook.webp?v=2.5.3" aria-label="Full-size screenshot"><img src="guide/14-open-notebook.webp?v=2.5.3" alt="" width="1440" height="900" loading="lazy"></a>
+<a href="guide/14-open-notebook.webp?v=2.5.5" aria-label="Full-size screenshot"><img src="guide/14-open-notebook.webp?v=2.5.5" alt="" width="1440" height="900" loading="lazy"></a>
 <figcaption>The notebook library lists the notebooks stored in this browser.</figcaption>
 </figure>
 
@@ -1435,7 +1470,7 @@ kept.
 ### Locking and sealing
 
 <figure>
-<a href="guide/13-lock-menu.webp?v=2.5.3" aria-label="Full-size screenshot"><img src="guide/13-lock-menu.webp?v=2.5.3" alt="" width="520" height="480" loading="lazy"></a>
+<a href="guide/13-lock-menu.webp?v=2.5.5" aria-label="Full-size screenshot"><img src="guide/13-lock-menu.webp?v=2.5.5" alt="" width="520" height="480" loading="lazy"></a>
 <figcaption>The notebook lock menu in the lower-left corner.</figcaption>
 </figure>
 
@@ -1455,7 +1490,7 @@ locked or sealed.
 ## About, license and citation
 
 <figure>
-<a href="guide/15-about.webp?v=2.5.3" aria-label="Full-size screenshot"><img src="guide/15-about.webp?v=2.5.3" alt="" width="1440" height="900" loading="lazy"></a>
+<a href="guide/15-about.webp?v=2.5.5" aria-label="Full-size screenshot"><img src="guide/15-about.webp?v=2.5.5" alt="" width="1440" height="900" loading="lazy"></a>
 <figcaption>The About window, opened from the footer.</figcaption>
 </figure>
 
