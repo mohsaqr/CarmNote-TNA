@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Carm TNA 2.5.3j — Transition Network Analysis Notebook</title>
+<title>Carm TNA 2.5.5j — Transition Network Analysis Notebook</title>
 <style>
 /* === Reset + Base === */
 * { margin: 0; padding: 0; box-sizing: border-box; }
@@ -1546,7 +1546,7 @@ Exhibit B - "Incompatible With Secondary Licenses" Notice
 <header>
   <!-- Row 1 — identity: brand, notebook title, save -->
   <div class="hdr-row-1">
-    <h1>Carm <b>TNA</b><sup id="nb-version-tag" style="font-size:9px;color:#9aa0a6;font-weight:500;margin-left:4px;letter-spacing:0.5px">2.5.3j</sup></h1>
+    <h1>Carm <b>TNA</b><sup id="nb-version-tag" style="font-size:9px;color:#9aa0a6;font-weight:500;margin-left:4px;letter-spacing:0.5px">2.5.5j</sup></h1>
     <div class="hdr-sep"></div>
     <input id="nb-title-input" class="nb-title-input" type="text" aria-label="Notebook title" placeholder="Name this notebook…" autocomplete="off" spellcheck="false">
     <span id="nb-saved-indicator" class="nb-saved-indicator"></span>
@@ -2017,6 +2017,15 @@ var $drop = document.getElementById('drop-zone');
 
 function gid() { return 'c' + (++S.nid); }
 function esc(s) { var d = document.createElement('div'); d.textContent = s; return d.innerHTML; }
+// setTimeout that runCell can wait for: same arguments, returns a Promise that
+// settles when fn has run. A verb that paints its spinner first and computes in
+// a timer returns this, so a per-group run (runScoped) never restores the
+// notebook's data before the verb has read it.
+function deferRun(fn, ms) {
+  return new Promise(function(resolve) {
+    setTimeout(function() { try { fn(); } finally { resolve(); } }, ms || 0);
+  });
+}
 function fmt(n, dp) {
   if (!Number.isFinite(n)) return String(n);
   if (n === 0) return '0';
@@ -2465,10 +2474,13 @@ function sequencesWithGroupColumn(groupCol) {
       var v = m[groupCol];
       return v == null ? '' : String(v);
     });
-    return { sequences: r.sequences, groups: labels, actorIds: r.actorIds };
+    return { sequences: r.sequences, groups: labels, actorIds: r.actorIds, eventTimes: r.eventTimes || null, sessionIds: null, rowSpans: null };
   }
   var built = buildSequencesFromData(S.columns.actor, S.columns.action, S.columns.time, groupCol, S.gapThreshold != null ? S.gapThreshold : -1, S.columns.order, S.columns.session);
-  return { sequences: built.sequences, groups: built.groups, actorIds: built.actorIds };
+  // The per-sequence arrays ride along so one group's cells can see only its
+  // sequences' timestamps and sessions (process mining by group).
+  return { sequences: built.sequences, groups: built.groups, actorIds: built.actorIds,
+           eventTimes: built.eventTimes || null, sessionIds: built.sessionIds || null, rowSpans: built.rowSpans || null };
 }
 
 // Heuristic guess so the Long/Wide toggle defaults sensibly. Wide is only
@@ -3686,7 +3698,7 @@ function specifyData() {
   // them must never pair them with new sequences of the same count (audit,
   // 2026-11-18).
   ['clusterLabels', 'clusterK', 'clusterMethod', 'clusterAssignments', 'clusterSilhouette', 'clusterDissimilarity',
-   'mmmLabels', 'mmmK', 'mmmAssignments'].forEach(function(k) { S[k] = null; });
+   'mmmLabels', 'mmmK', 'mmmAssignments', 'groupSets', 'groupSetOrder', '_colSet'].forEach(function(k) { S[k] = null; });
 
   // Fold the data panel so cells get vertical space.
   S.dataCardCollapsed = true;
@@ -3728,7 +3740,10 @@ function _rerunCells(includeModelVerbs) {
   // one BELOW cells that need it (a DFG above it ran first and said "Run a
   // Network cell first"). The rest start once every network cell has run.
   var nets = runnable.filter(function(cs) { return cs.type === 'network'; });
-  var rest = runnable.filter(function(cs) { return cs.type !== 'network'; });
+  // Then the cells that build groups (Groups, Cluster sequences, Mixture), so a
+  // cell placed above the one that builds its groups finds them (audit).
+  var rest = runnable.filter(function(cs) { return cs.type !== 'network' && GROUP_SET_VERBS[cs.type]; })
+    .concat(runnable.filter(function(cs) { return cs.type !== 'network' && !GROUP_SET_VERBS[cs.type]; }));
   // The rest run one after another, each waiting for the one above: a cell
   // can depend on an earlier one (a Groups cell built from a Cluster cell's
   // clusters), and a 10 ms stagger let it read the previous run's output.
@@ -4173,6 +4188,7 @@ function renderCell(cs) {
   var form = document.createElement('div'); form.className = 'cell-form'; form.id = cs.id + '-form';
   var gen = FORM_GENERATORS[cs.type];
   if (gen) form.innerHTML = gen(cs.id);
+  installScopeField(form, cs);
   refreshNestControls(form);
   if (typeof attachHelp === 'function') attachHelp(form, cs.type);
   cell.appendChild(form);
@@ -4823,8 +4839,6 @@ function formHon(id) {
     '<div class="form-group" title="Drop tuples with raw count below this threshold"><span class="form-label">Min freq</span><input type="number" class="form-control" data-field="minFreq" value="1" min="1" max="50" step="1" style="width:70px"></div>' +
     '<div class="form-group" title="HON+ (Saebi et al. 2020): builds higher orders lazily with a MaxDivergence pre-check. HON: classical Xu et al. 2016"><span class="form-label">Method</span><select class="form-control" data-field="method"><option value="hon+" selected>HON+ (default)</option><option value="hon">HON (classical)</option></select></div>' +
     '<label class="form-check" title="Collapse runs of the same state into one (A,A,A→A). The reference pyHON always collapses repeats; leaving them in keeps self-transitions, which carry meaning in TNA data."><input type="checkbox" data-field="collapse"> Collapse repeats</label>' +
-    '<div class="form-group" title="Build one HON per group, each from that group\'s sequences, one after another.\n• Group column — the Group column picked in the data card\n• Clusters — the last Cluster sequences run\n• Groups cell — the groups the last Groups cell built"><span class="form-label">By group</span><select class="form-control" data-field="honGroups">' +
-      '<option value="none" selected>None (all sequences)</option><option value="column">Group column</option><option value="clusters">Clusters</option><option value="auto">Groups cell</option></select></div>' +
     '</div></div>' +
     '<div class="form-section"><span class="form-section-lbl">Table</span><div class="form-section-row">' +
     '<div class="form-group" title="Show edges ranked from this position (1-based, sorted by probability × count desc)"><span class="form-label">From rank</span><input type="number" class="form-control" data-field="fromRank" value="1" min="1" max="5000" step="1" style="width:70px"></div>' +
@@ -5710,7 +5724,80 @@ var FORM_GENERATORS = {
 // ===========================================================================
 // RUN CELL
 // ===========================================================================
+// One verb, run on the notebook's current data. Returns the verb's Promise
+// for the verbs that finish later (workers, timers), so runCell and runScoped
+// can wait for them.
+function dispatchVerb(verb, ra, fv) {
+  switch (verb) {
+    case 'network':     return runNetwork(ra, fv);
+    case 'group':       return runGroup(ra, fv);
+    case 'sequences':   return runSequences(ra, fv);
+    case 'cluster':     return runClustering(ra, fv);
+    case 'mmm':         return runMmm(ra, fv);
+    case 'states':      return runDescriptives(ra, fv);
+    case 'centrality':  return runCentrality(ra, fv);
+    case 'betweenness': return runBetweenness(ra, fv);
+    case 'community':   return runCommunity(ra, fv);
+    case 'bootstrap':   return runBootstrap(ra, fv);
+    case 'networks':    return runNetworks(ra, fv);
+    case 'stability':   return runStability(ra, fv);
+    case 'compare':     return runCompare(ra, fv);
+    // v2.3.25 focused Compare verbs. Each dispatches to the existing
+    // broad runner with hardcoded fv toggles so only one section renders.
+    case 'compare-props': return runNetworks(ra, Object.assign({}, fv, { mode: 'descriptive', showSummary: false, showProps: true,  showDiff: false, showDiffHeat: false, showLongTbl: false }));
+    case 'compare-diff':  return runNetworks(ra, Object.assign({}, fv, { mode: 'descriptive', showSummary: false, showProps: false, showDiff: (fv.showDiff !== 'false' && fv.showDiff !== false), showDiffHeat: (fv.showDiffHeat !== 'false' && fv.showDiffHeat !== false), showLongTbl: false }));
+    case 'compare-perm':  return runNetworks(ra, Object.assign({}, fv, { mode: 'permutation' }));
+    case 'compare-pos':   return runCompare(ra, Object.assign({}, fv, { _posOnly: true, showKL: true }));
+    case 'net-summary':    return runNetSummary(ra, fv);
+    // v2.3.25 focused Describe verbs — same pattern, target runDescriptives.
+    case 'states-freq':    return runDescriptives(ra, Object.assign({}, fv, { showFreq: (fv.showChart !== 'false' && fv.showChart !== false), showTreemap: (fv.showTreemap === true || fv.showTreemap === 'true'), showMosaic: false, showWeightHist: false, showWeights: false, showTable: (fv.showTable !== 'false' && fv.showTable !== false) }));
+    case 'states-mosaic':  return runDescriptives(ra, Object.assign({}, fv, { showFreq: false, showMosaic: true, showWeightHist: false, showWeights: false, showTable: false }));
+    case 'states-weights': return runDescriptives(ra, Object.assign({}, fv, { showFreq: false, showMosaic: false, showWeightHist: (fv.showHistogram !== 'false' && fv.showHistogram !== false), showWeights: (fv.showMatrix !== 'false' && fv.showMatrix !== false), showTable: false }));
+    case 'reliability': return runReliability(ra, fv);
+    case 'cliques':     return runCliques(ra, fv);
+    case 'patterns':    return runPatterns(ra, fv);
+    case 'pattern-outcome': return runPatternOutcome(ra, fv);
+    case 'compare-pyramid': return runComparePyramid(ra, fv);
+    case 'indices':     return runIndices(ra, fv);
+    case 'outcome':     return runOutcome(ra, fv);
+    case 'hon':           return runHon(ra, fv);
+    case 'edge-reliab':   return runEdgeReliability(ra, fv);
+    case 'markov-order':  return runMarkovOrder(ra, fv);
+    case 'simplicial':    return runSimplicial(ra, fv);
+    case 'honem':         return runHonem(ra, fv);
+    case 'hypa':          return runHypa(ra, fv);
+    case 'mogen':         return runMogen(ra, fv);
+    case 'dfg':           return runDFG(ra, fv);
+    case 'path-dep':      return runPathDependence(ra, fv);
+    case 'high-order':    return runHighOrder(ra, fv);
+    case 'process-mining': return runProcessMining(ra, fv);
+      
+  }
+}
+
+// Cells run one at a time. A cell's Analyze choice swaps the notebook's data
+// for a group while it runs; a second cell started meanwhile (a Run button,
+// Run All, a rebuild) computed on that group's data and called it the whole
+// network (audit, 2026-11-19). A cell started while another runs waits, and
+// says so.
+var _cellQueue = Promise.resolve();
+var _cellsRunning = 0;
 window.runCell = function(id, verb) {
+  if (S.sealed) return Promise.resolve();
+  if (_cellsRunning) {
+    var waitEl = document.querySelector('[data-result="' + id + '"]');
+    // .eng-busy: the result area is not a result yet (anything waiting on it,
+    // a test or the export, keeps waiting).
+    if (waitEl) waitEl.innerHTML = '<div role="status" class="eng-busy" style="color:#666;font-size:12px;padding:8px">Waiting for the running cell to finish…</div>';
+  }
+  var p = _cellQueue.then(function() {
+    _cellsRunning++;
+    return _runCellNow(id, verb).then(function(r) { _cellsRunning--; return r; }, function(e) { _cellsRunning--; throw e; });
+  });
+  _cellQueue = p.catch(function() {});
+  return p;
+};
+function _runCellNow(id, verb) {
   if (S.sealed) return Promise.resolve();
   verb = migrateVerbName(verb);
   // V2.3.24 strict lock: a locked cell cannot be re-run from any path.
@@ -5740,50 +5827,9 @@ window.runCell = function(id, verb) {
     var _rp; // promise for async (worker-backed) verbs; undefined for sync
     try {
       var fv = captureFormValues(id);
-      switch (verb) {
-        case 'network':     runNetwork(ra, fv); break;
-        case 'group':       runGroup(ra, fv); break;
-        case 'sequences':   runSequences(ra, fv); break;
-        case 'cluster':     _rp = runClustering(ra, fv); break;
-        case 'mmm':         _rp = runMmm(ra, fv); break;
-        case 'states':      runDescriptives(ra, fv); break;
-        case 'centrality':  runCentrality(ra, fv); break;
-        case 'betweenness': runBetweenness(ra, fv); break;
-        case 'community':   runCommunity(ra, fv); break;
-        case 'bootstrap':   _rp = runBootstrap(ra, fv); break;
-        case 'networks':    _rp = runNetworks(ra, fv); break;
-        case 'stability':   _rp = runStability(ra, fv); break;
-        case 'compare':     runCompare(ra, fv); break;
-        // v2.3.25 focused Compare verbs. Each dispatches to the existing
-        // broad runner with hardcoded fv toggles so only one section renders.
-        case 'compare-props': _rp = runNetworks(ra, Object.assign({}, fv, { mode: 'descriptive', showSummary: false, showProps: true,  showDiff: false, showDiffHeat: false, showLongTbl: false })); break;
-        case 'compare-diff':  _rp = runNetworks(ra, Object.assign({}, fv, { mode: 'descriptive', showSummary: false, showProps: false, showDiff: (fv.showDiff !== 'false' && fv.showDiff !== false), showDiffHeat: (fv.showDiffHeat !== 'false' && fv.showDiffHeat !== false), showLongTbl: false })); break;
-        case 'compare-perm':  _rp = runNetworks(ra, Object.assign({}, fv, { mode: 'permutation' })); break;
-        case 'compare-pos':   runCompare(ra, Object.assign({}, fv, { _posOnly: true, showKL: true })); break;
-        case 'net-summary':    runNetSummary(ra, fv); break;
-        // v2.3.25 focused Describe verbs — same pattern, target runDescriptives.
-        case 'states-freq':    runDescriptives(ra, Object.assign({}, fv, { showFreq: (fv.showChart !== 'false' && fv.showChart !== false), showTreemap: (fv.showTreemap === true || fv.showTreemap === 'true'), showMosaic: false, showWeightHist: false, showWeights: false, showTable: (fv.showTable !== 'false' && fv.showTable !== false) })); break;
-        case 'states-mosaic':  runDescriptives(ra, Object.assign({}, fv, { showFreq: false, showMosaic: true, showWeightHist: false, showWeights: false, showTable: false })); break;
-        case 'states-weights': runDescriptives(ra, Object.assign({}, fv, { showFreq: false, showMosaic: false, showWeightHist: (fv.showHistogram !== 'false' && fv.showHistogram !== false), showWeights: (fv.showMatrix !== 'false' && fv.showMatrix !== false), showTable: false })); break;
-        case 'reliability': _rp = runReliability(ra, fv); break;
-        case 'cliques':     runCliques(ra, fv); break;
-        case 'patterns':    runPatterns(ra, fv); break;
-        case 'pattern-outcome': runPatternOutcome(ra, fv); break;
-        case 'compare-pyramid': runComparePyramid(ra, fv); break;
-        case 'indices':     runIndices(ra, fv); break;
-        case 'outcome':     runOutcome(ra, fv); break;
-        case 'hon':           runHon(ra, fv); break;
-        case 'edge-reliab':   _rp = runEdgeReliability(ra, fv); break;
-        case 'markov-order':  _rp = runMarkovOrder(ra, fv); break;
-        case 'simplicial':    runSimplicial(ra, fv); break;
-        case 'honem':         runHonem(ra, fv); break;
-        case 'hypa':          runHypa(ra, fv); break;
-        case 'mogen':         runMogen(ra, fv); break;
-        case 'dfg':           runDFG(ra, fv); break;
-        case 'path-dep':      runPathDependence(ra, fv); break;
-        case 'high-order':    runHighOrder(ra, fv); break;
-        case 'process-mining': runProcessMining(ra, fv); break;
-      }
+      // An Analyze choice runs the verb on the chosen network or groups; a
+      // cell without one (a saved earlier cell) runs as it always did.
+      _rp = (SCOPED_VERBS[verb] && fv.scope != null) ? runScoped(verb, ra, fv, dispatchVerb) : dispatchVerb(verb, ra, fv);
     } catch (err) {
       ra.innerHTML = '<div style="color:#dc2626;font-size:12px;padding:8px">' + esc(err.message || String(err)) + '</div>';
     }
@@ -5818,7 +5864,7 @@ window.runCell = function(id, verb) {
     }, 300);
   }, 30);
   });
-};
+}
 
 // ===========================================================================
 // V2.3.24 → v2.3.25: per-cell runtime badge in the cell header (was a result
@@ -9720,7 +9766,7 @@ function buildGroupModel(groupCol, fv) {
     if (!cl || !S.sequences || cl.length !== S.sequences.length) {
       throw new Error(from === 'clusters' ? 'Run a Cluster sequences cell first.' : 'Run a Mixture Markov model cell first.');
     }
-    result = { sequences: S.sequences, groups: cl.slice(), actorIds: S.actorIds };
+    result = { sequences: S.sequences, groups: cl.slice(), actorIds: S.actorIds, eventTimes: S.eventTimes || null, sessionIds: S.sessionIds || null };
   } else {
     // Re-derive sequences + group labels for the chosen column. Long re-runs
     // the gap-split builder; wide reads the label from per-sequence metadata.
@@ -9743,7 +9789,8 @@ function buildGroupModel(groupCol, fv) {
     for (var i = 0; i < sequences.length; i++) { if (labels[i] === e[0]) seqs.push(sequences[i]); }
     e[1].data = seqs;
   });
-  return { groupModel: groupModel, labels: labels, sequences: sequences, opts: opts };
+  return { groupModel: groupModel, labels: labels, sequences: sequences, opts: opts,
+           base: { sequences: sequences, actorIds: result.actorIds || null, eventTimes: result.eventTimes || null, sessionIds: result.sessionIds || null } };
 }
 
 function runGroup(ra, fv) {
@@ -9768,6 +9815,12 @@ function runGroup(ra, fv) {
     built = buildGroupModel(groupCol, fv);
     S.groupModel = built.groupModel;
     S.groupLabels = built.labels;
+    var _gCell = ra.closest ? ra.closest('.cell') : null;
+    if (_gCell) registerGroupSet(_gCell.id,
+      from === 'clusters' ? 'Groups (from the clusters, ' + (fv.type || 'tna') + ')' :
+      from === 'mmm' ? 'Groups (from the mixture, ' + (fv.type || 'tna') + ')' :
+      'Groups "' + groupCol + '" (' + (fv.type || 'tna') + ')',
+      built.groupModel, built.labels, built.base, 'groups');
     var groupModel = built.groupModel, labels = built.labels, sequences = built.sequences, opts = built.opts;
     var groups = groupNames(groupModel);
     var entries = groupEntries(groupModel);
@@ -10555,38 +10608,16 @@ function runSequences(ra, fv) {
   }
 }
 
-// "Use as groups" on a clustering result: a Groups cell built from these
-// clusters goes right below and runs, so every later cell that works by group
-// — Sequences (every view), Centrality, Compare, Patterns, HON — follows the
-// clusters (2026-11-18, the owner's request).
-function useClustersAsGroups(fromCellId, from) {
-  if (S.sealed) return;
-  var idx = -1;
-  for (var i = 0; i < S.cells.length; i++) if (S.cells[i].id === fromCellId) { idx = i; break; }
-  if (idx < 0) return;
-  insertCell('group', idx + 1);
-  var cs = S.cells[idx + 1];
-  cs.formValues = { groupFrom: from };
-  setTimeout(function() {
-    var sel = document.querySelector('#' + cs.id + ' [data-field="groupFrom"]');
-    if (sel) sel.value = from;
-    runCell(cs.id, 'group');
-  }, 60);
-}
-window.useClustersAsGroups = useClustersAsGroups;
-function _useAsGroupsButton(ra, from) {
-  var cell = ra.closest ? ra.closest('.cell') : null;
-  if (!cell) return null;
-  var b = document.createElement('button');
-  b.type = 'button';
-  b.className = 'btn-secondary use-as-groups';
-  b.textContent = 'Use these clusters as groups \u2192';
-  b.title = 'Adds a Groups cell built from these clusters below this one. Every later cell that works by group then uses the clusters.';
-  b.style.cssText = 'margin:0 0 10px;font-size:11px;padding:4px 10px';
-  // Inline, like every control in a result: re-renders round-trip a result
-  // through innerHTML, which drops listeners (audit: dead after one use).
-  b.setAttribute('onclick', "useClustersAsGroups('" + cell.id + "','" + from + "')");
-  return b;
+// A clustering result says what it offers the rest of the notebook: its
+// clusters become a set in every cell's Analyze choice (as CarmNote Pro), the
+// default of the comparison cells. A Groups cell with Groups from = Clusters
+// still builds them with another network type.
+function _clustersAreGroupsNote(n, what) {
+  var d = document.createElement('div');
+  d.className = 'clusters-are-groups';
+  d.style.cssText = 'font-size:12px;color:#1e3a8a;background:#eff6ff;border:1px solid #bfdbfe;border-radius:6px;padding:6px 10px;margin:0 0 10px';
+  d.textContent = 'These ' + n + ' ' + what + ' can now be analysed: pick them in Analyze on any cell (each one, or every one side by side). Comparison cells use them by default.';
+  return d;
 }
 
 function runClustering(ra, fv) {
@@ -10642,8 +10673,7 @@ function runClustering(ra, fv) {
       info.style.cssText = 'font-size:12px;color:#666;margin-bottom:8px';
       info.textContent = k + ' clusters | ' + dissimilarity.toUpperCase() + ' distance | ' + method + ' | Silhouette: ' + fmt(result.silhouette) + ' | Sizes: ' + result.sizes.join(', ');
       ra.appendChild(info);
-      var useBtn = _useAsGroupsButton(ra, 'clusters');
-      if (useBtn) ra.appendChild(useBtn);
+      ra.appendChild(_clustersAreGroupsNote(k, 'clusters'));
 
       var stateLabels = _labelsFromSequences(S.sequences);
       var colorMap = {};
@@ -10657,6 +10687,24 @@ function runClustering(ra, fv) {
         clusterSeqs[l].push(S.sequences[i]);
       });
       var clusterNames = Object.keys(clusterSeqs);
+
+      // The clusters ARE the groups from here on, whatever Show displays: every
+      // later cell that works by group analyses each cluster (2026-11-19, the
+      // owner: "once you do clustering, it still continues analyzing one
+      // network"). Only Show = TNA used to set them.
+      var builders = { tna: groupTna, ftna: groupFtna, ctna: groupCtna, atna: groupAtna };
+      var groupModel = (builders[type] || groupTna)(S.sequences, labels, { meta: actorMeta(S.actorIds, S.sequences.length) });
+      S.groupModel = groupModel;
+      S.groupLabels = labels;
+      var entries = groupEntries(groupModel);
+      entries.forEach(function(e) {
+        var seqs = [];
+        for (var i = 0; i < S.sequences.length; i++) { if (labels[i] === e[0]) seqs.push(S.sequences[i]); }
+        e[1].data = seqs;
+      });
+      var _cCell = ra.closest ? ra.closest('.cell') : null;
+      if (_cCell) registerGroupSet(_cCell.id, 'Clusters (k=' + k + ')', groupModel, labels,
+        { sequences: S.sequences, actorIds: S.actorIds, eventTimes: S.eventTimes, sessionIds: S.sessionIds }, 'clusters');
 
       if (showMode === 'sequences') {
         // Per-cluster sequence distribution + index plots
@@ -10679,19 +10727,6 @@ function runClustering(ra, fv) {
         ra.appendChild(grid);
 
       } else if (showMode === 'network') {
-        // Build group TNA only when Show=Network
-        var builders = { tna: groupTna, ftna: groupFtna, ctna: groupCtna, atna: groupAtna };
-        var buildFn = builders[type] || groupTna;
-        var groupModel = buildFn(S.sequences, labels, { meta: actorMeta(S.actorIds, S.sequences.length) });
-        S.groupModel = groupModel;
-        S.groupLabels = labels;
-        var entries = groupEntries(groupModel);
-        entries.forEach(function(e) {
-          var seqs = [];
-          for (var i = 0; i < S.sequences.length; i++) { if (labels[i] === e[0]) seqs.push(S.sequences[i]); }
-          e[1].data = seqs;
-        });
-
         createViewToggle(ra,
           function renderFigure(figDiv) {
             var grid = document.createElement('div');
@@ -10829,8 +10864,7 @@ function runMmm(ra, fv) {
         (cl.nStarts > 1 ? ' | ' + cl.nStarts + ' restarts' : '') +
         ' | Sizes: ' + sizes.join(', ');
       ra.appendChild(info);
-      var useMmmBtn = _useAsGroupsButton(ra, 'mmm');
-      if (useMmmBtn) ra.appendChild(useMmmBtn);
+      ra.appendChild(_clustersAreGroupsNote(k, 'components'));
 
       // Fit-quality table (always shown)
       var qHeaders = ['Cluster', 'Mixing', 'AvePP', 'Sequences'];
@@ -10847,6 +10881,14 @@ function runMmm(ra, fv) {
       var stateLabels = _labelsFromSequences(S.sequences);
       var colorMap = {};
       stateLabels.forEach(function(l, i) { colorMap[l] = NODE_COLORS[i % NODE_COLORS.length]; });
+
+      // The components ARE the groups from here on, whatever Show displays
+      // (as Cluster sequences; only Show = TNA used to set them).
+      S.groupModel = result;
+      S.groupLabels = labels;
+      var _mCell = ra.closest ? ra.closest('.cell') : null;
+      if (_mCell) registerGroupSet(_mCell.id, 'Mixture (k=' + k + ')', result, labels,
+        { sequences: S.sequences, actorIds: S.actorIds, eventTimes: S.eventTimes, sessionIds: S.sessionIds }, 'mixture');
 
       if (showMode === 'sequences') {
         var grid = document.createElement('div');
@@ -10869,9 +10911,6 @@ function runMmm(ra, fv) {
         ra.appendChild(grid);
 
       } else if (showMode === 'network') {
-        S.groupModel = result;
-        S.groupLabels = labels;
-
         createViewToggle(ra,
           function renderFigure(figDiv) {
             var grid = document.createElement('div');
@@ -11614,6 +11653,303 @@ function resolveGroupSource(source) {
     return _buildTransientGroup(keepSeqs, keepLabels, 'lastObs', S.actorIds ? keepIds : null);
   }
   return null;
+}
+
+// ===========================================================================
+// ANALYZE — what each analysis cell runs on (2026-11-19, the owner: "make
+// choices, like carmnote pro"). As CarmNote Pro (@carmnote/core scope layer):
+// every analysis cell has an Analyze choice — Whole network, a set of groups
+// each analysed on its own, or one group of a set. A set is the data card's Group
+// column, or what a Groups / Cluster sequences / Mixture Markov model cell
+// built. Single-population cells default to the Whole network; comparison
+// cells to the most recently built set. A saved choice that can no longer be
+// honoured is an error that says what to pick, never a silent whole network.
+//
+// Values: 'merged' · '<source>|*' (every group) · '<source>|<group>'.
+// Sources: 'col' (Group column), 'cell:<id>' (a Groups / Cluster / Mixture
+// cell), 'lastobs' (the last state of each sequence).
+// ===========================================================================
+// Verbs that take an Analyze choice, with their intent ('groups' = compare).
+// Cells that build a set of groups.
+var SCOPE_LIST_MAX = 25;
+var GROUP_SET_VERBS = { group: 1, cluster: 1, clustering: 1, mmm: 1 };
+var SCOPED_VERBS = {
+  'net-summary': 'merged', 'states-freq': 'merged', 'states-mosaic': 'merged', 'states-weights': 'merged',
+  bootstrap: 'merged', stability: 'merged', 'edge-reliab': 'merged', reliability: 'merged', 'markov-order': 'merged',
+  centrality: 'merged', betweenness: 'merged', community: 'merged', cliques: 'merged',
+  sequences: 'merged', indices: 'merged', patterns: 'merged', 'pattern-outcome': 'merged', outcome: 'merged',
+  'process-mining': 'merged', 'high-order': 'merged',
+  hon: 'merged', honem: 'merged', hypa: 'merged', mogen: 'merged', dfg: 'merged', 'path-dep': 'merged', simplicial: 'merged',
+  compare: 'groups', 'compare-pyramid': 'groups', 'compare-props': 'groups', 'compare-diff': 'groups',
+  'compare-perm': 'groups', 'compare-pos': 'groups', networks: 'groups'
+};
+// Verbs that draw one panel per group themselves from S.groupModel; every
+// other verb is run once per group by runScoped.
+var GROUP_NATIVE_VERBS = {
+  'net-summary': 1, 'states-mosaic': 1, bootstrap: 1, stability: 1, centrality: 1, betweenness: 1, community: 1,
+  sequences: 1, indices: 1, compare: 1, 'compare-pyramid': 1, 'compare-props': 1, 'compare-diff': 1,
+  'compare-perm': 1, 'compare-pos': 1, networks: 1
+};
+
+// A Groups / Cluster / Mixture cell registers what it built. `base` holds the
+// per-sequence arrays its labels run parallel to.
+// kind: 'groups' (a Groups cell: its networks are built with its own Type and
+// Scaling) | 'clusters' | 'mixture' (each group's network is built as the
+// Network cell builds the whole one).
+function registerGroupSet(cellId, label, groupModel, labels, base, kind) {
+  if (!S.groupSets) S.groupSets = {};
+  if (!S.groupSetOrder) S.groupSetOrder = [];
+  S.groupSets[cellId] = { label: label, groupModel: groupModel, labels: labels.slice(), base: base, kind: kind || 'groups' };
+  S.groupSetOrder = S.groupSetOrder.filter(function(k) { return k !== cellId; }).concat([cellId]);
+  refreshScopeFields();
+}
+
+// Cluster 2 before Cluster 10; the listing order only.
+function _naturalSort(names) { return names.slice().sort(function(x, y) { return String(x).localeCompare(String(y), undefined, { numeric: true }); }); }
+// The settings of the last Network cell, as a Run All leaves them (the
+// restore path uses the same rule).
+function _networkFv() {
+  var nets = S.cells.filter(function(c) { return c.type === 'network'; });
+  if (!nets.length) return {};
+  var last = nets[nets.length - 1];
+  var live = document.getElementById(last.id) ? captureFormValues(last.id) : null;
+  return live || last.formValues || {};
+}
+function _cellOf(id) { for (var i = 0; i < S.cells.length; i++) if (S.cells[i].id === id) return S.cells[i]; return null; }
+
+// The sources on offer now: { key, label, names } in a stable order.
+function scopeSources() {
+  var out = [];
+  if (S.columns && S.columns.group && S.sequences) {
+    var col = _columnSet();
+    if (col) out.push({ key: 'col', label: 'Group column "' + S.columns.group + '"', names: _naturalSort(groupNames(col.groupModel)) });
+  }
+  var registered = [];
+  (S.groupSetOrder || []).forEach(function(id) {
+    var set = S.groupSets && S.groupSets[id];
+    if (set && _cellOf(id)) {
+      registered.push(set.groupModel);
+      out.push({ key: 'cell:' + id, label: set.label, names: _naturalSort(groupNames(set.groupModel)) });
+    }
+  });
+  // Groups the notebook holds that no cell registered (a notebook from before
+  // the Analyze choice, groups set by a host or a script): offered as such.
+  if (S.groupModel && registered.indexOf(S.groupModel) < 0) {
+    var an = groupNames(S.groupModel);
+    if (an.length >= 2) out.push({ key: 'active', label: 'Active groups', names: _naturalSort(an) });
+  }
+  return out;
+}
+// The Group column's set, cached for the current sequences and column.
+function _columnSet() {
+  var k = S.columns && S.columns.group;
+  if (!k || !S.sequences) return null;
+  if (S._colSet && S._colSet.col === k && S._colSet.seqs === S.sequences) return S._colSet.set;
+  var set = null;
+  try {
+    var built = sequencesWithGroupColumn(k);
+    if (built.groups && built.groups.length) {
+      var gm = groupTna(built.sequences, built.groups, { meta: actorMeta(built.actorIds, built.sequences.length) });
+      groupEntries(gm).forEach(function(e) {
+        e[1].data = built.sequences.filter(function(_s, i) { return built.groups[i] === e[0]; });
+      });
+      if (groupNames(gm).length >= 2) set = { label: 'Group column "' + k + '"', groupModel: gm, labels: built.groups, base: built, kind: 'column' };
+    }
+  } catch (e) { set = null; }
+  S._colSet = { col: k, seqs: S.sequences, set: set };
+  return set;
+}
+
+// The <select> of choices for a verb, keeping `selected` when it is still offered.
+function scopeOptionsHtml(prefer, selected) {
+  var opts = [];
+  if (prefer !== 'groups') opts.push({ v: 'merged', l: 'Whole network' });
+  var sources = scopeSources();
+  // Each source lists at most SCOPE_LIST_MAX groups by name (a Group column of
+  // student ids would put hundreds in every cell); a saved pick beyond them
+  // still shows.
+  sources.forEach(function(src) {
+    opts.push({ v: src.key + '|*', l: src.label + ': every group' });
+    if (prefer === 'groups') return;
+    src.names.forEach(function(n, i) {
+      var v = src.key + '|' + n;
+      if (i < SCOPE_LIST_MAX || v === selected) opts.push({ v: v, l: src.label + ': ' + n });
+    });
+    if (src.names.length > SCOPE_LIST_MAX) opts.push({ v: '', l: '… ' + (src.names.length - SCOPE_LIST_MAX) + ' more groups (use every group)', disabled: true });
+  });
+  var latest = sources.length ? sources[sources.length - 1].key + '|*' : null;
+  var def = prefer === 'groups' ? (latest || '') : 'merged';
+  var have = selected != null && selected !== '' && opts.some(function(o) { return o.v === selected; });
+  // A saved choice whose groups are not (yet) built stays selected, marked,
+  // so a reopen keeps it until the cell that makes them has run again.
+  if (selected && !have) opts.push({ v: selected, l: '⚠ ' + selected.replace('|*', ': every group').replace('|', ': ') + ' (not built)' });
+  var cur = selected ? selected : def;
+  if (!opts.length) opts.push({ v: '', l: 'No groups yet: build Groups or cluster first' });   // runScoped explains on Run
+  return opts.map(function(o) {
+    return '<option value="' + esc(o.v) + '"' + (o.disabled ? ' disabled' : (o.v === cur ? ' selected' : '')) + '>' + esc(o.l) + '</option>';
+  }).join('');
+}
+function scopeFieldHtml(prefer) {
+  var tip = prefer === 'groups'
+    ? 'Which groups this comparison compares: the Group column, or the groups a Groups, Cluster sequences or Mixture Markov model cell built. Defaults to the most recently built.'
+    : 'What this analysis runs on: the whole network, every group of a set (each analysed on its own), or one group. Sets are the Group column and what Groups, Cluster sequences and Mixture Markov model cells built.';
+  return '<div class="form-row scope-row"><div class="form-group" title="' + esc(tip) + '"><span class="form-label">Analyze</span>' +
+    '<select class="form-control" data-field="scope" data-scope-prefer="' + prefer + '" style="min-width:240px">' +
+    scopeOptionsHtml(prefer, null) + '</select></div></div>';
+}
+// Rebuild every Analyze list (a set was built or rebuilt), keeping each pick.
+function refreshScopeFields() {
+  document.querySelectorAll('select[data-field="scope"]').forEach(function(sel) {
+    var keep = sel.value;
+    sel.innerHTML = scopeOptionsHtml(sel.getAttribute('data-scope-prefer') || 'merged', keep);
+  });
+}
+window.refreshScopeFields = refreshScopeFields;
+
+// Called by renderCell: an Analyze row on every scoped verb. A cell saved with
+// the earlier "Group axis" (groupSource) and no Analyze keeps that control and
+// its old behaviour, so a saved notebook reproduces.
+function installScopeField(form, cs) {
+  var prefer = SCOPED_VERBS[cs.type];
+  if (!prefer) return;
+  var fv = cs.formValues || {};
+  if (fv.groupSource != null && fv.scope == null) return;
+  form.querySelectorAll('[data-field="groupSource"]').forEach(function(sel) {
+    var g = sel.closest('.form-group'); if (g) g.remove();
+  });
+  form.insertAdjacentHTML('afterbegin', scopeFieldHtml(prefer));
+}
+
+// A choice that cannot be honoured: the message says what to do.
+function ScopeError(msg) { var e = new Error(msg); e.scopeError = true; return e; }
+
+// The units a choice stands for: null for the whole network, else
+// { label, all, groupModel, units: [{ name, model, seqs, actorIds, eventTimes, sessionIds }] }.
+function resolveScope(value) {
+  if (!value || value === 'merged') return null;
+  var bar = value.indexOf('|');
+  var key = bar < 0 ? value : value.slice(0, bar);
+  var unit = bar < 0 ? '*' : value.slice(bar + 1);
+  var set = null, label = '';
+  if (key === 'col') {
+    set = _columnSet();
+    if (!set) throw ScopeError('This cell analyses the Group column, but no Group column with two or more groups is mapped in the data card. Pick another choice in Analyze.');
+  } else if (key === 'active') {
+    if (!S.groupModel) throw ScopeError('This cell analyses the active groups, but none are built now. Run the cell that builds them, or pick again in Analyze.');
+    set = { label: 'Active groups', groupModel: S.groupModel, labels: S.groupLabels || [], kind: 'groups',
+            base: { sequences: S.sequences, actorIds: S.actorIds, eventTimes: S.eventTimes, sessionIds: S.sessionIds } };
+  } else if (key.indexOf('cell:') === 0) {
+    var cid = key.slice(5);
+    if (!_cellOf(cid)) throw ScopeError('The cell that built these groups was removed. Pick another choice in Analyze.');
+    set = S.groupSets && S.groupSets[cid];
+    if (!set) throw ScopeError('The groups this cell analyses come from cell ' + cid + ', which has not run yet. Run it (or Run All), then run this cell.');
+  } else {
+    throw ScopeError('Unknown Analyze choice "' + value + '". Pick again in Analyze.');
+  }
+  label = set.label;
+  var entries = groupEntries(set.groupModel);
+  if (unit !== '*') {
+    entries = entries.filter(function(e) { return e[0] === unit; });
+    if (!entries.length) throw ScopeError('"' + unit + '" is not among the groups of ' + label + ' any more (' +
+      groupNames(set.groupModel).join(', ') + '). Pick again in Analyze.');
+  }
+  var b = set.base || {};
+  var units = entries.map(function(e) {
+    var idx = [];
+    for (var i = 0; i < set.labels.length; i++) if (set.labels[i] === e[0]) idx.push(i);
+    var pick = function(arr) { return arr && arr.length === set.labels.length ? idx.map(function(i) { return arr[i]; }) : null; };
+    var seqs = pick(b.sequences) || (e[1].data || []);
+    return { name: e[0], model: e[1], seqs: seqs, actorIds: pick(b.actorIds), eventTimes: pick(b.eventTimes), sessionIds: pick(b.sessionIds) };
+  });
+  // Each group's network is built as the Network cell builds the whole one
+  // (Type, Scaling, Prune, START/END), so "Whole network" and "Cluster 2" of a
+  // cell are comparable (audit, 2026-11-19: they were plain tna before). A
+  // Groups cell's networks keep the Type and Scaling chosen there.
+  var rule = 'as the Groups cell built them';
+  if (set.kind !== 'groups') {
+    var netFv = _networkFv();
+    var keep = { sequences: S.sequences, actorIds: S.actorIds };
+    try {
+      units.forEach(function(u) {
+        S.sequences = u.seqs; S.actorIds = u.actorIds;
+        u.model = buildNetworkModel(netFv);
+      });
+    } finally { S.sequences = keep.sequences; S.actorIds = keep.actorIds; }
+    rule = "with the Network cell's settings";
+  }
+  // The chosen units as a group model for the verbs that draw panels themselves.
+  var models = {};
+  units.forEach(function(u) { models[u.name] = u.model; });
+  var gm = Object.assign({}, set.groupModel, { models: models });
+  return { label: label, all: unit === '*', groupModel: gm, units: units, labels: set.labels, rule: rule };
+}
+window.resolveScope = resolveScope;
+
+// Run a verb on its Analyze choice. The notebook's data is swapped for the
+// chosen units while the verb runs and restored after it has finished.
+var SCOPE_ENV_KEYS = ['model', 'sequences', 'actorIds', 'eventTimes', 'sessionIds', 'rowSpans', 'meta', 'groupModel', 'groupLabels'];
+async function runScoped(verb, ra, fv, dispatch) {
+  var scope;
+  try { scope = resolveScope(fv.scope); }
+  catch (err) {
+    ra.innerHTML = '<div style="color:#dc2626;font-size:12px;padding:8px">' + esc(err.message || String(err)) + '</div>';
+    return;
+  }
+  // Put back only what this run set and nobody has changed since: opening
+  // another notebook or rebuilding the network mid-run must survive the restore.
+  var saved = {}; SCOPE_ENV_KEYS.forEach(function(k) { saved[k] = S[k]; });
+  var mine = {};
+  var setEnv = function(o) { Object.keys(o).forEach(function(k) { S[k] = o[k]; mine[k] = o[k]; }); };
+  var restore = function() { Object.keys(mine).forEach(function(k) { if (S[k] === mine[k]) S[k] = saved[k]; }); };
+  var fv2 = Object.assign({}, fv, { groupSource: 'auto' });
+  // A verb's own error is shown in its result area, as runCell shows it.
+  var runInto = async function(target) {
+    try { await Promise.resolve(dispatch(verb, target, fv2)); }
+    catch (err) { target.innerHTML = '<div style="color:#dc2626;font-size:12px;padding:8px">' + esc(err.message || String(err)) + '</div>'; }
+  };
+  try {
+    if (!scope) {                                   // whole network: no groups in play
+      if (SCOPED_VERBS[verb] === 'groups') {
+        ra.innerHTML = '<div style="color:#dc2626;font-size:12px;padding:8px">Nothing to compare yet: build groups first (a Groups cell, Cluster sequences, a Mixture Markov model, or a Group column in the data card), then pick them in Analyze.</div>';
+        return;
+      }
+      setEnv({ groupModel: null, groupLabels: null });
+      await runInto(ra);
+      return;
+    }
+    if (scope.all && GROUP_NATIVE_VERBS[verb]) {    // the verb draws one panel per group
+      setEnv({ groupModel: scope.groupModel, groupLabels: scope.labels });
+      await runInto(ra);
+      return;
+    }
+    if (SCOPED_VERBS[verb] === 'groups') {          // a comparison of one group: nothing to compare
+      ra.innerHTML = '<div style="color:#dc2626;font-size:12px;padding:8px">A comparison needs every group of a set. Pick one in Analyze.</div>';
+      return;
+    }
+    // One run per unit, each in its own section, on that unit's data alone.
+    ra.innerHTML = '';
+    var head = document.createElement('div');
+    head.className = 'scope-head';
+    head.style.cssText = 'font-size:12px;color:#666;margin-bottom:6px';
+    head.textContent = (scope.all ? (scope.label + ': ' + scope.units.length + ' groups, each analysed on its own') : (scope.label + ': ' + scope.units[0].name + ' only')) +
+      ', networks built ' + scope.rule + '.';
+    ra.appendChild(head);
+    for (var u = 0; u < scope.units.length; u++) {   // sequential: each run reads the swapped data
+      var unitDef = scope.units[u];
+      if (scope.all) ra.appendChild(sectionDiv(unitDef.name + ' (' + unitDef.seqs.length + ' sequence' + (unitDef.seqs.length === 1 ? '' : 's') + ')'));
+      var host = document.createElement('div');
+      host.className = 'scope-unit';
+      host.setAttribute('data-scope-unit', unitDef.name);
+      ra.appendChild(host);
+      if (unitDef.model && !unitDef.model.data) unitDef.model.data = unitDef.seqs;
+      setEnv({ model: unitDef.model, sequences: unitDef.seqs, actorIds: unitDef.actorIds,
+               eventTimes: unitDef.eventTimes, sessionIds: unitDef.sessionIds,
+               rowSpans: null, meta: null, groupModel: null, groupLabels: null });
+      await runInto(host);
+    }
+  } finally {
+    restore();
+  }
 }
 
 function runCentrality(ra, fv) {
@@ -13385,6 +13721,7 @@ function runHon(ra, fv) {
   info.innerHTML = '<b>HON by group</b> — ' + esc(src.label) + ': ' + entries.length + ' group' + (entries.length === 1 ? '' : 's') +
     '. Each group\'s sequences get their own HON with the settings above.';
   ra.appendChild(info);
+  var runs = [];
   entries.forEach(function(e) {
     var seqs = e[1].data || [];
     ra.appendChild(sectionDiv('Group: ' + e[0] + ' (' + seqs.length + ' sequence' + (seqs.length === 1 ? '' : 's') + ')'));
@@ -13393,8 +13730,9 @@ function runHon(ra, fv) {
     host.setAttribute('data-hon-group', e[0]);
     ra.appendChild(host);
     if (!seqs.length) { host.innerHTML = '<div style="color:#888;font-size:12px">No sequences in this group.</div>'; return; }
-    _runHonOne(host, fv, seqs);
+    runs.push(_runHonOne(host, fv, seqs));
   });
+  return Promise.all(runs);
 }
 
 // One HON over `seqs`, rendered into `ra`.
@@ -13413,7 +13751,7 @@ function _runHonOne(ra, fv, seqs) {
 
   ra.innerHTML = '<div style="color:#888;font-size:12px;padding:12px;text-align:center">Building HON ' + esc(method) + ' (max order = ' + maxOrder + ')' + (hypaSig ? ' + HYPA significance' : '') + '...</div>';
 
-  setTimeout(function() {
+  return deferRun(function() {
     try {
       var result = buildHon(seqs, { maxOrder: maxOrder, minFreq: minFreq, method: method, collapseRepeats: collapse });
       ra.innerHTML = '';
@@ -14690,7 +15028,7 @@ function runSimplicial(ra, fv) {
 
   ra.innerHTML = '<div style="color:#888;font-size:12px;padding:12px;text-align:center">Building simplicial complex (order ' + ordersToInclude.join('+') + ', ' + mode + ')…</div>';
 
-  setTimeout(function() {
+  return deferRun(function() {
     try {
       // Get raw trajectories from S.sequences (strip nulls).
       var trajectories = S.sequences.map(function(seq) {
@@ -15154,7 +15492,7 @@ function runHonem(ra, fv) {
 
   ra.innerHTML = '<div style="color:#888;font-size:12px;padding:12px;text-align:center">Building HON order ' + maxOrder + ' + truncated SVD (dim = ' + dim + ')…</div>';
 
-  setTimeout(function() {
+  return deferRun(function() {
     try {
       var hon = buildHon(S.sequences, { maxOrder: maxOrder });
       var honem = buildHonem(hon, { dim: dim, maxPower: maxPower });
@@ -15247,7 +15585,7 @@ function runHypa(ra, fv) {
 
   ra.innerHTML = '<div style="color:#888;font-size:12px;padding:12px;text-align:center">Computing HYPA order ' + k + ' (α = ' + alpha + ', min count ' + minCount + ', ' + pAdjustMethod + ')…</div>';
 
-  setTimeout(function() {
+  return deferRun(function() {
     try {
       var result = buildHypa(S.sequences, { k: k, alpha: alpha, minCount: minCount, pAdjustMethod: pAdjustMethod === 'none' ? 'none' : pAdjustMethod });
       ra.innerHTML = '';
@@ -15342,7 +15680,7 @@ function runMogen(ra, fv) {
 
   ra.innerHTML = '<div style="color:#888;font-size:12px;padding:12px;text-align:center">Fitting orders 0..' + maxOrder + ' (criterion = ' + criterion + ')…</div>';
 
-  setTimeout(function() {
+  return deferRun(function() {
     try {
       var result = buildMogen(S.sequences, { maxOrder: maxOrder, criterion: criterion, lrtAlpha: lrtAlpha });
       ra.innerHTML = '';
@@ -15539,7 +15877,7 @@ function runProcessMap(ra, fv) {
 
   ra.innerHTML = '<div style="color:#888;font-size:12px;padding:12px;text-align:center">Building process map…</div>';
 
-  setTimeout(function() {
+  return deferRun(function() {
     try {
       var times = S.eventTimes;
       var timed = !!(times && times.length === S.sequences.length);
@@ -15855,7 +16193,7 @@ function runDFG(ra, fv) {
 
   ra.innerHTML = '<div style="color:#888;font-size:12px;padding:12px;text-align:center">Building DFG…</div>';
 
-  setTimeout(function() {
+  return deferRun(function() {
     try {
       if (!S.model.data) S.model.data = S.sequences;
       var result = buildDFG(S.model, { startLabel: startLabel, endLabel: endLabel });
@@ -15927,7 +16265,7 @@ function runPathDependence(ra, fv) {
 
   ra.innerHTML = '<div style="color:#888;font-size:12px;padding:12px;text-align:center">Computing path-dependence statistics (order ' + order + ', min count ' + minCount + ')…</div>';
 
-  setTimeout(function() {
+  return deferRun(function() {
     try {
       var result = pathDependence(S.sequences, { order: order, minCount: minCount, base: base });
       ra.innerHTML = '';
@@ -16167,7 +16505,7 @@ function runHomology(ra, fv) {
   var showPH     = fv.showPH     !== false && fv.showPH     !== 'false';
 
   ra.innerHTML = '<div style="color:#888;font-size:12px;padding:12px;text-align:center">Computing homology…</div>';
-  setTimeout(function() {
+  return deferRun(function() {
     try {
       var da = _homoDenseAdj();
       var complex = buildSimplicial(da.mat, { threshold: threshold, maxDim: maxDim, labels: da.labels, type: 'clique' });
@@ -16284,7 +16622,7 @@ function runHyperCentrality(ra, fv) {
   }
 
   ra.innerHTML = '<div style="color:#888;font-size:12px;padding:12px;text-align:center">Building hypergraph and computing centralities…</div>';
-  setTimeout(function() {
+  return deferRun(function() {
     try {
       var hg;
       if (source === 'cliques') {
@@ -17422,7 +17760,7 @@ function runOutcome(ra, fv) {
   // patterns table includes per-outcome counts (informational; the actual
   // tests below recompute presence anyway).
   ra.innerHTML = '<div style="color:#888;font-size:12px;padding:8px">Discovering patterns and fitting models…</div>';
-  setTimeout(function() {
+  return deferRun(function() {
     var report;
     try {
       report = discoverPatternsSeq(S.sequences, {
@@ -18162,6 +18500,10 @@ function restoreFormValues(id, vals) {
       // V2: if this hidden select is wrapped in a custom dropdown, sync its UI.
       var dd = f.closest && f.closest('.ms-dd');
       if (dd && typeof msSyncFromSelect === 'function') msSyncFromSelect(dd);
+    } else if (k === 'scope' && f.tagName === 'SELECT') {
+      // Rebuilt with the saved pick, which stays selected (marked) when its
+      // groups are not built yet — a plain .value would fall back silently.
+      f.innerHTML = scopeOptionsHtml(f.getAttribute('data-scope-prefer') || 'merged', vals[k] || null);
     } else f.value = vals[k] || '';
   });
   if (vals._measures) {
@@ -18322,7 +18664,7 @@ window.unpublish = function() {
 // Flush persistence NOW, bypassing the 2s autosave debounce — so a seal/lock
 // can't be lost by an immediate refresh (the root cause of "lock disappears").
 // Per-notebook build id — injected by build-notebook.cjs; 'dev' under vite.
-var CARM_BUILD = '51f6946·20261119';
+var CARM_BUILD = 'a06ef50·20261119';
 if (/^__CARM/.test(CARM_BUILD)) CARM_BUILD = 'dev';
 
 // ── Reproducibility certificate (Certified tier) ───────────────────────────
@@ -18878,7 +19220,7 @@ window.saveAs = saveAs;
 // ===========================================================================
 var SESSION_KIND = 'carmnote-session';
 var SESSION_TYPE = 'carm-tna';
-var NB_APP_VERSION = '2.5.3';
+var NB_APP_VERSION = '2.5.5';
 
 function sessionPayload() {
   var st = captureNotebookState();
@@ -19409,10 +19751,14 @@ async function runAll() {
   // incl. worker-backed ones, finishes + persists). Prevents many heavy
   // verbs racing into the single worker and keeps the old one-then-next
   // ordering so the final saved state is coherent.
-  for (var i = 0; i < S.cells.length; i++) {
-    var cs = S.cells[i];
-    if (cs.locked || cs.type === 'text') continue;
-    try { await runCell(cs.id, cs.type); } catch (e) {}
+  // Network cells first, then the cells that build groups, then the rest (as
+  // _rerunCells): a cell may analyse groups a cell below it builds.
+  var rank = function(cs) { return cs.type === 'network' ? 0 : (GROUP_SET_VERBS[cs.type] ? 1 : 2); };
+  var order = S.cells.filter(function(cs) { return !cs.locked && cs.type !== 'text'; })
+    .map(function(cs, i) { return { cs: cs, i: i }; })
+    .sort(function(a, b) { return rank(a.cs) - rank(b.cs) || a.i - b.i; });
+  for (var i = 0; i < order.length; i++) {
+    try { await runCell(order[i].cs.id, order[i].cs.type); } catch (e) {}
   }
 }
 
@@ -20062,11 +20408,11 @@ function applyExperimentalFilter() {
   var tag = document.getElementById('nb-version-tag');
   if (tag) {
     if (on) {
-      tag.innerHTML = '2.5.3j·B';
+      tag.innerHTML = '2.5.5j·B';
       tag.title = 'Experimental mode on — HON / HONEM / HYPA / Mogen / DFG / Path Dep / Case-dropping (edges) visible';
       tag.style.color = '#e07a3a';
     } else {
-      tag.innerHTML = '2.5.3j';
+      tag.innerHTML = '2.5.5j';
       tag.title = 'Curated mode — Markov Order, Stability, Simplicial Complex (toggle the flask in the header to reveal experimentals)';
       tag.style.color = '#9aa0a6';
     }
@@ -20375,7 +20721,7 @@ function _flagOlderLibraryEntry(id, version) {
 var DERIVED_STATE_KEYS = ['sequences', 'model', 'groupModel', 'groupLabels', 'actorIds', 'sessionIds',
   'rowSpans', 'eventTimes', 'meta', 'metaCols', 'columnWarnings',
   'clusterLabels', 'clusterK', 'clusterMethod', 'clusterAssignments', 'clusterSilhouette', 'clusterDissimilarity',
-  'mmmLabels', 'mmmK', 'mmmAssignments'];
+  'mmmLabels', 'mmmK', 'mmmAssignments', 'groupSets', 'groupSetOrder', '_colSet'];
 // opts.rerun === false: the caller re-runs the cells itself (session import).
 function applyState(sv, opts) {
   DERIVED_STATE_KEYS.forEach(function(k) { S[k] = null; });
