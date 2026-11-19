@@ -6,7 +6,7 @@ carry the probability of moving from one state to the next. CarmNote TNA
 estimates such networks, tests their stability and compares them across
 groups, and it does so inside a single HTML file that runs in the browser
 without a server or an internet connection. This page follows one worked
-example through CarmNote TNA 2.5.0, from raw events to a sealed,
+example through CarmNote TNA 2.5.3, from raw events to a sealed,
 shareable analysis; the [full user guide](./USER-GUIDE.md) documents every
 menu, cell and setting in detail.
 
@@ -31,7 +31,7 @@ the sample generator draws one from a fixed seed, so that the same settings
 always reproduce the same data.
 
 <figure>
-<a href="guide/03-sample-dialog.webp?v=2.5.0" aria-label="Full-size screenshot"><img src="guide/03-sample-dialog.webp?v=2.5.0" alt="" width="600" height="362" loading="lazy"></a>
+<a href="guide/03-sample-dialog.webp?v=2.5.3" aria-label="Full-size screenshot"><img src="guide/03-sample-dialog.webp?v=2.5.3" alt="" width="600" height="362" loading="lazy"></a>
 <figcaption>The sample-data generator. A vocabulary of states, the number of students, sessions and events, and a seed determine the dataset completely.</figcaption>
 </figure>
 
@@ -45,7 +45,7 @@ made. The group column carries the achievement level that the comparison will
 rest on.
 
 <figure>
-<a href="guide/04-data-card.webp?v=2.5.0" aria-label="Full-size screenshot"><img src="guide/04-data-card.webp?v=2.5.0" alt="" width="860" height="284" loading="lazy"></a>
+<a href="guide/04-data-card.webp?v=2.5.3" aria-label="Full-size screenshot"><img src="guide/04-data-card.webp?v=2.5.3" alt="" width="860" height="284" loading="lazy"></a>
 <figcaption>The sample data mapped: student as Actor, action as Action, timestamp as Time, session as Session and achievement as Group. Each student × session pair becomes one sequence, which yields 1,000 sequences of 10 events.</figcaption>
 </figure>
 
@@ -61,7 +61,7 @@ threshold of 0.05 removes the weakest transitions from the model; in the
 sample data all 61 edges that remain lie above it.
 
 <figure>
-<a href="guide/05-network-cell.webp?v=2.5.0" aria-label="Full-size screenshot"><img src="guide/05-network-cell.webp?v=2.5.0" alt="" width="860" height="961" loading="lazy"></a>
+<a href="guide/05-network-cell.webp?v=2.5.3" aria-label="Full-size screenshot"><img src="guide/05-network-cell.webp?v=2.5.3" alt="" width="860" height="961" loading="lazy"></a>
 <figcaption>The transition network of all 1,000 sequences. Edge labels are transition probabilities, and the arc around each node shows the proportion of sequences that begin in that state. The strongest self-loop is Watch → Watch (.31).</figcaption>
 </figure>
 
@@ -70,7 +70,7 @@ estimates one network for each achievement level. The cells added after it
 analyse the two networks side by side.
 
 <figure class="fig-tall">
-<a href="guide/cell-group.webp?v=2.5.0" aria-label="Full-size screenshot"><img src="guide/cell-group.webp?v=2.5.0" alt="" width="860" height="2768" loading="lazy"></a>
+<a href="guide/cell-group.webp?v=2.5.3" aria-label="Full-size screenshot"><img src="guide/cell-group.webp?v=2.5.3" alt="" width="860" height="2768" loading="lazy"></a>
 <figcaption>Separate networks for the 530 sequences of high achievers and the 470 sequences of low achievers.</figcaption>
 </figure>
 
@@ -85,7 +85,7 @@ the high-achiever network 35 of the 64 edges meet this criterion; the others
 are drawn dashed and are not interpreted.
 
 <figure class="fig-tall">
-<a href="guide/cell-bootstrap.webp?v=2.5.0" aria-label="Full-size screenshot"><img src="guide/cell-bootstrap.webp?v=2.5.0" alt="" width="860" height="2609" loading="lazy"></a>
+<a href="guide/cell-bootstrap.webp?v=2.5.3" aria-label="Full-size screenshot"><img src="guide/cell-bootstrap.webp?v=2.5.3" alt="" width="860" height="2609" loading="lazy"></a>
 <figcaption>Bootstrap validation with 1,000 resamples. Stable edges are drawn solid; unstable edges are dashed.</figcaption>
 </figure>
 
@@ -101,7 +101,7 @@ indicates that the next action depends on the current one and that a
 first-order transition network is an adequate summary of these data.
 
 <figure class="fig-tall">
-<a href="guide/cell-stability.webp?v=2.5.0" aria-label="Full-size screenshot"><img src="guide/cell-stability.webp?v=2.5.0" alt="" width="860" height="1526" loading="lazy"></a>
+<a href="guide/cell-stability.webp?v=2.5.3" aria-label="Full-size screenshot"><img src="guide/cell-stability.webp?v=2.5.3" alt="" width="860" height="1526" loading="lazy"></a>
 <figcaption>Centrality stability. Each curve traces the correlation between full-data and reduced-data centralities as cases are dropped; the dashed line marks the 0.7 threshold.</figcaption>
 </figure>
 
@@ -114,7 +114,7 @@ receives the most flow (an InStrength of 1.225), which places writing at the
 convergence point of their sessions.
 
 <figure class="fig-tall">
-<a href="guide/cell-centrality.webp?v=2.5.0" aria-label="Full-size screenshot"><img src="guide/cell-centrality.webp?v=2.5.0" alt="" width="860" height="2466" loading="lazy"></a>
+<a href="guide/cell-centrality.webp?v=2.5.3" aria-label="Full-size screenshot"><img src="guide/cell-centrality.webp?v=2.5.3" alt="" width="860" height="2466" loading="lazy"></a>
 <figcaption>Centralities of the high and low achiever networks.</figcaption>
 </figure>
 
@@ -128,7 +128,7 @@ produces. After Benjamini–Hochberg adjustment for the number of edges tested,
 40 transitions differ between the groups.
 
 <figure class="fig-tall">
-<a href="guide/cell-compare-perm.webp?v=2.5.0" aria-label="Full-size screenshot"><img src="guide/cell-compare-perm.webp?v=2.5.0" alt="" width="860" height="1370" loading="lazy"></a>
+<a href="guide/cell-compare-perm.webp?v=2.5.3" aria-label="Full-size screenshot"><img src="guide/cell-compare-perm.webp?v=2.5.3" alt="" width="860" height="1370" loading="lazy"></a>
 <figcaption>The permutation test with 1,000 permutations. Green edges are stronger among high achievers and red edges among low achievers; asterisks mark the adjusted significance.</figcaption>
 </figure>
 
@@ -140,7 +140,7 @@ residual of 17.6. Low achievers thus not only watch more often but also tend
 to remain in watching once they have begun.
 
 <figure>
-<a href="guide/cell-compare.webp?v=2.5.0" aria-label="Full-size screenshot"><img src="guide/cell-compare.webp?v=2.5.0" alt="" width="860" height="1238" loading="lazy"></a>
+<a href="guide/cell-compare.webp?v=2.5.3" aria-label="Full-size screenshot"><img src="guide/cell-compare.webp?v=2.5.3" alt="" width="860" height="1238" loading="lazy"></a>
 <figcaption>Standardized residuals of pattern frequencies. Positive residuals mark patterns that are more frequent in a group than independence predicts.</figcaption>
 </figure>
 
@@ -155,7 +155,7 @@ read-only, freeze it, or seal it with a fingerprint over its content, so that
 a reader can confirm that the analysis has not changed since it was saved.
 
 <figure>
-<a href="guide/13-lock-menu.webp?v=2.5.0" aria-label="Full-size screenshot"><img src="guide/13-lock-menu.webp?v=2.5.0" alt="" width="520" height="480" loading="lazy"></a>
+<a href="guide/13-lock-menu.webp?v=2.5.3" aria-label="Full-size screenshot"><img src="guide/13-lock-menu.webp?v=2.5.3" alt="" width="520" height="480" loading="lazy"></a>
 <figcaption>The notebook lock menu. A sealed notebook carries a SHA-256 fingerprint and reports any later change when it is opened.</figcaption>
 </figure>
 
