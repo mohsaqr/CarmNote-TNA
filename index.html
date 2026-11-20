@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Carm TNA 2.5.5j — Transition Network Analysis Notebook</title>
+<title>Carm TNA 2.5.6j — Transition Network Analysis Notebook</title>
 <style>
 /* === Reset + Base === */
 * { margin: 0; padding: 0; box-sizing: border-box; }
@@ -603,6 +603,39 @@ body.published .cell.text-cell .note-toolbar { display: none !important; }
 body.published .cell.text-cell .note-editor { pointer-events: none; }
 body.published .cell-header { display: none !important; }
 body.published .col-map { display: none !important; }
+body.published .recode-sec, body.sealed .recode-sec { display: none !important; }
+.recode-btn.open { background: var(--cnr-accent-deep); }
+.recode-sec:empty { display: none; }
+.recode-sec { margin: 8px 0 4px; padding: 10px 12px; border: 1px solid var(--cnr-border, #e5e7eb); border-radius: 8px; background: var(--cnr-surface, #fff); font-size: 12px; }
+.recode-title { font-weight: 600; font-size: 13px; margin-bottom: 4px; }
+.recode-muted, .rc-hint { color: var(--cnr-text-muted, #6b7280); margin-bottom: 6px; }
+.rc-list { display: grid; gap: 3px; max-height: 320px; overflow-y: auto; }
+.rc-row { display: grid; grid-template-columns: minmax(70px, 1fr) 44px 14px minmax(110px, 1.3fr) 72px; align-items: center; gap: 6px; padding: 2px 4px; border-left: 3px solid transparent; }
+.rc-tags { display: flex; gap: 4px; }
+.rc-row.rc-changed { border-left-color: var(--cnr-accent, #0072B2); }
+.rc-code { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.rc-n { text-align: right; color: var(--cnr-text-muted, #6b7280); font-variant-numeric: tabular-nums; }
+.rc-arrow { color: var(--cnr-text-muted, #6b7280); }
+.rc-to { height: 26px; padding: 2px 6px; font-size: 12px; }
+.rc-tag { display: none; font-size: 10px; padding: 1px 6px; border-radius: 9px; border: 1px solid currentColor; }
+.rc-row.rc-merged .rc-tag-merged { display: inline-block; color: #009E73; }
+.rc-row.rc-reuse .rc-tag-reuse { display: inline-block; color: #D55E00; }
+.rc-note { margin-top: 6px; color: #D55E00; }
+.rc-foot { display: flex; flex-wrap: wrap; align-items: center; gap: 8px; margin-top: 8px; }
+.rc-count { font-weight: 600; }
+.rc-pending { color: #D55E00; }
+.rc-actions { margin-left: auto; display: flex; flex-wrap: wrap; gap: 6px; }
+.rc-btn { font: inherit; font-size: 12px; padding: 4px 10px; border-radius: 6px; cursor: pointer; background: transparent; color: var(--cnr-accent-deep, #0072B2); border: 1px solid currentColor; }
+.rc-btn:hover { background: var(--cnr-accent-soft, rgba(0, 114, 178, 0.08)); }
+.rc-btn.rc-apply { background: var(--cnr-accent, #0072B2); color: #fff; border-color: transparent; font-weight: 600; }
+.rc-btn.rc-apply:hover { background: var(--cnr-accent-deep, #005a8c); }
+.rc-btn:focus-visible { outline: 2px solid var(--cnr-accent, #0072B2); outline-offset: 2px; }
+@media (max-width: 560px) {
+  .rc-row { grid-template-columns: minmax(0, 1fr) auto auto; row-gap: 2px; }
+  .rc-row .rc-to { grid-column: 1 / -1; }
+  .rc-row .rc-tags { grid-column: 1 / -1; }
+  .rc-actions { margin-left: 0; }
+}
 body.published .publish-bar { display: flex; }
 #pub-dup-btn { display: none; }
 body.sealed #pub-dup-btn { display: inline-block; }
@@ -1546,7 +1579,7 @@ Exhibit B - "Incompatible With Secondary Licenses" Notice
 <header>
   <!-- Row 1 — identity: brand, notebook title, save -->
   <div class="hdr-row-1">
-    <h1>Carm <b>TNA</b><sup id="nb-version-tag" style="font-size:9px;color:#9aa0a6;font-weight:500;margin-left:4px;letter-spacing:0.5px">2.5.5j</sup></h1>
+    <h1>Carm <b>TNA</b><sup id="nb-version-tag" style="font-size:9px;color:#9aa0a6;font-weight:500;margin-left:4px;letter-spacing:0.5px">2.5.6j</sup></h1>
     <div class="hdr-sep"></div>
     <input id="nb-title-input" class="nb-title-input" type="text" aria-label="Notebook title" placeholder="Name this notebook…" autocomplete="off" spellcheck="false">
     <span id="nb-saved-indicator" class="nb-saved-indicator"></span>
@@ -2016,7 +2049,13 @@ var $fi = document.getElementById('fi');
 var $drop = document.getElementById('drop-zone');
 
 function gid() { return 'c' + (++S.nid); }
-function esc(s) { var d = document.createElement('div'); d.textContent = s; return d.innerHTML; }
+// Safe in text AND in a quoted attribute: textContent→innerHTML escapes & < >
+// but not quotes, so a CSV value with a double quote broke out of value="…" /
+// data-…="…" (Codex review of Recode, 2026-11-20).
+// Apostrophes are left as they are: the notebook's attributes are double-quoted,
+// and inline onclick="fn('…')" handlers escape them for JavaScript themselves
+// (&#39; would decode back to ' inside the handler and break it — Codex review).
+function esc(s) { var d = document.createElement('div'); d.textContent = s; return d.innerHTML.replace(/"/g, '&quot;'); }
 // setTimeout that runCell can wait for: same arguments, returns a Promise that
 // settles when fn has run. A verb that paints its spinner first and computes in
 // a timer returns this, so a per-group run (runScoped) never restores the
@@ -2431,22 +2470,115 @@ function parseCSV(text) {
 // Returns the SAME shape buildSequencesFromData does, PLUS `meta`/`metaCols`,
 // so every existing downstream consumer is unaffected.
 // ===========================================================================
-function sequencesFromWide(data, idCol, fromCol, toCol) {
-  var cols = data.columns;
+// ===========================================================================
+// RECODE — rename or merge action codes before the model is estimated
+// (copied from CarmNote HTNA Pro's recoder, the owner 2026-11-20: "pro has
+// recode feature copy it").
+//
+// The rules are a TOTAL FUNCTION from an original code to a final label:
+// one rule per code, and `to` is a plain label that never refers to another
+// rule. So merging is not an operation: two codes given the same label ARE one
+// state. A chain ("A→B, B→C") or a swap cannot be written, and applying the
+// rules is one pass, order-independent. They live in S.columns.recode, so the
+// saved notebook, its certificate and the session file carry them, and every
+// place that builds sequences (Save Settings, Build, Groups from a column,
+// reopening, session import) applies them. A new file drops them (S.columns
+// is reset): codes of another file mean nothing.
+// ===========================================================================
+var RECODE_KIND = 'carmnote-recode';
+// The Recode editor's UI state (open, draft, note), kept across data-card re-renders.
+var _RC = { open: false, draft: null, note: '' };
+function _resetRecodeUi() { _RC.open = false; _RC.draft = null; _RC.note = ''; }
+function recodeRules() { return (S.columns && Array.isArray(S.columns.recode)) ? S.columns.recode : []; }
+/** code -> final label, for the rules that change something. */
+function recodeMapOf(rules) {
+  var m = Object.create(null);
+  (rules || []).forEach(function(r) {
+    if (!r || r.code == null || r.to == null) return;
+    var to = String(r.to).trim(), code = String(r.code);
+    if (to && to !== code) m[code] = to;
+  });
+  return m;
+}
+/** One sequence through the rules (a single pass: no rule feeds another). */
+function recodeSeq(seq, map) {
+  return seq.map(function(v) { var t = map[String(v)]; return t === undefined ? v : t; });
+}
+/** Set (or clear, with an empty label) the rule of one code; returns new rules. */
+function recodeSetRule(rules, code, to) {
+  code = String(code);
+  var clean = String(to == null ? '' : to).trim();
+  var out = (rules || []).filter(function(r) { return r && String(r.code) !== code; });
+  if (clean && clean !== code) out.push({ code: code, to: clean });
+  return out;
+}
+/**
+ * What the rules do to these codes: "N codes -> M states", which final labels
+ * gather more than one code (merged), and which codes TAKE OVER a name another
+ * code gave away ("Plan" -> "Read" while "Read" -> "Study": the row becomes the
+ * state called Read; it does not merge with the old Read).
+ */
+function recodeStats(codes, rules) {
+  var map = recodeMapOf(rules);
+  var fin = function(c) { var t = map[c]; return t === undefined ? c : t; };
+  var states = Object.create(null), vacated = Object.create(null), reuse = Object.create(null), merged = Object.create(null);
+  codes.forEach(function(c) {
+    var f = fin(c);
+    states[f] = (states[f] || 0) + 1;
+    if (f !== c) vacated[c] = f;
+  });
+  Object.keys(states).forEach(function(f) { if (states[f] > 1) merged[f] = true; });
+  codes.forEach(function(c) { var f = fin(c); if (f !== c && vacated[f] !== undefined) reuse[c] = vacated[f]; });
+  return { nCodes: codes.length, nStates: Object.keys(states).length, merged: merged, reuse: reuse, finalOf: fin };
+}
+/** The state columns of a wide file (the From…To span), as sequencesFromWide reads them. */
+function _wideStateCols(cols, idCol, fromCol, toCol) {
   var fromIdx = cols.indexOf(fromCol);
   if (fromIdx === -1) fromIdx = cols.findIndex(function(c) { return c !== idCol; });
   if (fromIdx < 0) fromIdx = 0;
   var toIdx = cols.indexOf(toCol);
   if (toIdx === -1 || toIdx < fromIdx) toIdx = cols.length - 1;
-  var stateCols = cols.slice(fromIdx, toIdx + 1);
+  return { fromIdx: fromIdx, toIdx: toIdx, stateCols: cols.slice(fromIdx, toIdx + 1) };
+}
+/**
+ * The codes of the data under the mapping on screen (else the saved one), with
+ * their counts, in natural order: [{code, n}]. Null when no action column is mapped.
+ */
+function recodeCodes() {
+  if (!S.data || !S.data.rows) return null;
+  var counts = new Map();
+  var add = function(v) { if (v == null || v === '') return; v = String(v); counts.set(v, (counts.get(v) || 0) + 1); };
+  var dom = function(id) { var el = document.getElementById(id); return el ? el.value : null; };
+  var c = S.columns || {};
+  if ((S.dataFormat || 'long') === 'wide') {
+    var span = _wideStateCols(S.data.columns, dom('col-wide-id') != null ? dom('col-wide-id') : (c.id || ''),
+      dom('col-wide-from') || c.from || '', dom('col-wide-to') || c.to || '');
+    S.data.rows.forEach(function(r) { span.stateCols.forEach(function(col) { add(r[col]); }); });
+  } else {
+    var action = dom('col-action') || c.action;
+    if (!action) return null;
+    // prepareLong trims action values; the editor keys them the same way.
+    S.data.rows.forEach(function(r) { add(r[action] == null ? r[action] : String(r[action]).trim()); });
+  }
+  return _naturalSort(Array.from(counts.keys())).map(function(k) { return { code: k, n: counts.get(k) }; });
+}
+window.recodeRules = recodeRules; window.recodeMapOf = recodeMapOf; window.recodeSetRule = recodeSetRule;
+window.recodeStats = recodeStats; window.recodeCodes = recodeCodes;
+
+function sequencesFromWide(data, idCol, fromCol, toCol) {
+  var cols = data.columns;
+  var span = _wideStateCols(cols, idCol, fromCol, toCol);
+  var fromIdx = span.fromIdx, toIdx = span.toIdx, stateCols = span.stateCols;
   var metaCols = cols.filter(function(c, i) { return i < fromIdx || i > toIdx; });
+  var rc = recodeMapOf(recodeRules());   // the Recode rules, before the model
   var sequences = [], actorIds = [], rowSpans = [], meta = [];
   data.rows.forEach(function(r, ri) {
     var seq = [];
     stateCols.forEach(function(c) {
       var v = r[c];
       if (v === '' || v == null) return;
-      seq.push(String(v));
+      var t = rc[String(v)];
+      seq.push(t === undefined ? String(v) : t);
     });
     if (!seq.length) return;
     sequences.push(seq);
@@ -2995,6 +3127,10 @@ function loadFile(file) {
     // from localStorage on dist-file refresh). Otherwise the previous
     // notebook's States / Network cells appear to "auto-show" against
     // the new data. Same filename → treat as a refresh, keep cells.
+    // Recode rules name the codes of one file: a different file never inherits
+    // them, cells or no cells (Codex review).
+    if (S.data && S.data.filename !== file.name && S.columns) S.columns.recode = [];
+    if (S.data && S.data.filename !== file.name) _resetRecodeUi();
     if (S.data && S.data.filename !== file.name && (S.cells.length || S.model)) {
       S.cells = []; S.sequences = null; S.model = null;
       S.groupModel = null; S.groupLabels = null; S.columns = null;
@@ -3195,6 +3331,111 @@ function renderDataPanel() {
   mapDiv.className = 'col-map';
   card.appendChild(mapDiv);
 
+  // ── Recode (from CarmNote HTNA Pro): rename or merge codes before the model.
+  // Edits go into a DRAFT; "Apply & rebuild" makes it the notebook's rules and
+  // rebuilds, so what the cells show always matches the saved rules.
+  var rcDiv = document.createElement('div');
+  rcDiv.className = 'recode-sec';
+  rcDiv.id = 'recode-sec';
+  card.appendChild(rcDiv);
+  // The editor's state lives outside the card: Apply re-renders the card, and
+  // the editor (open, draft, the note on what was applied) must survive that.
+  var R = _RC;
+  function rcEsc(v) { return esc(String(v)); }
+  function renderRecode() {
+    var btn = document.getElementById('btn-recode');
+    if (btn) { btn.classList.toggle('open', R.open); btn.setAttribute('aria-expanded', R.open ? 'true' : 'false'); }
+    if (!R.open) { rcDiv.innerHTML = ''; return; }
+    if (R.draft == null) R.draft = recodeRules().slice();
+    var head = '<div class="recode-title">Recode codes</div>';
+    var codes = recodeCodes();
+    if (codes == null) { rcDiv.innerHTML = head + '<div class="recode-muted">Map the Action column first.</div>'; return; }
+    if (!codes.length) { rcDiv.innerHTML = head + '<div class="recode-muted">No codes found in the mapped column.</div>'; return; }
+    var names = codes.map(function(c) { return c.code; });
+    var st = recodeStats(names, R.draft);
+    var map = recodeMapOf(R.draft);
+    var rows = codes.map(function(c) {
+      var cur = map[c.code] || '';
+      var fin = st.finalOf(c.code);
+      return '<div class="rc-row' + (cur ? ' rc-changed' : '') + (st.merged[fin] ? ' rc-merged' : '') + (st.reuse[c.code] !== undefined ? ' rc-reuse' : '') +
+        '" data-rc-code="' + rcEsc(c.code) + '">' +
+        '<span class="rc-code" title="' + rcEsc(c.code) + '">' + rcEsc(c.code) + '</span>' +
+        '<span class="rc-n">' + c.n + '</span><span class="rc-arrow" aria-hidden="true">\u2192</span>' +
+        '<input type="text" class="form-control rc-to" data-rc-input="1" aria-label="New label for ' + rcEsc(c.code) + '" value="' + rcEsc(cur) +
+          '" placeholder="' + rcEsc(c.code) + '" list="rc-labels" title="Leave empty to keep. Type another code\u2019s label to merge with it.">' +
+        '<span class="rc-tags"><span class="rc-tag rc-tag-merged">merged</span>' +
+        '<span class="rc-tag rc-tag-reuse" data-rc-reuse-tag>took over</span></span></div>';
+    }).join('');
+    var applied = JSON.stringify(recodeMapOf(recodeRules())) === JSON.stringify(map);
+    rcDiv.innerHTML = head +
+      '<div class="rc-hint">Rename a code, or give two codes the same label to merge them. Empty keeps the code. Applied before the model is estimated.</div>' +
+      '<datalist id="rc-labels">' + _rcLabelOptions(names, st) + '</datalist>' +
+      '<div class="rc-list">' + rows + '</div>' +
+      '<div class="rc-note" data-rc-note' + (R.note ? '' : ' style="display:none"') + '>' + rcEsc(R.note) + '</div>' +
+      '<div class="rc-foot"><span class="rc-count" data-rc-count>' + st.nCodes + ' codes \u2192 ' + st.nStates + ' states</span>' +
+        '<span class="rc-pending" data-rc-pending' + (applied ? ' style="display:none"' : '') + '>Not applied yet</span>' +
+        '<span class="rc-actions">' +
+          '<button type="button" class="rc-btn" data-rc-act="export">\u21e9 Export rules</button>' +
+          '<button type="button" class="rc-btn" data-rc-act="import">\u21e7 Import rules</button>' +
+          '<button type="button" class="rc-btn" data-rc-act="reset">\u21bb Reset all</button>' +
+          '<button type="button" class="rc-btn rc-apply" data-rc-act="apply">Apply &amp; rebuild</button>' +
+        '</span></div>';
+    rcDiv.querySelectorAll('[data-rc-input]').forEach(function(inp) {
+      var code = inp.closest('.rc-row').getAttribute('data-rc-code');
+      // 'input': the tags and the count follow every keystroke, repainted in
+      // place (a re-render would take the focus away mid-word).
+      inp.addEventListener('input', function() { R.draft = recodeSetRule(R.draft, code, inp.value); refreshRecode(); });
+    });
+  }
+  function _rcLabelOptions(names, st) {
+    // The labels IN PLAY (each code's final label): a name given away is no
+    // longer offered, so picking from the list always merges.
+    var seen = [];
+    names.forEach(function(c) { var f = st.finalOf(c); if (seen.indexOf(f) < 0) seen.push(f); });
+    return seen.map(function(l) { return '<option value="' + rcEsc(l) + '"></option>'; }).join('');
+  }
+  function refreshRecode() {
+    var codes = recodeCodes() || [];
+    var names = codes.map(function(c) { return c.code; });
+    var st = recodeStats(names, R.draft);
+    var map = recodeMapOf(R.draft);
+    rcDiv.querySelectorAll('.rc-row').forEach(function(row) {
+      var code = row.getAttribute('data-rc-code'), fin = st.finalOf(code), reused = st.reuse[code];
+      row.classList.toggle('rc-changed', map[code] !== undefined);
+      row.classList.toggle('rc-merged', !!st.merged[fin]);
+      row.classList.toggle('rc-reuse', reused !== undefined);
+      var tag = row.querySelector('[data-rc-reuse-tag]');
+      if (tag) tag.title = reused !== undefined ? '"' + fin + '" has itself been renamed to "' + reused + '", so this code takes over the freed name; it does not merge with the old "' + fin + '". To merge with it, use "' + reused + '".' : '';
+    });
+    var dl = rcDiv.querySelector('#rc-labels'); if (dl) dl.innerHTML = _rcLabelOptions(names, st);
+    var cnt = rcDiv.querySelector('[data-rc-count]'); if (cnt) cnt.textContent = st.nCodes + ' codes \u2192 ' + st.nStates + ' states';
+    var pend = rcDiv.querySelector('[data-rc-pending]');
+    if (pend) pend.style.display = JSON.stringify(recodeMapOf(recodeRules())) === JSON.stringify(map) ? 'none' : '';
+  }
+  rcDiv.addEventListener('click', function(e) {
+    var b = e.target.closest('[data-rc-act]'); if (!b) return;
+    var act = b.getAttribute('data-rc-act');
+    if (act === 'reset') { R.draft = []; R.note = ''; renderRecode(); }
+    else if (act === 'export') exportRecodeRules(R.draft);
+    else if (act === 'import') importRecodeRules(function(rules, msg) { if (rules) R.draft = rules; R.note = msg; renderRecode(); });
+    else if (act === 'apply') {
+      var res = applyRecodeAndRebuild(R.draft);
+      R.note = res.message || '';
+      if (res.ok) R.draft = recodeRules().slice();
+      // specifyData folds the card: keep it open so the note is seen, and
+      // draw the editor in whichever card is on the page now.
+      S.dataCardCollapsed = false;
+      var liveCard = document.getElementById('data-card-top');
+      if (liveCard) liveCard.classList.remove('collapsed');
+      if (document.getElementById('recode-sec') === rcDiv) renderRecode();
+      else if (typeof window._recodeRender === 'function') window._recodeRender();
+    }
+  });
+  // A different Action column (or From/To span) means different codes.
+  mapDiv.addEventListener('change', function() { if (R.open) renderRecode(); });
+  window._recodeRender = renderRecode;
+  window._recodeToggle = function() { R.open = !R.open; R.note = ''; if (R.open) R.draft = recodeRules().slice(); renderRecode(); };
+
   // "Re-run needed": stays visible with the card collapsed — it is about the
   // results further down the page, not about the fields.
   var staleDiv = document.createElement('div');
@@ -3335,6 +3576,7 @@ function renderDataPanel() {
           '<select class="form-control" id="col-wide-from">' + optList + '</select></label>' +
         '<label title="Last column of the sequence. Columns after it are kept as metadata.">to ' +
           '<select class="form-control" id="col-wide-to">' + optList + '</select></label>' +
+        '<button class="build-btn recode-btn" id="btn-recode" title="Rename or merge codes before the model is estimated" aria-expanded="false">\u270e Recode\u2026</button>' +
         '<button class="build-btn" id="btn-specify">Save Settings</button>' +
         '<button class="build-btn" id="btn-build" title="Save settings + add a Network cell" style="background:var(--cnr-accent-deep)">Build Network</button>' +
         '<button class="build-btn danger" id="btn-clear-net" title="Clear network and all analyses">✕ Clear All</button>';
@@ -3367,6 +3609,7 @@ function renderDataPanel() {
           '<input type="checkbox" id="col-sessions"> Sessions</label>' +
         '<label class="col-map-gap" title="Inactivity that starts a new session, in seconds. Ticking Sessions fills in 900, R tna::prepare_data()\u2019s default; 0 = a new session on any gap. Blank = no sessions.">Gap ' +
           '<input type="number" class="form-control" id="col-gap" value="" min="-1" max="86400" step="60" placeholder="none"></label>' +
+        '<button class="build-btn recode-btn" id="btn-recode" title="Rename or merge codes before the model is estimated" aria-expanded="false">\u270e Recode\u2026</button>' +
         '<button class="build-btn" id="btn-specify">Save Settings</button>' +
         '<button class="build-btn" id="btn-build" title="Save settings + add a Network cell" style="background:var(--cnr-accent-deep)">Build Network</button>' +
         '<button class="build-btn danger" id="btn-clear-net" title="Clear network and all analyses">✕ Clear All</button>';
@@ -3375,6 +3618,8 @@ function renderDataPanel() {
     }
     document.getElementById('btn-specify').addEventListener('click', specifyDataAndRun);
     document.getElementById('btn-build').addEventListener('click', buildNetwork);
+    document.getElementById('btn-recode').addEventListener('click', window._recodeToggle);
+    renderRecode();
     document.getElementById('btn-clear-net').addEventListener('click', function() {
       // Keep the loaded data, drop the model + every analysis cell. Persist
       // so the cleared analyses don't reappear on the next reload (same
@@ -3594,9 +3839,10 @@ function buildSequencesFromData(actorCol, actionCol, timeCol, groupCol, gapThres
   var sequences = [], actorIds = [], sessionIds = [], rowSpans = [], eventTimes = [];
   var groupLabels = groupCol ? [] : null;
   var anyMissingTime = false;
+  var rc = recodeMapOf(recodeRules());   // the Recode rules, before the model
 
   idx.forEach(function(i) {
-    var seq = res.sequences[i].filter(function(s) { return s != null && s !== ''; });
+    var seq = recodeSeq(res.sequences[i].filter(function(s) { return s != null && s !== ''; }), rc);
     if (!seq.length) return;
     sequences.push(seq);
     actorIds.push(res.actors[i]);
@@ -3646,6 +3892,9 @@ function _labelsFromSequences(sequences) {
 
 function specifyData() {
   var result;
+  // The Recode rules belong to the data, not to the column choice: keep them.
+  var keepRecode = recodeRules().slice();
+  var prevColumns = S.columns, prevGap = S.gapThreshold;
 
   if (S.dataFormat === 'wide') {
     var idSel = document.getElementById('col-wide-id');
@@ -3658,7 +3907,7 @@ function specifyData() {
       alert('States "from" column must come before (or equal) the "to" column.');
       return false;
     }
-    S.columns = { wide: true, id: idCol, from: fromCol, to: toCol };
+    S.columns = { wide: true, id: idCol, from: fromCol, to: toCol, recode: keepRecode };
     S.gapThreshold = -1;
     result = sequencesFromWide(S.data, idCol, fromCol, toCol);
   } else {
@@ -3672,7 +3921,7 @@ function specifyData() {
     if (isNaN(gapThreshold)) gapThreshold = -1;
     if (!action) { alert('Select at least the Action column.'); return false; }
 
-    S.columns = { actor: actor, action: action, time: time, order: order, group: group, session: session };
+    S.columns = { actor: actor, action: action, time: time, order: order, group: group, session: session, recode: keepRecode };
     S.gapThreshold = gapThreshold;
     result = buildSequencesFromData(actor, action, time, group, gapThreshold, order, session);
 
@@ -3681,6 +3930,9 @@ function specifyData() {
   }
 
   var sequences = result.sequences;
+  // Refuse before replacing anything: a rejected mapping leaves the notebook as it was.
+  if (sequences.length < 2) { alert('Need at least 2 sequences (got ' + sequences.length + ').'); S.columns = prevColumns; S.gapThreshold = prevGap; return false; }
+  S._gen = (S._gen || 0) + 1;   // new data: a cell still running per group stops (runScoped)
   S.sequences = sequences;
   S.actorIds = result.actorIds;
   S.sessionIds = result.sessionIds;
@@ -3688,7 +3940,6 @@ function specifyData() {
   S.eventTimes = result.eventTimes || null;
   S.meta = result.meta || null;
   S.metaCols = result.metaCols || null;
-  if (sequences.length < 2) { alert('Need at least 2 sequences (got ' + sequences.length + ').'); return false; }
 
   // Specifying new data invalidates any previous model and derived state.
   S.model = null;
@@ -3718,6 +3969,115 @@ window.specifyData = specifyData;
 // Called when the user clicks "Save Settings" (#btn-specify) directly — re-runs the cells
 // that work from sequences alone (process mining, patterns, indices, …).
 // Model-dependent cells stay stale until the user adds a Network cell.
+// Apply & rebuild: the draft becomes the notebook's rules, the sequences are
+// built again under them and every cell re-runs (Network cells first).
+function applyRecodeAndRebuild(rules) {
+  var codes = recodeCodes() || [];
+  var have = Object.create(null); codes.forEach(function(c) { have[c.code] = 1; });
+  var clean = [], dropped = [];
+  (rules || []).forEach(function(r) {
+    if (!r || r.code == null) return;
+    var to = String(r.to == null ? '' : r.to).trim(), code = String(r.code);
+    if (!to || to === code) return;
+    if (!have[code]) { dropped.push(code); return; }
+    clean.push({ code: code, to: to });
+  });
+  // A label equal to the START / END state the Network cell adds would merge
+  // real events with the synthetic boundary (Codex review).
+  // Every Network cell (any of them may rebuild the model), read as Run All reads it.
+  var reserved = [];
+  S.cells.filter(function(c) { return c.type === 'network'; }).forEach(function(c) {
+    var net = (document.getElementById(c.id) && captureFormValues(c.id)) || c.formValues || {};
+    var on = function(v) { return v === true || v === 'true'; };
+    if (on(net.addStartState)) reserved.push(String(net.startStateLabel || '').trim() || 'START');
+    if (on(net.addEndState)) reserved.push(String(net.endStateLabel || '').trim() || 'END');
+  });
+  reserved = reserved.filter(function(v, i, a) { return a.indexOf(v) === i; });
+  var clash = clean.filter(function(r) { return reserved.indexOf(r.to) >= 0; }).map(function(r) { return r.code + ' → ' + r.to; });
+  if (clash.length) return { ok: false, message: 'Not applied: ' + clash.join(', ') + ' would merge with the ' + reserved.join(' / ') + ' state the Network cell adds. Choose another label, or change that state’s label in the Network cell.' };
+  // The Network cells rebuild the model the other cells use; a locked one would
+  // not, and the others would run with no model (Codex review).
+  var nets = S.cells.filter(function(c) { return c.type === 'network'; });
+  if (nets.length && nets.every(function(c) { return c.locked; })) {
+    return { ok: false, message: 'Not applied: the Network cell is locked, so the model could not be rebuilt under the new rules. Unlock it first.' };
+  }
+  var prev = S.columns ? S.columns.recode : undefined;
+  if (!S.columns) S.columns = {};
+  S.columns.recode = clean;
+  if (!specifyData()) {                     // rejected mapping: nothing changes
+    if (S.columns) S.columns.recode = prev || [];
+    return { ok: false, message: 'Not applied: the data settings could not be saved (see the message above).' };
+  }
+  var p = S.cells.length ? _rerunCells(nets.length > 0) : null;
+  if (typeof qas === 'function') qas();
+  return { ok: true, dropped: dropped, done: p || Promise.resolve(),
+    message: dropped.length ? 'Applied. Rules for codes not in the mapped data were removed: ' + dropped.join(', ') + '.' : '' };
+}
+window.applyRecodeAndRebuild = applyRecodeAndRebuild;
+
+// The rules as a CODEBOOK, on their own: a coding scheme outlives the file it
+// was written for. The format is HTNA Pro's ({kind:'carmnote-recode', v:1,
+// rules:[{actor, code, to}]}), so a codebook moves between the two notes.
+function exportRecodeRules(rules) {
+  var payload = { kind: RECODE_KIND, v: 1, rules: (rules || []).map(function(r) { return { actor: null, code: r.code, to: r.to }; }) };
+  var base = S.data && S.data.filename ? String(S.data.filename).replace(/\.[^.]+$/, '') : 'codes';
+  var url = URL.createObjectURL(new Blob([JSON.stringify(payload, null, 2)], { type: 'application/json' }));
+  var a = document.createElement('a'); a.href = url; a.download = base + '.recode.json';
+  document.body.appendChild(a); a.click(); a.remove();
+  setTimeout(function() { URL.revokeObjectURL(url); }, 1000);
+}
+/**
+ * Read a codebook against the current data and say what did not fit: a rule
+ * for a code this data does not have is reported by name, never dropped in
+ * silence. HTNA codebooks carry an actor per rule; this note has one code
+ * space, so two rules giving one code different labels cannot both apply and
+ * are reported too. done(rules|null, message).
+ */
+function recodeRulesFromCodebook(payload, codes) {
+  if (!payload || payload.kind !== RECODE_KIND || !Array.isArray(payload.rules)) {
+    return { rules: null, message: 'That file is not a CarmNote recode codebook (*.recode.json).' };
+  }
+  var have = Object.create(null); (codes || []).forEach(function(c) { have[c.code] = 1; });
+  var to = Object.create(null), missed = [], clash = [];
+  payload.rules.forEach(function(r) {
+    if (!r || r.code == null || r.to == null || !String(r.to).trim()) return;
+    var c = String(r.code), t = String(r.to).trim();
+    if (!have[c]) { missed.push(c); return; }
+    if (to[c] !== undefined && to[c] !== t) { if (clash.indexOf(c) < 0) clash.push(c); return; }
+    to[c] = t;
+  });
+  clash.forEach(function(c) { delete to[c]; });
+  var rules = Object.keys(to).map(function(c) { return { code: c, to: to[c] }; });
+  var total = payload.rules.length;
+  var msg = 'Imported ' + rules.length + ' of ' + total + ' rules.';
+  if (missed.length) msg += ' Not in this data, not applied: ' + missed.join(', ') + '.';
+  if (clash.length) msg += ' Given different labels in the codebook, not applied: ' + clash.join(', ') + '.';
+  msg += ' Press Apply & rebuild to estimate the model on them.';
+  return { rules: rules, message: msg };
+}
+window.recodeRulesFromCodebook = recodeRulesFromCodebook;
+function importRecodeRules(done) {
+  var input = document.createElement('input');
+  input.type = 'file'; input.accept = '.json,application/json'; input.style.display = 'none';
+  input.addEventListener('change', function() {
+    var f = input.files && input.files[0];
+    input.remove();
+    if (!f) return;
+    var reader = new FileReader();
+    reader.onload = function() {
+      var payload = null;
+      try { payload = JSON.parse(String(reader.result || '')); }
+      catch (e) { done(null, 'That file is not JSON: ' + e.message); return; }
+      var r = recodeRulesFromCodebook(payload, recodeCodes());
+      done(r.rules, r.message);
+    };
+    reader.onerror = function() { done(null, 'The file could not be read.'); };
+    reader.readAsText(f);
+  });
+  document.body.appendChild(input);
+  input.click();
+}
+
 function specifyDataAndRun() {
   if (!specifyData()) return;
   _rerunCells(false);
@@ -3742,19 +4102,48 @@ function _rerunCells(includeModelVerbs) {
   var nets = runnable.filter(function(cs) { return cs.type === 'network'; });
   // Then the cells that build groups (Groups, Cluster sequences, Mixture), so a
   // cell placed above the one that builds its groups finds them (audit).
-  var rest = runnable.filter(function(cs) { return cs.type !== 'network' && GROUP_SET_VERBS[cs.type]; })
-    .concat(runnable.filter(function(cs) { return cs.type !== 'network' && !GROUP_SET_VERBS[cs.type]; }));
+  // Clusterings and mixtures before Groups cells: a Groups cell may build its
+  // groups from them (Codex review). Each tier keeps document order.
+  var rest = runnable.filter(function(cs) { return cs.type !== 'network'; })
+    .map(function(cs, i) { return { cs: cs, i: i }; })
+    .sort(function(a, b) { return _runTier(a.cs) - _runTier(b.cs) || a.i - b.i; })
+    .map(function(x) { return x.cs; });
   // The rest run one after another, each waiting for the one above: a cell
   // can depend on an earlier one (a Groups cell built from a Cluster cell's
   // clusters), and a 10 ms stagger let it read the previous run's output.
+  // A LOCKED clustering / mixture / Groups cell keeps its frozen result, but
+  // the cells analysing its groups need the groups themselves: they are
+  // rebuilt (the frozen result is put back) before those cells run (Codex review).
+  var lockedProducers = S.cells.filter(function(cs) { return cs.locked && GROUP_SET_VERBS[cs.type] && (!S.groupSets || !S.groupSets[cs.id]); })
+    .sort(function(a, b) { return _runTier(a) - _runTier(b); });
   return Promise.all(nets.map(function(cs) { return Promise.resolve(runCell(cs.id, cs.type)); }))
     .catch(function(err) { console.warn('[carm-tna] network re-run failed:', err); })
+    .then(function() {
+      return lockedProducers.reduce(function(chain, cs) {
+        return chain.then(function() { return _rebuildLockedProducer(cs); });
+      }, Promise.resolve());
+    })
     .then(function() {
       return rest.reduce(function(chain, cs) {
         return chain.then(function() { return runCell(cs.id, cs.type); })
           .catch(function(err) { console.warn('[carm-tna] re-run of ' + cs.id + ' failed:', err); });
       }, Promise.resolve());
     });
+}
+
+function _rebuildLockedProducer(cs) {
+  var ra = document.querySelector('[data-result="' + cs.id + '"]');
+  var frozen = { html: ra ? ra.innerHTML : null, cachedHTML: cs.cachedHTML, temp: cs._tempResult };
+  cs.locked = false;
+  return Promise.resolve(runCell(cs.id, cs.type)).catch(function(err) {
+    console.warn('[carm-tna] rebuilding the groups of locked ' + cs.id + ' failed:', err);
+  }).then(function() {
+    cs.locked = true;
+    cs.cachedHTML = frozen.cachedHTML;
+    if (frozen.temp === undefined) delete cs._tempResult; else cs._tempResult = frozen.temp;
+    var now = document.querySelector('[data-result="' + cs.id + '"]');
+    if (now && frozen.html != null) now.innerHTML = frozen.html;
+  });
 }
 
 // Which verbs need S.model (the TNA transition network) to run?
@@ -5784,13 +6173,19 @@ var _cellQueue = Promise.resolve();
 var _cellsRunning = 0;
 window.runCell = function(id, verb) {
   if (S.sealed) return Promise.resolve();
-  if (_cellsRunning) {
-    var waitEl = document.querySelector('[data-result="' + id + '"]');
+  var _wcs = S.cells.find(function(c) { return c.id === id; });
+  var waitEl = null, waitWas = null;
+  if (_cellsRunning && !(_wcs && _wcs.locked)) {
+    waitEl = document.querySelector('[data-result="' + id + '"]');
+    waitWas = waitEl ? waitEl.innerHTML : null;
     // .eng-busy: the result area is not a result yet (anything waiting on it,
     // a test or the export, keeps waiting).
     if (waitEl) waitEl.innerHTML = '<div role="status" class="eng-busy" style="color:#666;font-size:12px;padding:8px">Waiting for the running cell to finish…</div>';
   }
   var p = _cellQueue.then(function() {
+    // Locked while it waited: its result is put back, not left at "Waiting…".
+    var nowCs = S.cells.find(function(c) { return c.id === id; });
+    if (waitEl && waitWas != null && nowCs && nowCs.locked && waitEl.querySelector('.eng-busy')) waitEl.innerHTML = waitWas;
     _cellsRunning++;
     return _runCellNow(id, verb).then(function(r) { _cellsRunning--; return r; }, function(e) { _cellsRunning--; throw e; });
   });
@@ -9641,7 +10036,7 @@ if (poReset) poReset.addEventListener('click', function() {
 // plain tna() and so dropped the cell's Type, Scaling, Prune and START/END
 // states: every cell run after reopening a notebook saw the wrong network
 // while the Network form still showed the boxes ticked (PRV-86, 2026-11-18).
-function buildNetworkModel(fv) {
+function buildNetworkModel(fv, extra) {
   fv = fv || {};
   var type = fv.type || 'tna';
   // Default 0.05 prune matches the form default; user can set to 0 to keep all edges.
@@ -9669,6 +10064,8 @@ function buildNetworkModel(fv) {
     : S.sequences;
   var builders = { tna: tna, ftna: ftna, ctna: ctna, atna: atna };
   var opts = {};
+  // A shared alphabet (the groups of one set): every model has the same states in the same order.
+  if (extra && extra.labels) opts.labels = extra.labels;
   if (scaling) opts.scaling = scaling;
   // ATNA β (V2.3.17) — passed only when Type=atna; the other builders ignore
   // it. Empty/NaN/negative falls through to the engine default (0.1).
@@ -11673,6 +12070,14 @@ function resolveGroupSource(source) {
 // Cells that build a set of groups.
 var SCOPE_LIST_MAX = 25;
 var GROUP_SET_VERBS = { group: 1, cluster: 1, clustering: 1, mmm: 1 };
+// Run order for Run All and reopening: Network cells, then clusterings and
+// mixtures, then Groups cells (which may group by those clusters), then the rest.
+function _runTier(cs) {
+  if (cs.type === 'network') return 0;
+  if (cs.type === 'cluster' || cs.type === 'clustering' || cs.type === 'mmm') return 1;
+  if (cs.type === 'group') return 2;
+  return 3;
+}
 var SCOPED_VERBS = {
   'net-summary': 'merged', 'states-freq': 'merged', 'states-mosaic': 'merged', 'states-weights': 'merged',
   bootstrap: 'merged', stability: 'merged', 'edge-reliab': 'merged', reliability: 'merged', 'markov-order': 'merged',
@@ -11814,6 +12219,16 @@ function installScopeField(form, cs) {
   if (!prefer) return;
   var fv = cs.formValues || {};
   if (fv.groupSource != null && fv.scope == null) return;
+  // A HON cell saved with "By group" (before 2.5.5) keeps that choice and its
+  // behaviour: the value rides in a hidden field, so it is saved again (Codex review).
+  if (fv.honGroups != null && fv.honGroups !== 'none' && fv.scope == null) {
+    if (!form.querySelector('[data-field="honGroups"]')) {
+      var h = document.createElement('input');
+      h.type = 'hidden'; h.setAttribute('data-field', 'honGroups'); h.value = String(fv.honGroups);
+      form.insertBefore(h, form.firstChild);
+    }
+    return;
+  }
   form.querySelectorAll('[data-field="groupSource"]').forEach(function(sel) {
     var g = sel.closest('.form-group'); if (g) g.remove();
   });
@@ -11859,7 +12274,7 @@ function resolveScope(value) {
     for (var i = 0; i < set.labels.length; i++) if (set.labels[i] === e[0]) idx.push(i);
     var pick = function(arr) { return arr && arr.length === set.labels.length ? idx.map(function(i) { return arr[i]; }) : null; };
     var seqs = pick(b.sequences) || (e[1].data || []);
-    return { name: e[0], model: e[1], seqs: seqs, actorIds: pick(b.actorIds), eventTimes: pick(b.eventTimes), sessionIds: pick(b.sessionIds) };
+    return { name: e[0], model: e[1], seqs: seqs, idx: idx, actorIds: pick(b.actorIds), eventTimes: pick(b.eventTimes), sessionIds: pick(b.sessionIds) };
   });
   // Each group's network is built as the Network cell builds the whole one
   // (Type, Scaling, Prune, START/END), so "Whole network" and "Cluster 2" of a
@@ -11868,11 +12283,21 @@ function resolveScope(value) {
   var rule = 'as the Groups cell built them';
   if (set.kind !== 'groups') {
     var netFv = _networkFv();
+    // ONE alphabet for every group of the set (the engine's group builder does
+    // the same): a group's matrix is then comparable cell by cell with another
+    // group's. Built per group, a group that only does A→B and one that only
+    // does C→D put both edges in slot [0][1], and Compare ▸ Differences read
+    // them as equal (Codex review, 2026-11-20).
+    var alpha = {};
+    (b.sequences || []).forEach(function(sq) { sq.forEach(function(v) { if (v != null && v !== '') alpha[v] = 1; }); });
+    if (netFv.addStartState === true || netFv.addStartState === 'true') alpha[(typeof netFv.startStateLabel === 'string' && netFv.startStateLabel.trim()) || 'START'] = 1;
+    if (netFv.addEndState === true || netFv.addEndState === 'true') alpha[(typeof netFv.endStateLabel === 'string' && netFv.endStateLabel.trim()) || 'END'] = 1;
+    var shared = Object.keys(alpha).sort();
     var keep = { sequences: S.sequences, actorIds: S.actorIds };
     try {
       units.forEach(function(u) {
         S.sequences = u.seqs; S.actorIds = u.actorIds;
-        u.model = buildNetworkModel(netFv);
+        u.model = buildNetworkModel(netFv, { labels: shared });
       });
     } finally { S.sequences = keep.sequences; S.actorIds = keep.actorIds; }
     rule = "with the Network cell's settings";
@@ -11887,7 +12312,7 @@ window.resolveScope = resolveScope;
 
 // Run a verb on its Analyze choice. The notebook's data is swapped for the
 // chosen units while the verb runs and restored after it has finished.
-var SCOPE_ENV_KEYS = ['model', 'sequences', 'actorIds', 'eventTimes', 'sessionIds', 'rowSpans', 'meta', 'groupModel', 'groupLabels'];
+var SCOPE_ENV_KEYS = ['model', 'sequences', 'actorIds', 'eventTimes', 'sessionIds', 'rowSpans', 'meta', 'groupModel', 'groupLabels', '_scopeIdx', '_scopeN'];
 async function runScoped(verb, ra, fv, dispatch) {
   var scope;
   try { scope = resolveScope(fv.scope); }
@@ -11900,7 +12325,14 @@ async function runScoped(verb, ra, fv, dispatch) {
   var saved = {}; SCOPE_ENV_KEYS.forEach(function(k) { saved[k] = S[k]; });
   var mine = {};
   var setEnv = function(o) { Object.keys(o).forEach(function(k) { S[k] = o[k]; mine[k] = o[k]; }); };
-  var restore = function() { Object.keys(mine).forEach(function(k) { if (S[k] === mine[k]) S[k] = saved[k]; }); };
+  // New data or another notebook while this cell ran (S._gen moved on): the
+  // notebook is no longer the one this run swapped, so nothing is put back and
+  // no further group is installed (Codex review).
+  var gen = S._gen;
+  var restore = function() {
+    if (S._gen !== gen) return;
+    Object.keys(mine).forEach(function(k) { if (S[k] === mine[k]) S[k] = saved[k]; });
+  };
   var fv2 = Object.assign({}, fv, { groupSource: 'auto' });
   // A verb's own error is shown in its result area, as runCell shows it.
   var runInto = async function(target) {
@@ -11934,8 +12366,17 @@ async function runScoped(verb, ra, fv, dispatch) {
     head.textContent = (scope.all ? (scope.label + ': ' + scope.units.length + ' groups, each analysed on its own') : (scope.label + ': ' + scope.units[0].name + ' only')) +
       ', networks built ' + scope.rule + '.';
     ra.appendChild(head);
+    // A group's rows of the notebook's data (rowSpans, wide metadata) and its
+    // indices, for the verbs that read per-sequence columns (Outcome).
+    var nAll = saved.sequences ? saved.sequences.length : 0;
+    var sliceTo = function(idx, arr) { return (idx && arr && arr.length === nAll) ? idx.map(function(i) { return arr[i]; }) : null; };
     for (var u = 0; u < scope.units.length; u++) {   // sequential: each run reads the swapped data
       var unitDef = scope.units[u];
+      if (S._gen !== gen) {
+        ra.appendChild(Object.assign(document.createElement('div'), { textContent: 'The data changed while this cell ran. Run it again.', style: 'color:#dc2626;font-size:12px;padding:8px' }));
+        break;
+      }
+      var uIdx = (scope.labels && scope.labels.length === nAll) ? unitDef.idx : null;
       if (scope.all) ra.appendChild(sectionDiv(unitDef.name + ' (' + unitDef.seqs.length + ' sequence' + (unitDef.seqs.length === 1 ? '' : 's') + ')'));
       var host = document.createElement('div');
       host.className = 'scope-unit';
@@ -11944,7 +12385,8 @@ async function runScoped(verb, ra, fv, dispatch) {
       if (unitDef.model && !unitDef.model.data) unitDef.model.data = unitDef.seqs;
       setEnv({ model: unitDef.model, sequences: unitDef.seqs, actorIds: unitDef.actorIds,
                eventTimes: unitDef.eventTimes, sessionIds: unitDef.sessionIds,
-               rowSpans: null, meta: null, groupModel: null, groupLabels: null });
+               rowSpans: sliceTo(uIdx, saved.rowSpans), meta: sliceTo(uIdx, saved.meta),
+               _scopeIdx: uIdx, _scopeN: uIdx ? nAll : null, groupModel: null, groupLabels: null });
       await runInto(host);
     }
   } finally {
@@ -17640,18 +18082,22 @@ function _resolvePatternOutcomeContext(fv, ra) {
     return null;
   }
 
-  // Resolve outcome vector: one label per sequence, length === S.sequences.length
+  // Resolve outcome vector: one label per sequence, length === S.sequences.length.
+  // Inside a per-group run (Analyze = one group / every group) S.sequences is
+  // the group's; a vector over all sequences is cut to the group's indices.
+  var toGroup = function(v) { return (S._scopeIdx && v && v.length === S._scopeN) ? S._scopeIdx.map(function(i) { return v[i]; }) : v; };
   var outcomeSrc = fv.outcomeSrc || 'lastObs';
   var outcomeVec = null, outcomeLabel = '';
   if (outcomeSrc === 'lastObs') {
     outcomeVec = S.sequences.map(function(s) { return s && s.length ? s[s.length - 1] : null; });
     outcomeLabel = 'Last observation';
   } else if (outcomeSrc === 'clusters') {
-    if (!S.clusterLabels || S.clusterLabels.length !== S.sequences.length) {
+    var clLab = toGroup(S.clusterLabels);
+    if (!clLab || clLab.length !== S.sequences.length) {
       ra.innerHTML = '<div style="color:#dc2626;font-size:12px;padding:8px">No clustering labels available. Run the Clustering verb first.</div>';
       return null;
     }
-    outcomeVec = S.clusterLabels.slice();
+    outcomeVec = clLab.slice();
     outcomeLabel = 'Clusters (k=' + (S.clusterK || '?') + ')';
   } else if (outcomeSrc === 'column') {
     if (!S.columns || !S.columns.group) {
@@ -17660,11 +18106,12 @@ function _resolvePatternOutcomeContext(fv, ra) {
     }
     // Re-derive group labels parallel to S.sequences via the same build pipeline
     var built = buildSequencesFromData(S.columns.actor, S.columns.action, S.columns.time, S.columns.group, S.gapThreshold != null ? S.gapThreshold : -1, S.columns.order, S.columns.session);
-    if (!built.groups || built.groups.length !== S.sequences.length) {
+    var colLab = toGroup(built.groups);
+    if (!colLab || colLab.length !== S.sequences.length) {
       ra.innerHTML = '<div style="color:#dc2626;font-size:12px;padding:8px">Column-based outcome could not align with current sequences (try Last observation or Clusters).</div>';
       return null;
     }
-    outcomeVec = built.groups;
+    outcomeVec = colLab;
     outcomeLabel = 'Group column (' + S.columns.group + ')';
   } else if (outcomeSrc === 'numericCol') {
     // Continuous outcome via S.rowSpans — each sequence inherits its first
@@ -18664,7 +19111,7 @@ window.unpublish = function() {
 // Flush persistence NOW, bypassing the 2s autosave debounce — so a seal/lock
 // can't be lost by an immediate refresh (the root cause of "lock disappears").
 // Per-notebook build id — injected by build-notebook.cjs; 'dev' under vite.
-var CARM_BUILD = 'a06ef50·20261119';
+var CARM_BUILD = 'abf18ab·20261120';
 if (/^__CARM/.test(CARM_BUILD)) CARM_BUILD = 'dev';
 
 // ── Reproducibility certificate (Certified tier) ───────────────────────────
@@ -19220,7 +19667,7 @@ window.saveAs = saveAs;
 // ===========================================================================
 var SESSION_KIND = 'carmnote-session';
 var SESSION_TYPE = 'carm-tna';
-var NB_APP_VERSION = '2.5.5';
+var NB_APP_VERSION = '2.5.6';
 
 function sessionPayload() {
   var st = captureNotebookState();
@@ -19365,6 +19812,7 @@ function newNotebook() {
   persistCurrentToLibrary();
   S.data = null; S.sequences = null; S.model = null; S.groupModel = null; S.groupLabels = null;
   DERIVED_STATE_KEYS.forEach(function(k) { S[k] = null; });   // clusterings too
+  S._gen = (S._gen || 0) + 1;
   S.columns = null; S.cells = []; S.published = false;
   S.gapThreshold = -1; S.nid = 0;
   S.notebookId = nbGenId();
@@ -19404,6 +19852,7 @@ function clearAll() {
   if ((S.data || S.cells.length) && !confirm('Clear data and cells for "' + (S.notebookTitle || 'this notebook') + '"? The notebook stays in your library.')) return;
   S.data = null; S.sequences = null; S.model = null; S.groupModel = null; S.groupLabels = null;
   DERIVED_STATE_KEYS.forEach(function(k) { S[k] = null; });   // clusterings too
+  S._gen = (S._gen || 0) + 1;
   S.columns = null; S.cells = []; S.published = false;
   S.gapThreshold = -1; S.nid = 0;
   S.sealed = false;
@@ -19753,7 +20202,7 @@ async function runAll() {
   // ordering so the final saved state is coherent.
   // Network cells first, then the cells that build groups, then the rest (as
   // _rerunCells): a cell may analyse groups a cell below it builds.
-  var rank = function(cs) { return cs.type === 'network' ? 0 : (GROUP_SET_VERBS[cs.type] ? 1 : 2); };
+  var rank = _runTier;
   var order = S.cells.filter(function(cs) { return !cs.locked && cs.type !== 'text'; })
     .map(function(cs, i) { return { cs: cs, i: i }; })
     .sort(function(a, b) { return rank(a.cs) - rank(b.cs) || a.i - b.i; });
@@ -20408,11 +20857,11 @@ function applyExperimentalFilter() {
   var tag = document.getElementById('nb-version-tag');
   if (tag) {
     if (on) {
-      tag.innerHTML = '2.5.5j·B';
+      tag.innerHTML = '2.5.6j·B';
       tag.title = 'Experimental mode on — HON / HONEM / HYPA / Mogen / DFG / Path Dep / Case-dropping (edges) visible';
       tag.style.color = '#e07a3a';
     } else {
-      tag.innerHTML = '2.5.5j';
+      tag.innerHTML = '2.5.6j';
       tag.title = 'Curated mode — Markov Order, Stability, Simplicial Complex (toggle the flask in the header to reveal experimentals)';
       tag.style.color = '#9aa0a6';
     }
@@ -20725,6 +21174,8 @@ var DERIVED_STATE_KEYS = ['sequences', 'model', 'groupModel', 'groupLabels', 'ac
 // opts.rerun === false: the caller re-runs the cells itself (session import).
 function applyState(sv, opts) {
   DERIVED_STATE_KEYS.forEach(function(k) { S[k] = null; });
+  S._gen = (S._gen || 0) + 1;   // another notebook: running per-group cells stop
+  _resetRecodeUi();
   // The open notebook's cells leave the page first. renderAllCells() reads
   // each cell's form and result back from the element with the same id, and
   // ids repeat across notebooks (c1, c2, …): opening a notebook over another
